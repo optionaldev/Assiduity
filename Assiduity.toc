@@ -1,0 +1,8 @@
+## Interface: 30300
+## Title: A|cffff8e00s|cffff7a00s|cffff6300i|cffff4d00d|cffff3d00u|cffff2a00i|cffff1b00t|cffff0004y|r
+## Author: optionaldev
+## Version: 0.1
+
+slash_commands.lua
+
+chat_filter.lua
