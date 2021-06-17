@@ -4,5 +4,7 @@
 ## Version: 0.1
 
 slash_commands.lua
+utility_functions.lua
 
+binds.lua
 chat_filter.lua
