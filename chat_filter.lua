@@ -84,6 +84,7 @@ local guildsToFilter = {
 	"nueva guild los",
 	"orgrimmar gankers",
 	"our guild welcome",
+	"out laws",
 	"olympos",
 	"pouch my tenis",
 	"pvp guild",
@@ -137,6 +138,7 @@ local marketToFilter = {
 	"pala",
 	"prebis",
 	"priest",
+	"resto",
 	"ret",
 	"warlock",
 	"war"

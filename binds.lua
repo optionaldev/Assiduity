@@ -120,6 +120,7 @@ local BINDS = {
         ["E"] = "MACRO e",
         ["R"] = "MACRO r",
         ["T"] = "MACRO t",
+        ["Y"] = "MACRO y",
 
         ["F"] = "MACRO f",
         ["G"] = "MACRO g",

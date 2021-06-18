@@ -6,5 +6,7 @@
 slash_commands.lua
 utility_functions.lua
 
+gcd.xml
+
 binds.lua
 chat_filter.lua
