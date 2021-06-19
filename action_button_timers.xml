@@ -1,0 +1,45 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="action_button_timers.lua"/>
+
+<Frame name="AssiduityActionButtonTimerTemplate" inherits="AssiduityTimingTemplate" frameLevel="100" frameStrata="HIGH" virtual="true">
+    <Size x="50" y="50"/>
+    <Anchors>
+        <Anchor point="CENTER"/>
+    </Anchors>
+    <Layers>
+        <Layer level="BORDER">
+            <Texture parentKey="coolingT" setAllPoints="true" hidden="true">
+                <Color r="0" g="0" b="0" a="0.7"/>
+            </Texture>
+        </Layer>
+    </Layers>
+</Frame>
+
+<Frame parent="MultiBarBottomLeftButton1" inherits="AssiduityActionButtonTimerTemplate" id="1"/>
+<Frame parent="MultiBarBottomLeftButton2" inherits="AssiduityActionButtonTimerTemplate" id="2"/>
+<Frame parent="MultiBarBottomLeftButton3" inherits="AssiduityActionButtonTimerTemplate" id="3"/>
+<Frame parent="MultiBarBottomLeftButton4" inherits="AssiduityActionButtonTimerTemplate" id="4"/>
+<Frame parent="MultiBarBottomLeftButton5" inherits="AssiduityActionButtonTimerTemplate" id="5"/>
+<Frame parent="MultiBarBottomLeftButton6" inherits="AssiduityActionButtonTimerTemplate" id="6"/>
+<Frame parent="MultiBarBottomLeftButton7" inherits="AssiduityActionButtonTimerTemplate" id="7"/>
+<Frame parent="MultiBarBottomLeftButton8" inherits="AssiduityActionButtonTimerTemplate" id="8"/>
+<Frame parent="MultiBarBottomLeftButton9" inherits="AssiduityActionButtonTimerTemplate" id="9"/>
+<Frame parent="MultiBarBottomLeftButton10" inherits="AssiduityActionButtonTimerTemplate" id="10"/>
+<Frame parent="MultiBarBottomLeftButton11" inherits="AssiduityActionButtonTimerTemplate" id="11"/>
+<Frame parent="MultiBarBottomLeftButton12" inherits="AssiduityActionButtonTimerTemplate" id="12"/>
+
+<Frame parent="MultiBarBottomRightButton1" inherits="AssiduityActionButtonTimerTemplate" id="13"/>
+<Frame parent="MultiBarBottomRightButton2" inherits="AssiduityActionButtonTimerTemplate" id="14"/>
+<Frame parent="MultiBarBottomRightButton3" inherits="AssiduityActionButtonTimerTemplate" id="15"/>
+<Frame parent="MultiBarBottomRightButton4" inherits="AssiduityActionButtonTimerTemplate" id="16"/>
+<Frame parent="MultiBarBottomRightButton5" inherits="AssiduityActionButtonTimerTemplate" id="17"/>
+<Frame parent="MultiBarBottomRightButton6" inherits="AssiduityActionButtonTimerTemplate" id="18"/>
+<Frame parent="MultiBarBottomRightButton7" inherits="AssiduityActionButtonTimerTemplate" id="19"/>
+<Frame parent="MultiBarBottomRightButton8" inherits="AssiduityActionButtonTimerTemplate" id="20"/>
+<Frame parent="MultiBarBottomRightButton9" inherits="AssiduityActionButtonTimerTemplate" id="21"/>
+<Frame parent="MultiBarBottomRightButton10" inherits="AssiduityActionButtonTimerTemplate" id="22"/>
+
+
+</Ui>

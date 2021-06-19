@@ -4,9 +4,14 @@
 ## Version: 0.1
 
 slash_commands.lua
+
 utility_functions.lua
+common_tables.lua
+timing.xml
+fonts.xml
 
 gcd.xml
+action_button_timers.xml
 
 binds.lua
 chat_filter.lua

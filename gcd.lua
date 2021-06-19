@@ -1,11 +1,5 @@
 
 --[[*
-    NeemGCD
-    
-    Api:
-    
-    To do list:
-    
     The global cooldown is generally 1.5 seconds for all classes except rogues, 
     Cat Form druids, and Death Knights, whose abilities are mostly one second 
     global cooldown(reduced to 0.5 in UP). Shaman totems also only trigger a one 
@@ -31,8 +25,22 @@ local print = print
 
 local math_floor = math.floor
 
-local HASTE_BUFFS   = QueryNeemDB( "HASTE_BUFF_TO_PERCENTAGE" )
-local HASTE_TALENTS = QueryNeemDB( "CLASS_TO_HASTE_TALENTS" )
+local HASTE_BUFFS   = ASSIDUITY_HASTE_BUFF_TO_PERCENTAGE
+local HASTE_TALENTS = {
+
+    ["DEATHKNIGHT"] = {},
+    ["DRUID"] = {
+        { 1, 11, 1 },
+    },
+    ["HUNTER"] = {},
+    ["MAGE"] = {},
+    ["PALADIN"] = {},
+    ["PRIEST"] = {},
+    ["ROGUE"] = {},
+    ["SHAMAN"] = {},
+    ["WARLOCK"] = {},
+    ["WARRIOR"] = {}
+}
 
 local HASTE_FOR_100_PERCENT = 3279     --- 32.79 haste for 1 percent
 local _, PLAYER_CLASS       = UnitClass( "player" )
@@ -336,8 +344,6 @@ local start = function( self, spell )
     TimingLibDelayedHide( self, gcd )
     
     self:Show()
-    -- countdownEnd = GetTime() + gcd
-    -- self:SetScript( "OnUpdate", OnUpdate )
 end
 
 AssiduityGCD_OnLoad = function( self )
@@ -350,45 +356,7 @@ AssiduityGCD_OnLoad = function( self )
     self:RegisterEvent( "UNIT_SPELLCAST_INTERRUPTED" )
     self:RegisterEvent( "UNIT_SPELLCAST_START" )
     self:RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED" )
-    
-	print("GCD LOADED")
 	
     self:SetScript( "OnEvent", OnEvent )
-end
-
------------
--- Hooks --
------------
-
--- local gcdx
-
--- hooksecurefunc( "CooldownFrame_SetTimer", function( _, _, duration ) 
-
-    -- if duration ~= 0 then
-        -- if duration >= 1 and duration <= 1.5 then
-            -- if gcdx ~= duration then
-                -- debug( "gcd110", duration )
-            -- end
-            -- gcdx = duration
-        -- else
-            -- gcdx = nil
-        -- end
-    -- end
--- end
--- )
-
-
---------------------
--- Slash commands --
---------------------
-SLASH_NEEMGCD1 = "/neemgcd"
-SLASH_NEEMGCD2 = "/ng"
-
-SlashCmdList["NEEMGCD"] = function( msg )
-    if msg == "hide" then
-        --local a = 5
-    else 
-        print( "Possible neemgcd commands: hide." )
-    end
 end
 
