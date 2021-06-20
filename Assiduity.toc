@@ -12,6 +12,7 @@ fonts.xml
 
 gcd.xml
 action_button_timers.xml
+procs.xml
 
 binds.lua
 chat_filter.lua

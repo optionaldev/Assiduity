@@ -1,0 +1,65 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    
+<Script file="procs.lua"/>
+
+<Frame name="AssiduityProcTemplate" virtual="true" hidden="true">
+    <Size x="40" y="40"/>
+    <Layers>
+        <Layer level="BACKGROUND">
+            <Texture parentKey="iconT" setAllPoints="true">
+            </Texture>
+            <FontString parentKey="count" inherits="AssiduityProcsFont">
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT">
+                        <Offset x="-6" y="3"/>
+                    </Anchor>
+                </Anchors>
+            </FontString>
+        </Layer>
+    </Layers>
+    <Frames>
+        <Cooldown parentKey="CD" inherits="CooldownFrameTemplate" reverse="true" drawEdge="true">
+            <Anchors>
+                <Anchor point="CENTER">
+                    <Offset>
+                        <AbsDimension x="0" y="-1"/>
+                    </Offset>
+                </Anchor>
+            </Anchors>
+        </Cooldown>
+        <Frame parentKey="timerF" inherits="AssiduityTimingTemplate" hidden="true"/>
+    </Frames>
+    <Scripts>
+        <OnLoad function="AssiduityProcTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<Frame name="AssiduityProcs" parent="UIParent">
+    <Size x="1" y="1"/>
+    <Anchors>
+        <Anchor point="BOTTOM" relativeTo="UIParent" relativePoint="BOTTOM">
+            <Offset x="-150" y="250"/>
+        </Anchor>
+    </Anchors>
+    <Frames>
+        <Frame name="$parentProc1" id="1" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc2" id="2" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc3" id="3" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc4" id="4" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc5" id="5" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc6" id="6" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc7" id="7" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc8" id="8" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc8" id="9" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc8" id="10" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc8" id="11" inherits="AssiduityProcTemplate"/>
+        <Frame name="$parentProc8" id="12" inherits="AssiduityProcTemplate"/>
+    </Frames>
+    <Scripts>
+        <OnLoad function="AssiduityProcs_OnLoad"/>
+    </Scripts>
+</Frame>
+    
+</Ui>
+                    
