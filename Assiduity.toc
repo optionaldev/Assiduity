@@ -10,6 +10,7 @@ common_tables.lua
 timing.xml
 fonts.xml
 
+reposition_frames.lua
 gcd.xml
 action_button_timers.xml
 procs.xml

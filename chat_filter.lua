@@ -50,16 +50,20 @@ local guildsToFilter = {
 	"drakken",
 	"cognitive",
 	"courage",
+	"deleted user",
 	"edora",
 	"el capitoli",
 	"con la guild",
 	"empathy",
 	"essentials",
 	"evasion",
+	"exalted spiritz",
 	"frenchdrama",
 	"for the aliance",
+	"freezing field",
 	"from bulgaria with love",
 	"guardian of the bulgaria",
+	"guild internacional",
 	"guild latina,",
 	"guilda cz/sk",
 	"i n s i g h t",
@@ -74,6 +78,7 @@ local guildsToFilter = {
 	"iron line",
 	"k e r v a n",
 	"knight champions",
+	"la brigada",
 	"la caja de pandora",
 	"legado de wrynn",
 	"magyar guild",
@@ -98,12 +103,15 @@ local guildsToFilter = {
 	"saints and soldiers",
 	"serbian knights",
 	"silent spectrum",
+	"snow doves",
 	"the dead center",
 	"tempered insanity",
+	"the outcast",
 	"the patiant",
 	"the pug society",
 	"the rippers",
 	"the sons of norris",
+	"the walkiing dead",
 	"t o x i n",
 	"toxicology",
 	"toomanybuttons",
@@ -111,6 +119,7 @@ local guildsToFilter = {
 	"vanguardia de escarcha",
 	"vendetta",
 	"wap squad",
+	"warmane br",
 	"w i p e",
 	"what makes us strong",
 	"yeezus"
@@ -127,6 +136,7 @@ local marketToFilter = {
 	"dk",
 	"druid",
 	"fresh naked",
+	"fury",
 	"gnome",
 	"hpala",
 	"human",
@@ -140,6 +150,7 @@ local marketToFilter = {
 	"priest",
 	"resto",
 	"ret",
+	"via trade",
 	"warlock",
 	"war"
 }
@@ -154,12 +165,14 @@ local reservingToFilter = {
 	"boe+p",
 	"b+p+sfs",
 	"b+p",
+	"boe/primo"
 }
 
 
 local otherFilters = {
 	"wts - shadow",
-	"twitch.tv"
+	"twitch.tv",
+	"warmane trade"
 }
 
 --[[
@@ -217,6 +230,8 @@ local ADDON_LOADED = function( self, addon )
 		for _, filter in ipairs(marketToFilter) do
 			table_insert(filteringSubstrings, "wtb " .. filter)
 			table_insert(filteringSubstrings, "wts " .. filter)
+			table_insert(filteringSubstrings, "selling " .. filter)
+			table_insert(filteringSubstrings, "buying " .. filter)
 		end
 		
 		for _, value in ipairs(reservingToFilter) do
@@ -235,10 +250,10 @@ end
 -----------
 -- Frame --
 -----------
-local NeemChatFilter = CreateFrame( "Frame" )
+local AssiduityChatFilter = CreateFrame("Frame")
 
 do
-    local self = NeemChatFilter
+    local self = AssiduityChatFilter
   
     self.ADDON_LOADED = ADDON_LOADED
     
