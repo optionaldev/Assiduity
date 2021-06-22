@@ -150,6 +150,7 @@ local marketToFilter = {
 	"priest",
 	"resto",
 	"ret",
+	"this",
 	"via trade",
 	"warlock",
 	"war"

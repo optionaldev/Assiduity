@@ -1,19 +1,20 @@
 ## Interface: 30300
 ## Title: A|cffff8e00s|cffff7a00s|cffff6300i|cffff4d00d|cffff3d00u|cffff2a00i|cffff1b00t|cffff0004y|r
 ## Author: optionaldev
-## Version: 0.1
+## Version: 0.2
 
-slash_commands.lua
+src/slash_commands.lua
 
-utility_functions.lua
-common_tables.lua
-timing.xml
-fonts.xml
+src\utility_functions.lua
+src\common_tables.lua
+src\timing.xml
+src\fonts.xml
 
-reposition_frames.lua
-gcd.xml
-action_button_timers.xml
-procs.xml
+src\action_button_timers.xml
+src\combat.xml
+src\gcd.xml
+src\procs.xml
+src\reposition_frames.lua
 
-binds.lua
-chat_filter.lua
+src\binds.lua
+src\chat_filter.lua
