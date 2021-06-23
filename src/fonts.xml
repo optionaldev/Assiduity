@@ -13,4 +13,12 @@
     </FontHeight>
 </Font>
 
+<Font name="AssiduityProcsFont" outline="NORMAL" font="Fonts\ARIALN.TTF" virtual="true">
+    <FontHeight>
+        <AbsValue val="19"/>
+    </FontHeight>
+    <Color r="1.0" g="1.0" b="1.0"/>
+</Font>
+
+
 </Ui>

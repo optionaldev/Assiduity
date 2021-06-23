@@ -47,7 +47,7 @@ local guildsToFilter = {
 	"carbonite",
 	"code",
 	"die raidgilde",
-	"drakken",
+	"drakkhen",
 	"cognitive",
 	"courage",
 	"deleted user",
@@ -91,6 +91,7 @@ local guildsToFilter = {
 	"our guild welcome",
 	"out laws",
 	"olympos",
+	"penumbra d la desolacion",
 	"pouch my tenis",
 	"pvp guild",
 	"pvp nao e pra gringos",
@@ -116,18 +117,30 @@ local guildsToFilter = {
 	"toxicology",
 	"toomanybuttons",
 	"trauma",
+	"unison",
 	"vanguardia de escarcha",
 	"vendetta",
 	"wap squad",
 	"warmane br",
 	"w i p e",
 	"what makes us strong",
+	"whispers in the dark",
 	"yeezus"
+}
+
+local marketIdentiers = {
+	"wts",
+	"wtb",
+	"selling",
+	"buying"
 }
 
 local marketToFilter = {
 	
-	"200k",
+	"50",
+	"100",
+	"150",
+	"200",
 	"a lot of",
 	"blackrock",
 	"bis",
@@ -207,6 +220,16 @@ local function spamFilter(self, event, message, _, language, ...)
 		end
 	end	
 	
+	for _, filter in ipairs(marketToFilter) do
+		if string_find(lowercaseMessage, filter, 1, true) then
+			for _, identifier in ipairs(marketIdentiers) do
+				if string_find(lowercaseMessage, identifier, 1, true) then
+					return true
+				end
+			end
+		end
+    end
+        
 	for _, substring in ipairs(filteringSubstrings) do
 		-- Filter messages that contain substring. The 4th parameter (true) make string finding ignore regex syntax 
 		if string_find(lowercaseMessage, substring, 1, true) then
@@ -227,13 +250,6 @@ local ADDON_LOADED = function( self, addon )
 		
 		print("marketToFilter = ")
 		print(marketToFilter)
-		
-		for _, filter in ipairs(marketToFilter) do
-			table_insert(filteringSubstrings, "wtb " .. filter)
-			table_insert(filteringSubstrings, "wts " .. filter)
-			table_insert(filteringSubstrings, "selling " .. filter)
-			table_insert(filteringSubstrings, "buying " .. filter)
-		end
 		
 		for _, value in ipairs(reservingToFilter) do
 			table_insert(filteringSubstrings, value)
