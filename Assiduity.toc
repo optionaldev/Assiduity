@@ -14,7 +14,8 @@ src\action_button_timers.xml
 src\combat.xml
 src\gcd.xml
 src\procs.xml
-src\reposition_frames.lua
 
+src\auto_equip.lua
 src\binds.lua
 src\chat_filter.lua
+src\reposition_frames.lua
