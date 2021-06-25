@@ -15,7 +15,7 @@ local chests = {
 	"White Traditional Hanbok"
 }
 
-local currentChestIndex = 0
+local currentChestIndex = 1
 
 local NEXT_CHEST_UPDATE_MIN = 150
 local NEXT_CHEST_UPDATE_MAX = 230
@@ -30,19 +30,22 @@ local onUpdate = function(self)
 	
 	local currentTime = GetTime()
 	
-	if nextChestUpdateTime < currentTime then
+	if nextChestUpdateTime < currentTime and UnitIsDeadOrGhost("player") ~= 1 then
+		
 		if currentChestIndex == #chests then
 			currentChestIndex = 1
 		end
+		print("currentChestIndex = " .. tostring(currentChestIndex))
 	
 		EquipItemByName(chests[currentChestIndex])
-		
-		currentChestIndex = currentChestIndex + 1
 	
 		local randomNumber = math_random(NEXT_CHEST_UPDATE_MIN, NEXT_CHEST_UPDATE_MAX)
 		nextChestUpdateTime = currentTime + randomNumber
 		
+		print("Wearing " .. chests[currentChestIndex])
 		print("Scheduled chest update in " .. tostring(randomNumber))
+		
+		currentChestIndex = currentChestIndex + 1
 	end
 end
 
@@ -51,7 +54,10 @@ local ADDON_LOADED = function( self, addon )
     if addon == "Assiduity" then
         self:UnregisterEvent( "ADDON_LOADED" )
 		
-		self:SetScript("OnUpdate", onUpdate)
+		local name = UnitName("player")
+		if name == "Asymmetry" then
+			self:SetScript("OnUpdate", onUpdate)
+		end
     end
 end
 
@@ -78,7 +84,7 @@ end
 SLASH_ASSIDUITYAUTOEQUIP1 = "/assiduityautoequip"
 SLASH_ASSIDUITYAUTOEQUIP2 = "/aae"
 
-SlashCmdList["ASSIDUITYCHATFILTER"] = function (message)
+SlashCmdList["ASSIDUITYAUTOEQUIP"] = function (message)
 	
 	local self = AssiduityAutoEquip
 	
@@ -86,7 +92,7 @@ SlashCmdList["ASSIDUITYCHATFILTER"] = function (message)
 		self:SetScript("OnUpdate", nil)
 		print("Auto equip paused.")
 	elseif message == "resume" then
-		set:SetScript("OnUpdate", onUpdate)
+		self:SetScript("OnUpdate", onUpdate)
 		print("Auto equip resumed.")
 	else 
 		print("Available commands for /assiduityautoequip or /aae:")

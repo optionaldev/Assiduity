@@ -18,4 +18,5 @@ src\procs.xml
 src\auto_equip.lua
 src\binds.lua
 src\chat_filter.lua
+src\delete_items.lua
 src\reposition_frames.lua
