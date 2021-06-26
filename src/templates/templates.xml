@@ -1,0 +1,448 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<!--  file="Interface\Icons\Spell_Nature_GiftoftheWild" -->
+
+<Script file="templates.lua"/>
+
+<!-- Templates for templates -->
+
+<Texture name="NeemBackgroundTemplate" parentKey="bgT"   virtual="true"/>
+<Texture name="NeemIconTemplate"       parentKey="iconT" virtual="true"/>
+
+<!-- copy / paste
+<Texture inherits="NeemBackgroundTemplate"/>
+<Texture inherits="NeemIconTemplate"/>
+-->
+
+<!-- Aura Frame -->
+
+<Frame name="NeemSmallBuffFrameTemplate" virtual="true" enableMouse="false" hidden="true">
+    <Layers>
+        <Layer level="BORDER">
+            <Texture parentKey="dispelTypeT" setAllPoints="true"/>
+        </Layer>
+        <Layer>
+            <Texture inherits="NeemIconTemplate"/>
+            <FontString parentKey="countFS"/>
+        </Layer>
+    </Layers>
+    <Frames>
+        <Cooldown parentKey="CD" inherits="CooldownFrameTemplate" reverse="true" drawEdge="false" frameLevel="100" setAllPoints="true"/>
+    </Frames>
+    <Scripts>
+        <OnEnter>
+            GameTooltip:SetOwner( self, "ANCHOR_BOTTOMRIGHT", 15, -25 )
+            GameTooltip:SetUnitBuff( self:GetParent():GetParent().unit, self.auraID )
+        </OnEnter>
+        <OnLeave>
+            GameTooltip:Hide()
+        </OnLeave>
+        <OnLoad function="NeemSmallAuraFrameTemplate_OnLoad"/>
+        <OnUpdate>
+            if( GameTooltip:IsOwned( self )) then
+                GameTooltip:SetUnitBuff( self:GetParent():GetParent().unit, self.auraID )
+            end
+        </OnUpdate>
+    </Scripts>
+</Frame>
+
+<Button name="NeemLargeBuffButtonTemplate" inherits="NeemSmallBuffFrameTemplate" enableMouse="true" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemLargeAuraFrameTemplate_OnLoad"/>
+    </Scripts>
+</Button>
+
+<Frame name="NeemSmallDebuffFrameTemplate" inherits="NeemSmallBuffFrameTemplate" virtual="true">
+    <Scripts>
+        <OnEnter>
+            GameTooltip:SetOwner( self, "ANCHOR_BOTTOMRIGHT", 15, -25 )
+            GameTooltip:SetUnitDebuff( self:GetParent():GetParent().unit, self.auraID )
+        </OnEnter>
+        <OnLoad function="NeemSmallAuraFrameTemplate_OnLoad"/>
+        <OnUpdate>
+            if( GameTooltip:IsOwned( self )) then
+                GameTooltip:SetUnitDebuff( self:GetParent():GetParent().unit, self.auraID )
+            end
+        </OnUpdate>
+    </Scripts>
+</Frame>
+
+<Frame name="NeemLargeDebuffFrameTemplate" inherits="NeemSmallDebuffFrameTemplate" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemLargeAuraFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<!-- Auras Frame -->
+
+<Frame name="NeemSmallBuffsFrameTemplate" virtual="true">
+    <Layers>
+        <Layer level="BACKGROUND">
+            <Texture inherits="NeemBackgroundTemplate"/>
+        </Layer>
+    </Layers>
+    <Scripts>
+        <OnLoad function="NeemSmallBuffsFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<Frame name="NeemLargeBuffsFrameTemplate" inherits="NeemSmallBuffsFrameTemplate" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemLargeBuffsFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<Frame name="NeemSmallDebuffsFrameTemplate" inherits="NeemSmallBuffsFrameTemplate" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemSmallDebuffsFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<Frame name="NeemLargeDebuffsFrameTemplate" inherits="NeemSmallDebuffsFrameTemplate" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemLargeDebuffsFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<!-- Cast StatusBar -->
+
+<StatusBar name="NeemCastingBarTemplate" drawLayer="BORDER" virtual="true" hidden="false">
+    <Size x="80" y="14"/>
+    <Layers>
+        <Layer level="BACKGROUND">
+            <Texture setAllPoints="true">
+                <Color r="0" g="0" b="0" a="0.5"/>
+            </Texture>		
+        </Layer>
+        <Layer level="ARTWORK">
+            <FontString name="$parentText" inherits="GameFontHighlightSmall">
+                <Size>
+                    <AbsDimension x="80" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP">
+                        <Offset>
+                            <AbsDimension x="0" y="2"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </FontString>
+            <Texture name="$parentIcon" hidden="true">
+                <Size>
+                    <AbsDimension x="16" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT">
+                        <Offset>
+                            <AbsDimension x="-5" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Texture>
+        </Layer>
+        <Layer level="OVERLAY">
+            <Texture name="$parentSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
+                <Size>
+                    <AbsDimension x="32" y="32"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="CENTER"/>
+                </Anchors>
+            </Texture>
+            <Texture name="$parentFlash" file="" alphaMode="ADD">
+                <Size>
+                    <AbsDimension x="256" y="64"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOP">
+                        <Offset>
+                            <AbsDimension x="0" y="28"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Texture>
+        </Layer>
+    </Layers>
+    
+    <Scripts>
+        <OnLoad function="NeemCastStatusBarTemplate_OnLoad"/>
+    </Scripts>
+    <BarTexture file="Interface\TargetingFrame\UI-StatusBar"/>
+    <BarColor r="1.0" g="0.7" b="0.0"/>
+</StatusBar>
+
+<!-- Extra Frame -->
+
+<Texture name="NeemComboPointTemplate" file="Interface\AddOns\Neem\artwork\combo_point" hidden="true" virtual="true">
+    <Size x="20" y="20"/>
+</Texture>
+
+<Frame name="NeemExtraFrameTemplate" enableMouse="false" parentKey="extraF" virtual="true">
+    <Size x="150" y="20"/>
+    <Layers>
+        <Layer level="BORDER">
+            <FontString parentKey="nameFS" inherits=""/>
+        </Layer>
+        <Layer>
+            <Texture parentKey="cp1T" inherits="NeemComboPointTextureTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT"/>
+                </Anchors>
+            </Texture>
+            <Texture parentKey="cp2T" inherits="NeemComboPointTextureTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset x="20" y="0"/>
+                    </Anchor>
+                </Anchors>
+            </Texture>
+            <Texture parentKey="cp3T" inherits="NeemComboPointTextureTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset x="40" y="0"/>
+                    </Anchor>
+                </Anchors>
+            </Texture>
+            <Texture parentKey="cp4T" inherits="NeemComboPointTextureTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset x="60" y="0"/>
+                    </Anchor>
+                </Anchors>
+            </Texture>
+            <Texture parentKey="cp5T" inherits="NeemComboPointTextureTemplate">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT">
+                        <Offset x="80" y="0"/>
+                    </Anchor>
+                </Anchors>
+            </Texture>
+        </Layer>
+    </Layers>
+    <Scripts>
+        <OnLoad function="NeemExtraFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<!-- Health StatusBar -->
+
+<Frame name="NeemSmallHealthStatusBarTemplate" virtual="true">
+    <Size x="10" y="10"/>
+    <Layers>
+        <Layer level="BACKGROUND">
+            <Texture inherits="NeemBackgroundTemplate" setAllPoints="true">
+                <Color r="0" g="0" b="0"/>
+            </Texture>
+        </Layer>
+    </Layers>
+    <Frames>
+        <StatusBar parentKey="SB" minValue="0" maxValue="100" defaultValue="50">
+            <Anchors>
+                <Anchor point="TOPLEFT">
+                    <Offset x="1" y="-1"/>
+                </Anchor>
+                <Anchor point="BOTTOMRIGHT">
+                    <Offset x="-1" y="1"/>
+                </Anchor>
+            </Anchors>
+            <Layers>
+                <Layer>
+                    <FontString parentKey="textFS">
+                        <Anchors>
+                            <Anchor point="RIGHT">
+                                <Offset x="-2" y="0"/>
+                            </Anchor>
+                        </Anchors>
+                    </FontString>
+                </Layer>
+            </Layers>
+            <BarTexture file="Interface\AddOns\Neem\artwork\status_bar"/>
+            <BarColor r="0" g="0" b="0"/>
+        </StatusBar>
+    </Frames>
+    <Scripts>
+        <OnLoad function="NeemSmallHealthStatusBarTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<Frame name="NeemLargeHealthStatusBarTemplate" inherits="NeemSmallHealthStatusBarTemplate" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemLargeHealthStatusBarTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<!-- Icon Frame -->
+
+<Frame name="NeemSmallIconFrameTemplate" parentKey="iconF" virtual="true">
+    <Layers>
+        <Layer level="BORDER">
+            <Texture parentKey="iconT" file="Interface\Icons\Spell_Nature_GiftoftheWild" setAllPoints="true"/>
+        </Layer>
+        <Layer>
+            <FontString parentKey="textFS">
+                <Anchors>
+                    <Anchor point="CENTER"/>
+                </Anchors>
+            </FontString>
+        </Layer>
+    </Layers>
+    <Scripts>
+        <OnLoad function="NeemSmallIconFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<Frame name="NeemLargeIconFrameTemplate" inherits="NeemSmallIconFrameTemplate" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemLargeIconFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<!-- Overlay Health Bar -->
+
+<StatusBar name="NeemOverlayStatusBarTemplate" parentKey="overlaySB" orientation="VERTICAL" setAllPoints="true" virtual="true">
+    <Layers>
+        <Layer level="BORDER">
+            <FontString parentKey="percentageFS" inherits="NeemStatusBarFont" text="lol%">
+                <Anchors>
+                    <Anchor point="BOTTOM" relativePoint="TOP"/>
+                </Anchors>
+            </FontString>
+        </Layer>
+    </Layers>
+    <Scripts>
+        <OnLoad function="NeemOverlayStatusBarTemplate_OnLoad"/>
+    </Scripts>
+</StatusBar>
+
+<!-- Power StatusBar -->
+
+<Frame name="NeemSmallPowerStatusBarTemplate" inherits="NeemSmallHealthStatusBarTemplate" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemSmallPowerStatusBarTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<Frame name="NeemLargePowerStatusBarTemplate"  inherits="NeemSmallPowerStatusBarTemplate" virtual="true">
+    <Scripts>
+        <OnLoad function="NeemLargePowerStatusBarTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<!-- Spec Frame -->
+
+<Frame name="NeemSpecFrameTemplate" alpha="0.5" parentKey="specF" virtual="true">
+    <Layers>
+        <Layer>
+            <Texture parentKey="iconT" file="Interface\Icons\Spell_Nature_LightningShield" setAllPoints="true"/>
+        </Layer>
+    </Layers>
+    <Scripts>
+        <OnLoad function="NeemSpecFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+<!-- Target of Unit Frame -->
+
+<Button name="NeemTargetOfUnitButtonTemplate" inherits="SecureUnitButtonTemplate" parentKey="targetF" virtual="true">
+    <Layers>
+        <Layer level="BACKGROUND">
+            <Texture inherits="NeemBackgroundTemplate"/> 
+        </Layer>
+    </Layers>
+    <Frames>
+        <Frame inherits="NeemSmallIconFrameTemplate" setAllPoints="true"/>
+    </Frames>
+    <Scripts>
+        <OnLoad function="NeemTargetOfUnitButtonTemplate_OnLoad"/>
+    </Scripts>
+</Button>
+
+<!-- Unit Frame -->
+
+<Button name="NeemUnitFrameTemplate" inherits="SecureUnitButtonTemplate" parent="UIParent" virtual="true">
+    <Layers>
+        <Layer level="BACKGROUND">
+            <Texture name="$parentBackground" inherits="NeemBackgroundTemplate"/>
+        </Layer>
+    </Layers>
+    <Frames>
+        <Frame parentKey="combatF">
+            <Layers>
+                <Layer level="BORDER">
+                    <Texture parentKey="combatT"/>
+                </Layer>
+            </Layers>
+            <Scripts>
+                <OnLoad function="NeemUnitFrameTemplateCombat_OnLoad"/>
+            </Scripts>
+        </Frame>
+        <Frame parentKey="focusF">
+            <Layers>
+                <Layer level="BORDER">
+                    <Texture parentKey="focusT"/>
+                </Layer>
+            </Layers>
+            <Scripts>
+                <OnLoad function="NeemUnitFrameTemplateFocus_OnLoad"/>
+            </Scripts>
+        </Frame>
+        <Frames parentKey="leaderF">
+            <Layers>
+                <Layer>
+                    <Texture parentKey="leaderT" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true"/>
+                </Layer>
+            </Layers>
+            <Scripts>
+                <OnLoad function="NeemUnitFrameTemplateLeader_OnLoad"/>
+            </Scripts>
+        </Frames>
+        <Frame parentKey="targetF">
+            <Layers>
+                <Layer level="BORDER">
+                    <Texture parentKey="leftT"/>
+                    <Texture parentKey="rightT"/>
+                </Layer>
+            </Layers>
+            <Scripts>
+                <OnLoad function="NeemUnitFrameTemplateTarget_OnLoad"/>
+            </Scripts>
+        </Frame>
+    </Frames>
+</Button>
+
+<!-- Unit Pet Frame -->
+
+<Frame name="NeemPlayerAuraTemplate" hidden="true" virtual="true">
+    <Layers>
+        <Layer>
+            <Texture inherits="NeemIconTemplate" file="Interface\Icons\Spell_Nature_GiftoftheWild"/>
+        </Layer>
+    </Layers>
+    <Frames>
+        <Cooldown parentKey="CD" inherits="CooldownFrameTemplate" reverse="true" drawEdge="false">
+            <Anchors>
+                <Anchor point="CENTER"/>
+            </Anchors>
+        </Cooldown>
+    </Frames>
+</Frame>
+
+<Button name="NeemUnitPetFrameTemplate" inherits="NeemUnitFrameTemplate" parentKey="petF" virtual="true">
+    <Frames>
+        <StatusBar inherits="NeemOverlayStatusBarTemplate"/>
+        <Frame inherits="NeemSmallIconFrameTemplate" setAllPoints="true"/>
+        
+        <Frame name="$parentAura1" inherits="NeemPlayerAuraTemplate" parentKey="aura1"/>
+        <Frame parentKey="aura2" inherits="NeemPlayerAuraTemplate">
+            <Anchors>
+                <Anchor point="TOP" relativeTo="$parentAura1" relativePoint="BOTTOM"/>
+            </Anchors>
+        </Frame>
+    </Frames>
+    <Scripts>
+        <OnLoad function="NeemUnitPetFrameTemplate_OnLoad"/>
+    </Scripts>
+</Button>
+
+</Ui>

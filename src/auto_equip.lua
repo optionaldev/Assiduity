@@ -10,6 +10,7 @@ local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local chests = {
 	"Dark Green Wedding Hanbok",
 	"Green Wedding Hanbok",
+	"Preened Ironfeather Breastplate",
 	"Red Traditional Hanbok",
 	"Royal Dangui",
 	"White Traditional Hanbok"
