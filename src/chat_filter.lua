@@ -37,7 +37,7 @@ local guildsToFilter = {
 	"another memory",
 	"arise",
 	"atencion",
-	"autentic romanesc",
+	"autentic",
 	"back in blood",
 	"bad luck",
 	"balanced insanity",

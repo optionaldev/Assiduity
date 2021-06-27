@@ -28,3 +28,17 @@ AssiduityPrintTable = function(tbl)
 		end
     end
 end
+
+--- func: Returns the expiration time of a unit's buff
+AssiduityBuffExpiration = function( unit, buff )
+
+    local _, _, _, _, _, _,expiration = UnitBuff( unit, buff )
+    return expiration
+end
+
+--- func: Returns the casting time of a spell belonging to player
+AssiduityGetCastTime = function( spell )
+
+    local _, _, _, _, _, _, castTime = GetSpellInfo( spell )
+    return castTime / 1000
+end

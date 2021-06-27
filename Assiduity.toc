@@ -19,4 +19,5 @@ src\auto_equip.lua
 src\binds.lua
 src\chat_filter.lua
 src\delete_items.lua
+src\equipment_flicker.lua
 src\reposition_frames.lua
