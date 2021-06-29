@@ -27,8 +27,19 @@ local ADDON_LOADED = function(self, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 		
 		-- Reposition the PlayerFrame
+		
+		
+		print("reposition Player frame")
 		PlayerFrame:ClearAllPoints()
-		PlayerFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOM", -150, DISTANCE_FROM_BOTTOM + 20)
+		PlayerFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOM", -150, DISTANCE_FROM_BOTTOM + 20)  
+		
+		--[[
+		MultiBarBottomLeft:SetMovable() 
+    MultiBarBottomLeft:ClearAllPoints() 
+    MultiBarBottomLeft:SetPoint( "BOTTOMRIGHT", UIParent, 
+                                 "BOTTOM", -58, 10 )
+    MultiBarBottomLeft:SetUserPlaced( 1 )
+		]]
 		
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 		self:RegisterEvent("PLAYER_TARGET_CHANGED")

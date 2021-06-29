@@ -117,7 +117,6 @@ local BINDS = {
 
         ["Q"] = "MACRO q",
         ["E"] = "MACRO e",
-        ["CTRL-E"] = "MACRO e ctrl",
         ["R"] = "MACRO r",
         ["T"] = "MACRO t",
         ["Y"] = "MACRO y",

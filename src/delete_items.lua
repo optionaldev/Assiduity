@@ -46,8 +46,14 @@ local COMMON_ITEMS_TO_DELETE = {
 	["Scroll of Strength III"] = 1,
 	["Scroll of Strength IV"] = 1,
 	["Scroll of Strength V"] = 1,
+	["Shimmering Amice"] = 1,
+	["Simple Shoes"] = 1,
 	["Solid Stone"] = 1,
+	["Spellbinder Belt"] = 1,
 	["Superior Healing Potion"] = 1,
+	["Tel'Abim Banana"] = 1,
+	["Veteran Boots"] = 1,
+	["Veteran Bracers"] = 1,
 }
 
 ---------------------

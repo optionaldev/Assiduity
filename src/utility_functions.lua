@@ -42,3 +42,26 @@ AssiduityGetCastTime = function( spell )
     local _, _, _, _, _, _, castTime = GetSpellInfo( spell )
     return castTime / 1000
 end
+
+AssiduityMount = function( index )
+	if not IsMounted() then 
+		if (GetZoneText() == "Wintergrasp" and GetWintergraspWaitTime() == nil) or 
+			not IsFlyableArea() 
+		then 
+			CallCompanion("MOUNT", index) 
+		end 
+	end
+ end
+ 
+AssiduityWarn = function(message)
+    RaidNotice_AddMessage(RaidWarningFrame,
+                          message,
+                          ChatTypeInfo_RAID_WARNING)
+end
+
+AssiduityTableJoin = function(table1, table2)
+
+    for _, value in ipairs(table2) do
+        table_insert(table1, value)
+    end
+end
