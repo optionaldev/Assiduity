@@ -1,5 +1,7 @@
 local MINIMUM_AMOUNT = 19
 
+local GetInstanceType = AssiduityGetInstanceType
+
 local AssiduityReagents = CreateFrame("Frame")
 do
     local Warn = AssiduityWarn
@@ -60,7 +62,8 @@ do
                 if not isReagentEnough(reagent) then
                     local name = GetItemInfo(reagent)
 					if name ~= nil then
-						Warn("Low on " .. name)
+						print("Low on " .. name)
+						--Warn("Low on " .. name)
 					end
                 end
             end
@@ -68,7 +71,7 @@ do
         firstTime = nil
     end
 
-    local self = NeemReagents
+    local self = AssiduityReagents
     
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
 

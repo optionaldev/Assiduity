@@ -36,6 +36,7 @@ local guildsToFilter = {
 	"advent",
 	"another memory",
 	"arise",
+	"asperity",
 	"atencion",
 	"autentic",
 	"back in blood",
@@ -48,6 +49,7 @@ local guildsToFilter = {
 	"carbonite",
 	"carried",
 	"code",
+	"dej na wino",
 	"die raidgilde",
 	"drakkhen",
 	"cognitive",
@@ -102,11 +104,14 @@ local guildsToFilter = {
 	"rebel knights",
 	"red ribbon army",
 	"r e s u r r e c t i o n",
+	"remorselesses",
 	"renegados brasil",
 	"retaliation",
 	"rising angels",
 	"saints and soldiers",
 	"serbian knights",
+	"shadow house",
+	"shield of light",
 	"silent spectrum",
 	"snow doves",
 	"the dead center",
@@ -130,6 +135,7 @@ local guildsToFilter = {
 	"w i p e",
 	"what makes us strong",
 	"whispers in the dark",
+	"wrynn legacy",
 	"yeezus"
 }
 
@@ -170,6 +176,7 @@ local marketToFilter = {
 	"ret",
 	"shaman",
 	"this",
+	"twink",
 	"via trade",
 	"warlock",
 	"war"
@@ -190,9 +197,16 @@ local reservingToFilter = {
 
 
 local otherFilters = {
-	"wts - shadow",
+	"trade",
+	"rs10",
+	"rs25",
+	"rs 10",
+	"rs 25",
+	"the black temple",
+	"tmog",
 	"twitch.tv",
-	"warmane trade"
+	"warmane trade",
+	"xmog"
 }
 
 --[[

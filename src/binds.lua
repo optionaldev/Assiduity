@@ -116,6 +116,7 @@ local BINDS = {
         ["N"] = "ACTIONBUTTON12",
 
         ["Q"] = "MACRO q",
+        ["ALT-Q"] = "MACRO q alt",
         ["E"] = "MACRO e",
         ["R"] = "MACRO r",
         ["T"] = "MACRO t",

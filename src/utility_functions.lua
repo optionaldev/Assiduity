@@ -1,6 +1,8 @@
 
 print("Loaded utility functions.")
 
+local table_insert = table.insert
+
 --- func: Returns the localized class of the player
 AssiduityGetPlayerLocalizedClass = function()
 
