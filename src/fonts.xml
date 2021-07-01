@@ -20,5 +20,69 @@
     <Color r="1.0" g="1.0" b="1.0"/>
 </Font>
 
+<!-- Power Status Bar -->
+
+<Font name="AssiduityPowerStatusBarFontSmall" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+    <FontHeight>
+        <AbsValue val="15"/>
+    </FontHeight>
+    <Color r="0.8" g="0.8" b="0.8"/>
+</Font>
+
+<Font name="AssiduityPowerStatusBarFontLarge" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+    <FontHeight>
+        <AbsValue val="15"/>
+    </FontHeight>
+    <Color r="0.8" g="0.8" b="0.8"/>
+</Font>
+
+<!-- Count -->
+
+<Font name="AssiduityAuraCountFontSmall" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+    <FontHeight>
+        <AbsValue val="15"/>
+    </FontHeight>
+    <Color r="0.8" g="0.8" b="0.8"/>
+</Font>
+
+<Font name="AssiduityAuraCountFontLarge" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+    <FontHeight>
+        <AbsValue val="8"/>
+    </FontHeight>
+    <Color r="0.8" g="0.8" b="0.8"/>
+</Font>
+
+<!-- Health Status Bar -->
+
+<Font name="AssiduityHealthStatusBarFontLarge" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+    <FontHeight>
+        <AbsValue val="15"/>
+    </FontHeight>
+    <Color r="0.8" g="0.8" b="0.8"/>
+</Font>
+
+<Font name="AssiduityHealthStatusBarFontSmall" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+    <FontHeight>
+        <AbsValue val="15"/>
+    </FontHeight>
+    <Color r="0.8" g="0.8" b="0.8"/>
+</Font>
+
+<!-- Icon Text Font -->
+
+<Font name="AssiduityIconTextFontSmall" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+    <FontHeight>
+        <AbsValue val="15"/>
+    </FontHeight>
+    <Color r="0.8" g="0.8" b="0.8"/>
+</Font>
+
+<Font name="AssiduityIconTextFontLarge" font="Fonts\FRIZQT__.TTF" virtual="true">
+    <FontHeight>
+        <AbsValue val="100"/>
+    </FontHeight>
+    <Color r="0" g="0" b="0"/>
+</Font>
+
 
 </Ui>

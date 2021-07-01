@@ -197,12 +197,14 @@ local reservingToFilter = {
 
 
 local otherFilters = {
-	"trade",
+	"molten core",
 	"rs10",
 	"rs25",
 	"rs 10",
 	"rs 25",
+	"tempest keep",
 	"the black temple",
+	"trade",
 	"tmog",
 	"twitch.tv",
 	"warmane trade",

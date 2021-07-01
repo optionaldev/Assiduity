@@ -26,19 +26,13 @@ local ADDON_LOADED = function(self, addon)
 	if addon == "Assiduity" then
 		self:UnregisterEvent("ADDON_LOADED")
 		
-		-- Reposition the PlayerFrame
-		
-		
-		print("reposition Player frame")
-		PlayerFrame:ClearAllPoints()
-		PlayerFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOM", -150, DISTANCE_FROM_BOTTOM + 20)  
+		PlayerFrame:SetAlpha(0.2)
 		
 		--[[
 		MultiBarBottomLeft:SetMovable() 
-    MultiBarBottomLeft:ClearAllPoints() 
-    MultiBarBottomLeft:SetPoint( "BOTTOMRIGHT", UIParent, 
-                                 "BOTTOM", -58, 10 )
-    MultiBarBottomLeft:SetUserPlaced( 1 )
+		MultiBarBottomLeft:ClearAllPoints() 
+		MultiBarBottomLeft:SetPoint( "BOTTOMRIGHT", UIParent, "BOTTOM", -58, 10 )
+		MultiBarBottomLeft:SetUserPlaced( 1 )
 		]]
 		
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")

@@ -55,6 +55,8 @@ AssiduityMount = function( index )
 	end
  end
  
+local ChatTypeInfo_RAID_WARNING = ChatTypeInfo.RAID_WARNING
+
 AssiduityWarn = function(message)
     RaidNotice_AddMessage(RaidWarningFrame,
                           message,

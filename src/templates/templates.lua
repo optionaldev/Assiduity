@@ -53,7 +53,101 @@ local unpack = unpack
 local math_ceil = math.ceil
 local math_floor = math.floor
 
-local SETTINGS   = QueryNeemDB( "SETTINGS" )
+
+local LARGE_BACKGROUND_OFFSET   = 2
+local LARGE_SPACING             = 2
+local SMALL_BACKGROUND_OFFSET   = 1
+local SMALL_SPACING             = 1
+
+local STANDARD_BACKGROUND_COLOR = { 0, 0, 0, 50 }
+
+local AURA_FRAME_SMALL  = "AURA_FRAME_SMALL"
+local AURA_FRAME_LARGE  = "AURA_FRAME_LARGE"
+local AURAS_FRAME_SMALL = "AURAS_FRAME_SMALL"
+local AURAS_FRAME_LARGE = "AURAS_FRAME_LARGE"  
+local BUFFS_FRAME       = "BUFFS_FRAME" 
+local DEBUFFS_FRAME     = "DEBUFFS_FRAME" 
+local HEALTH_SB_SMALL   = "HEALTH_SB_SMALL"
+local HEALTH_SB_LARGE   = "HEALTH_SB_LARGE"
+local ICON_FRAME_SMALL  = "ICON_FRAME_SMALL"
+local ICON_FRAME_LARGE  = "ICON_FRAME_LARGE" 
+local POWER_SB_SMALL    = "POWER_SB_SMALL"
+local POWER_SB_LARGE    = "POWER_SB_LARGE"
+local UNIT_FRAME_SMALL  = "UNIT_FRAME_SMALL"
+local UNIT_FRAME_LARGE  = "UNIT_FRAME_LARGE"
+local UNIT_TARGET_FRAME = "UNIT_TARGET_FRAME"
+
+local SETTINGS = {
+    ["bgColor"]         = STANDARD_BACKGROUND_COLOR,
+    ["bigFrameOffsetH"] = 200,
+    ["bigFrameOffsetV"] = 150,
+    [AURA_FRAME_SMALL] = {
+        ["countFont"]   = "AssiduityAuraCountFontSmall",
+        ["countOffset"] = 1,
+        ["iconOffset"]  = 2,
+        ["size"]        = 15,
+    },
+    [AURA_FRAME_LARGE] = {
+        ["countFont"]   = "AssiduityAuraCountFontLarge",
+        ["countOffset"] = 2,
+        ["iconOffset"]  = 1.5,
+        ["size"]        = 20,
+    },
+    [AURAS_FRAME_SMALL] = { 
+        ["bgOffset"] = SMALL_BACKGROUND_OFFSET,
+        ["spacing"]  = SMALL_SPACING,
+    },
+    [AURAS_FRAME_LARGE] = {
+        ["bgOffset"] = LARGE_BACKGROUND_OFFSET,
+        ["spacing"]  = LARGE_SPACING,
+    },
+    [BUFFS_FRAME] = {
+        ["bgColor"] = { 0.5, 0.5, 0.5 },
+        ["func"]    = UnitBuff,
+    },
+    [DEBUFFS_FRAME] = {
+        ["bgColor"] = { 0, 0, 0 },
+        ["func"]    = UnitDebuff,
+    },
+    [HEALTH_SB_SMALL] = {
+        ["textFont"] = "AssiduityHealthStatusBarFontSmall",
+    },
+    [HEALTH_SB_LARGE] = {
+        ["textFont"] = "AssiduityHealthStatusBarFontLarge",
+    },
+    [ICON_FRAME_SMALL] = {
+        ["textFont"] = "AssiduityIconTextFontSmall",
+    },
+    [ICON_FRAME_LARGE] = {
+        ["textFont"] = "AssiduityIconTextFontLarge",
+    },
+    [POWER_SB_SMALL] = {
+        ["textFont"] = "AssiduityPowerStatusBarFontSmall",
+    },
+    [POWER_SB_LARGE] = {
+        ["textFont"] = "AssiduityPowerStatusBarFontLarge",
+    },
+    [UNIT_FRAME_SMALL] = {
+        ["bgOffset"]      = 2,
+        ["castOffset"]    = 7,
+        ["healthHeight"]  = 25,
+        ["height"]        = 38,
+        ["spacing"]       = SMALL_SPACING,
+        ["width"]         = 180,
+    },
+    [UNIT_FRAME_LARGE] = {
+        ["bgOffset"]      = 3,
+        ["castOffset"]    = 10,
+        ["healthHeight"]  = 30,
+        ["height"]        = 48,
+        ["spacing"]       = LARGE_SPACING,
+        ["width"]         = 230,
+    },
+    [UNIT_TARGET_FRAME] = {
+        ["bgColor"]  = STANDARD_BACKGROUND_COLOR,
+        ["bgOffset"] = LARGE_BACKGROUND_OFFSET,
+    },
+}
 
 --- adjust
 local AURAS_PER_ROW = 100
@@ -119,27 +213,21 @@ do  --- Aura Frame
         self:SetSize( size, size )
     end
     
-    NeemSmallAuraFrameTemplate_OnLoad = function( self )
+    AssiduitySmallAuraFrameTemplate_OnLoad = function( self )
     
-        self.string = QueryNeemDB( "AURA_FRAME_SMALL" )
-       
+        self.string = "AURA_FRAME_SMALL"
         loadCommonElements( self )
     end
     
-    NeemLargeAuraFrameTemplate_OnLoad = function( self )
+    AssiduityLargeAuraFrameTemplate_OnLoad = function( self )
     
-        self.string = QueryNeemDB( "AURA_FRAME_LARGE" )
-        
+        self.string = "AURA_FRAME_LARGE"
         loadCommonElements( self )
     end
 end
 
 do  --- Auras Frame 
-    local AURAS_FRAME_SMALL = QueryNeemDB( "AURAS_FRAME_SMALL" )
-    local AURAS_FRAME_LARGE = QueryNeemDB( "AURAS_FRAME_LARGE" )
-    local BUFFS_FRAME       = QueryNeemDB( "BUFFS_FRAME" )
-    local DEBUFFS_FRAME     = QueryNeemDB( "DEBUFFS_FRAME" )
-
+	
     local min          = min
     local table_insert = table.insert
     local table_remove = table.remove
@@ -240,12 +328,12 @@ do  --- Auras Frame
     local loadCommonElements = function( self )
     
         self.init = init
-    
+	
         local bgOffset = SETTINGS[self.string1].bgOffset
         local spacing  = SETTINGS[self.string1].spacing
         local objectType
         
-        if self.inheriting == "NeemLargeBuffButtonTemplate" then
+        if self.inheriting == "AssiduityLargeBuffButtonTemplate" then
             objectType = "Button"
         else
             objectType = "Frame"
@@ -294,40 +382,38 @@ do  --- Auras Frame
                 end
             end
         end
-    
-        -- debug( "templates338 parent, auraF", self:GetParent(), self, self.func )
     end
     
-    NeemSmallBuffsFrameTemplate_OnLoad = function( self )
+    AssiduitySmallBuffsFrameTemplate_OnLoad = function( self )
     
-        self.inheriting = "NeemSmallBuffFrameTemplate"
+        self.inheriting = "AssiduitySmallBuffFrameTemplate"
         self.string1    = AURAS_FRAME_SMALL
         self.string2    = BUFFS_FRAME
-        
+		
         loadCommonElements( self )
     end
     
-    NeemLargeBuffsFrameTemplate_OnLoad = function( self )
+    AssiduityLargeBuffsFrameTemplate_OnLoad = function( self )
     
-        self.inheriting = "NeemLargeBuffButtonTemplate"
+        self.inheriting = "AssiduityLargeBuffButtonTemplate"
         self.string1    = AURAS_FRAME_LARGE
         self.string2    = BUFFS_FRAME
-        
+		
         loadCommonElements( self )
     end
     
-    NeemSmallDebuffsFrameTemplate_OnLoad = function( self )
+    AssiduitySmallDebuffsFrameTemplate_OnLoad = function( self )
     
-        self.inheriting = "NeemSmallDebuffFrameTemplate"
+        self.inheriting = "AssiduitymSmallDebuffFrameTemplate"
         self.string1    = AURAS_FRAME_SMALL
         self.string2    = DEBUFFS_FRAME
         
         loadCommonElements( self )
     end
     
-    NeemLargeDebuffsFrameTemplate_OnLoad = function( self )
+    AssiduityLargeDebuffsFrameTemplate_OnLoad = function( self )
     
-        self.inheriting = "NeemLargeDebuffFrameTemplate"
+        self.inheriting = "AssiduityLargeDebuffFrameTemplate"
         self.string1    = AURAS_FRAME_LARGE
         self.string2    = DEBUFFS_FRAME
         
@@ -356,7 +442,7 @@ do  --- Cast StatusBar
         end )
     end
 
-    NeemCastStatusBarTemplate_OnLoad = function( self )
+    AssiduityCastStatusBarTemplate_OnLoad = function( self )
     
         self.init = init
     end
@@ -417,7 +503,7 @@ do  --- Extra Frame
         self:SetScript( "OnEvent", OnEvent )
     end
 
-    NeemExtraFrameTemplate_OnLoad = function( self )
+    AssiduityExtraFrameTemplate_OnLoad = function( self )
     
         self.init = init
     end
@@ -515,17 +601,15 @@ do  --- Health StatusBar
         self.init = init
     end
     
-    NeemSmallHealthStatusBarTemplate_OnLoad = function( self )
+    AssiduitySmallHealthStatusBarTemplate_OnLoad = function( self )
     
-        self.string = QueryNeemDB( "HEALTH_SB_SMALL" )
-        
+        self.string = "HEALTH_SB_SMALL"
         loadCommonElements( self )
     end
     
-    NeemLargeHealthStatusBarTemplate_OnLoad = function( self )
+    AssiduityLargeHealthStatusBarTemplate_OnLoad = function( self )
     
-        self.string = QueryNeemDB( "HEALTH_SB_LARGE" )
-    
+        self.string = "HEALTH_SB_LARGE"
         loadCommonElements( self )
     end
 end
@@ -710,17 +794,15 @@ do  --- Icon Frame
         self.init = init
     end
     
-    NeemSmallIconFrameTemplate_OnLoad = function( self )
+    AssiduitySmallIconFrameTemplate_OnLoad = function( self )
     
-        self.string = QueryNeemDB( "ICON_FRAME_SMALL" )
-        
+        self.string = "ICON_FRAME_SMALL"
         loadCommonElements( self )
     end
     
-    NeemLargeIconFrameTemplate_OnLoad = function( self )
+    AssiduityLargeIconFrameTemplate_OnLoad = function( self )
     
-        self.string = QueryNeemDB( "ICON_FRAME_LARGE" )
-        
+        self.string = "ICON_FRAME_LARGE"
         loadCommonElements( self )
     end
 end
@@ -782,7 +864,7 @@ do  --- Overlay StatusBar
         self:SetScript( "OnValueChanged", OnValueChanged )
     end
    
-    NeemOverlayStatusBarTemplate_OnLoad = function( self )
+    AssiduityOverlayStatusBarTemplate_OnLoad = function( self )
     
         self.init = init
     end
@@ -953,17 +1035,15 @@ do  --- Power StatusBar
         self.init = init
     end
 
-    NeemSmallPowerStatusBarTemplate_OnLoad = function( self )
+    AssiduitySmallPowerStatusBarTemplate_OnLoad = function( self )
     
-        self.string = QueryNeemDB( "POWER_SB_SMALL" )
-    
+        self.string = "POWER_SB_SMALL"
         loadCommonElements( self )
     end
     
-    NeemLargePowerStatusBarTemplate_OnLoad = function( self )
+    AssiduityLargePowerStatusBarTemplate_OnLoad = function( self )
     
-        self.string = QueryNeemDB( "POWER_SB_LARGE" )
-        
+        self.string = "POWER_SB_LARGE"
         loadCommonElements( self )
     end
 end
@@ -1038,7 +1118,7 @@ do  --- Spec Frame
         self.update = update
     end
     
-    NeemSpecFrameTemplate_OnLoad = function( self )
+    AssiduitySpecFrameTemplate_OnLoad = function( self )
         
         self.init = init
     end
@@ -1099,7 +1179,7 @@ do  --- Target of Unit Frame
         RegisterUnitWatch( self )
     end
     
-    NeemTargetOfUnitButtonTemplate_OnLoad = function( self )
+    AssiduityTargetOfUnitButtonTemplate_OnLoad = function( self )
 
         self.init = init
 
@@ -1113,42 +1193,6 @@ do  --- Unit Pet Frame
         first two are monitored auras,
         the third one is a spell linked to middle mouse click on frame
     ]]
-    local CLASS_TO_BUFFS   = QueryNeemDB( "CLASS_TO_BUFFS" )
-    local CLASS_TO_DEBUFFS = QueryNeemDB( "CLASS_TO_DEBUFFS" )
-    
-    local CLASS_TO_BUFF_ICONS = {
-
-        ["DEATHKNIGHT"] = {},
-        ["DRUID"] = {},
-        ["HUNTER"] = {},
-        ["MAGE"] = {},
-        ["PALADIN"] = {},
-        ["PRIEST"] = {},
-        ["ROGUE"] = {},
-        ["SHAMAN"] = {},
-        ["WARLOCK"] = {},
-        ["WARRIOR"] = {}
-    }
-
-    local CLASS_TO_DEBUFF_ICONS = {
-
-        ["DEATHKNIGHT"] = {},
-        ["DRUID"] = {
-            "Interface\\Icons\\Spell_Nature_StarFall",
-            "Interface\\Icons\\Spell_Nature_InsectSwarm",
-        },
-        ["HUNTER"] = {},
-        ["MAGE"] = {},
-        ["PALADIN"] = {},
-        ["PRIEST"] = {
-            "Interface\\Icons\\Spell_Shadow_DevouringPlague",
-            "Interface\\Icons\\Spell_Shadow_ShadowWordPain",
-        },
-        ["ROGUE"] = {},
-        ["SHAMAN"] = {},
-        ["WARLOCK"] = {},
-        ["WARRIOR"] = {}
-    }
     
     local OWNER_TO_PET_UNIT = {
 
@@ -1192,14 +1236,136 @@ do  --- Unit Pet Frame
         ["party4"] = "FRIENDLY"
     }
     
-    local FilteredNamePlates = QueryNeemDB( "FilteredNamePlates" )
-    
+    local FilteredNamePlates = {
+	
+		--- Non totems
+		["Viper"]           = true,
+		["Venomous Snake"]  = true,
+		["Spirit Wolf"]     = true,
+		["Treant"]          = true,
+		["Water Elemental"] = true,
+	
+		["Cleansing Totem"]              = true,
+		["Earth Elemental Totem"]        = true,
+		["Earthbind Totem"]              = false,
+		["Fire Elemental Totem"]         = true,
+		["Fire Resistance Totem"]        = true,
+		["Fire Resistance Totem II"]     = true,
+		["Fire Resistance Totem III"]    = true,
+		["Fire Resistance Totem IV"]     = true,
+		["Fire Resistance Totem V"]      = true,
+		["Fire Resistance Totem VI"]     = true,
+		["Flametongue Totem"]            = true,
+		["Flametongue Totem II"]         = true,
+		["Flametongue Totem III"]        = true,
+		["Flametongue Totem IV"]         = true,
+		["Flametongue Totem V"]          = true,
+		["Flametongue Totem VI"]         = true,
+		["Flametongue Totem VII"]        = true,
+		["Flametongue Totem VIII"]       = true,
+		["Frost Resistance Totem"]       = true,
+		["Frost Resistance Totem II"]    = true,
+		["Frost Resistance Totem III"]   = true,
+		["Frost Resistance Totem IV"]    = true,
+		["Frost Resistance Totem V"]     = true,
+		["Frost Resistance Totem VI"]    = true,
+		["Grounding Totem"]              = false,
+		["Healing Stream Totem"]         = true,
+		["Healing Stream Totem II"]      = true,
+		["Healing Stream Totem III"]     = true,
+		["Healing Stream Totem IV"]      = true,
+		["Healing Stream Totem V"]       = true,
+		["Healing Stream Totem VI"]      = true,
+		["Healing Stream Totem VII"]     = true,
+		["Healing Stream Totem VIII"]    = true,
+		["Healing Stream Totem IX"]      = true,
+		["Magma Totem"]                  = true,
+		["Magma Totem II"]               = true,
+		["Magma Totem III"]              = true,
+		["Magma Totem IV"]               = true,
+		["Magma Totem V"]                = true,
+		["Magma Totem VI"]               = true,
+		["Magma Totem VII"]              = true,
+		["Mana Spring Totem"]            = true,
+		["Mana Spring Totem II"]         = true,
+		["Mana Spring Totem III"]        = true,
+		["Mana Spring Totem IV"]         = true,
+		["Mana Spring Totem V"]          = true,
+		["Mana Spring Totem VI"]         = true,
+		["Mana Spring Totem VII"]        = true,
+		["Mana Spring Totem VIII"]       = true,
+		["Mana Tide Totem"]              = false,
+		["Nature Resistance Totem"]      = true,
+		["Nature Resistance Totem II"]   = true,
+		["Nature Resistance Totem III"]  = true,
+		["Nature Resistance Totem IV"]   = true,
+		["Nature Resistance Totem V"]    = true,
+		["Nature Resistance Totem VI"]   = true,
+		["Searing Totem"]                = true,
+		["Searing Totem II"]             = true,
+		["Searing Totem III"]            = true,
+		["Searing Totem IV"]             = true,
+		["Searing Totem V"]              = true,
+		["Searing Totem VI"]             = true,
+		["Searing Totem VII"]            = true,
+		["Searing Totem VIII"]           = true,
+		["Searing Totem IX"]             = true,
+		["Searing Totem X"]              = true,
+		["Sentry Totem"]                 = true,
+		["Stoneclaw Totem"]              = true,
+		["Stoneclaw Totem II"]           = true,
+		["Stoneclaw Totem III"]          = true,
+		["Stoneclaw Totem IV"]           = true,
+		["Stoneclaw Totem V"]            = true,
+		["Stoneclaw Totem VI"]           = true,
+		["Stoneclaw Totem VII"]          = true,
+		["Stoneclaw Totem VIII"]         = true,
+		["Stoneclaw Totem IX"]           = true,
+		["Stoneclaw Totem X"]            = true,
+		["Stoneskin Totem"]              = true,
+		["Stoneskin Totem II"]           = true,
+		["Stoneskin Totem III"]          = true,
+		["Stoneskin Totem IV"]           = true,
+		["Stoneskin Totem V"]            = true,
+		["Stoneskin Totem VI"]           = true,
+		["Stoneskin Totem VII"]          = true,
+		["Stoneskin Totem VIII"]         = true,
+		["Stoneskin Totem IX"]           = true,
+		["Stoneskin Totem X"]            = true,
+		["Strength of Earth Totem"]      = true,
+		["Strength of Earth Totem II"]   = true,
+		["Strength of Earth Totem III"]  = true,
+		["Strength of Earth Totem IV"]   = true,
+		["Strength of Earth Totem V"]    = true,
+		["Strength of Earth Totem VI"]   = true,
+		["Strength of Earth Totem VII"]  = true,
+		["Strength of Earth Totem VIII"] = true,
+		["Totem of Wrath I"]             = true,
+		["Totem of Wrath II"]            = true,
+		["Totem of Wrath III"]           = true,
+		["Totem of Wrath IV"]            = true,
+		["Tremor Totem"]                 = true,
+		["Windfury Totem"]               = true,
+		["Wrath of Air Totem"]           = true
+	}
+
     local _, PLAYER_CLASS = UnitClass( "player" )
     
-    CLASS_TO_BUFFS        = CLASS_TO_BUFFS[PLAYER_CLASS]
-    CLASS_TO_DEBUFFS      = CLASS_TO_DEBUFFS[PLAYER_CLASS]
-    CLASS_TO_BUFF_ICONS   = CLASS_TO_BUFF_ICONS[PLAYER_CLASS]
-    CLASS_TO_DEBUFF_ICONS = CLASS_TO_DEBUFF_ICONS[PLAYER_CLASS]
+    CLASS_TO_BUFFS = {
+		"Rejuvenation",
+		"Abolish Poison",
+		"Remove Curse"
+	}
+    CLASS_TO_DEBUFFS = {
+        "Moonfire",
+        "Insect Swarm",
+        "Wrath(Rank 1)"     --- adjust
+    }
+    CLASS_TO_BUFF_ICONS   = {}
+    CLASS_TO_DEBUFF_ICONS = {
+        "Interface\\Icons\\Spell_Nature_StarFall",
+        "Interface\\Icons\\Spell_Nature_InsectSwarm",
+    }
     
     local OnUpdate = function( self )
 
@@ -1321,7 +1487,7 @@ do  --- Unit Pet Frame
         RegisterUnitWatch( self )
     end
 
-    NeemUnitPetFrameTemplate_OnLoad = function( self )
+    AssiduityUnitPetFrameTemplate_OnLoad = function( self )
     
         self.init = init
     end
@@ -1332,13 +1498,17 @@ do  --- Unit Frame
         
         self.bgT:SetTexture( unpack( SETTINGS.bgColor ))
         
-        local SETTINGS = SETTINGS[ self.string ]
+		AssiduityPrintTable(SETTINGS)
+		
+        local SETTING = SETTINGS[ self.string ]
         
-        local bgOffset     = SETTINGS.bgOffset
-        local height       = SETTINGS.height
-        local healthHeight = SETTINGS.healthHeight
-        local spacing      = SETTINGS.spacing
-        local width        = SETTINGS.width
+		AssiduityPrintTable(SETTING)
+		
+        local bgOffset     = SETTING.bgOffset
+        local height       = SETTING.height
+        local healthHeight = SETTING.healthHeight
+        local spacing      = SETTING.spacing
+        local width        = SETTING.width
         
         self:SetSize( width, height )
         
@@ -1350,24 +1520,24 @@ do  --- Unit Frame
         
         if orientation == "LEFT" then
             self.castSB:SetPoint( "RIGHT", self, "LEFT",    
-                                  SETTINGS.castOffset, 0 )
+                                  SETTING.castOffset, 0 )
         
             self.healthSB:SetPoint( "TOPRIGHT", self, "TOPRIGHT" )
-            self.healthSB:SetSize( SETTINGS.width - spacing - height, healthHeight )
+            self.healthSB:SetSize( SETTING.width - spacing - height, healthHeight )
             
             self.iconF:SetPoint( "TOPLEFT", self, "TOPLEFT" )
             
             self.powerSB:SetPoint( "BOTTOMRIGHT", self, "BOTTOMRIGHT" )
             self.powerSB:SetPoint( "TOPLEFT", self.healthSB, "BOTTOMLEFT",
                                    0, -spacing )
-            -- self.powerSB:SetSize( SETTINGS.width - spacing - height, 
+            -- self.powerSB:SetSize( SETTING.width - spacing - height, 
                                   -- height - spacing - healthHeight )
             
               
         else
             self.castSB:SetPoint( "LEFT", self, "RIGHT",    
-								  SETTINGS.castOffset, 0)
-                                  --SETTINGS[self.string].castOffset + 20, 0 )
+								  SETTING.castOffset, 0)
+                                  --SETTING[self.string].castOffset + 20, 0 )
                       
             self.healthSB:SetPoint( "TOPLEFT", self, "TOPLEFT" )
             self.healthSB:SetPoint( "BOTTOMRIGHT", self, "TOPRIGHT",
@@ -1417,7 +1587,7 @@ do  --- Unit Frame
             self:SetScript( "OnEvent", UNIT_FLAGS )
         end
         
-        NeemUnitFrameTemplateCombat_OnLoad = function( self )
+        AssiduityUnitFrameTemplateCombat_OnLoad = function( self )
         
             self.init = init
         end
@@ -1452,7 +1622,7 @@ do  --- Unit Frame
             self:SetScript( "OnEvent", PLAYER_FOCUS_CHANGED )
         end
         
-        NeemUnitFrameTemplateFocus_OnLoad = function( self )
+        AssiduityUnitFrameTemplateFocus_OnLoad = function( self )
         
             self.init = init
         end
@@ -1488,7 +1658,7 @@ do  --- Unit Frame
             self:SetScript( "OnEvent", PARTY_LEADER_CHANGED )
         end
         
-        NeemUnitFrameTemplateLeader_OnLoad = function( self )
+        AssiduityUnitFrameTemplateLeader_OnLoad = function( self )
         
             self.init = init
         end
@@ -1534,7 +1704,7 @@ do  --- Unit Frame
             self:SetScript( "OnEvent", PLAYER_TARGET_CHANGED )
         end
         
-        NeemUnitFrameTemplateTarget_OnLoad = function( self )
+        AssiduityUnitFrameTemplateTarget_OnLoad = function( self )
         
             self.init = init
         end

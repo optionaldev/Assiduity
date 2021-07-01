@@ -1,0 +1,133 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<Script file="player.lua"/>
+
+<Button name="AssiduityPlayer" inherits="AssiduityUnitFrameTemplate" id="0">
+    <Frames>
+        <Frame inherits="AssiduityLargeBuffsFrameTemplate" parentKey="buffF"/>
+        <Frame inherits="AssiduityLargeBuffsFrameTemplate" parentKey="playerBuffF"/>
+        <Frame inherits="AssiduityLargeDebuffsFrameTemplate" parentKey="debuffF"/>
+        
+        <StatusBar inherits="AssiduityCastingBarTemplate" name="$parentCastBar" parentKey="castSB"/>
+        
+        <Frame inherits="AssiduityLargeHealthStatusBarTemplate" parentKey="healthSB"/>
+        <Frame inherits="AssiduityLargePowerStatusBarTemplate" parentKey="powerSB"/>
+        <Frame inherits="AssiduityLargeIconFrameTemplate" parentKey="iconF"/>
+        
+        <Frame parentKey="manaF" inherits="AssiduitySmallPowerStatusBarTemplate" hidden="true" name="$parentManaFrame">
+            <Size x="120" y="14"/>
+            <Anchors>
+                <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+                    <Offset x="3" y="2"/>
+                </Anchor>
+            </Anchors>
+            <Scripts>
+                <OnLoad function="AssiduityPlayerManaFrame_OnLoad"/>
+            </Scripts>
+        </Frame>
+    </Frames>
+    <Scripts>
+        <OnLoad function="AssiduityPlayer_OnLoad"/>
+    </Scripts>
+</Button>
+
+<Frame name="AssiduityNameFrameTemplate" virtual="true">
+    <Layers>
+        <Layer level="BACKGROUND">
+            <Texture parentKey="reactionT" alpha="0.7" setAllPoints="true"/>
+            <FontString parentKey="nameFS" inherits="AssiduityLargeNameFont">
+                <Anchors>
+                    <Anchor point="LEFT">
+                        <Offset x="10" y="0"/>
+                    </Anchor>
+                </Anchors>
+            </FontString>
+        </Layer>
+    </Layers>
+    <Scripts>
+        <OnLoad function="AssiduityNameFrameTemplate_OnLoad"/>
+    </Scripts>
+</Frame>
+
+
+<!--Button name="AssiduityTarget" inherits="NeemUnitFrameTemplate" id="0">
+    <Frames>
+        <Frame inherits="AssiduityNameFrameTemplate" parentKey="nameF">
+            <Anchors>
+                <Anchor point="TOPLEFT">
+                    <Offset x="1" y="-1"/>
+                </Anchor>
+            </Anchors>
+        </Frame>
+    
+        <Frame inherits="NeemLargeBuffsFrameTemplate" parentKey="buffF"/>
+        <Frame inherits="NeemLargeBuffsFrameTemplate" parentKey="playerBuffF"/>
+        <Frame inherits="NeemLargeDebuffsFrameTemplate" parentKey="debuffF"/>
+        
+        <StatusBar inherits="NeemCastingBarTemplate" name="$parentCastBar" parentKey="castSB"/>
+        
+        <Frame inherits="NeemLargeHealthStatusBarTemplate" parentKey="healthSB"/>
+        <Frame inherits="NeemLargePowerStatusBarTemplate" parentKey="powerSB"/>
+        <Frame inherits="NeemLargeIconFrameTemplate" parentKey="iconF"/>
+        
+        <Button parentKey="targetF" inherits="NeemLargeTargetOfUnitTemplate"/>
+        
+        <Frame parentKey="manaF" inherits="NeemSmallPowerStatusBarTemplate" hidden="true" name="$parentManaFrame">
+            <Size x="120" y="14"/>
+            <Anchors>
+                <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+                    <Offset x="-1" y="-1"/>
+                </Anchor>
+            </Anchors>
+            <Scripts>
+                <OnLoad function="NeemPlayerManaFrame_OnLoad"/>
+            </Scripts>
+        </Frame>
+    </Frames>
+    <Scripts>
+        <OnLoad function="NeemTarget_OnLoad"/>
+    </Scripts>
+</Button>
+
+
+<Button name="NeemFocus" inherits="NeemUnitFrameTemplate" id="0">
+    <Frames>
+        <Frame inherits="NeemNameFrameTemplate" parentKey="nameF">
+            <Anchors>
+                <Anchor point="TOPLEFT">
+                    <Offset x="1" y="-1"/>
+                </Anchor>
+            </Anchors>
+        </Frame>
+    
+        <Frame inherits="NeemLargeBuffsFrameTemplate" parentKey="buffF"/>
+        <Frame inherits="NeemLargeBuffsFrameTemplate" parentKey="playerBuffF"/>
+        <Frame inherits="NeemLargeDebuffsFrameTemplate" parentKey="debuffF"/>
+        
+        <StatusBar inherits="NeemCastingBarTemplate" name="$parentCastBar" parentKey="castSB"/>
+        
+        <Frame inherits="NeemLargeHealthStatusBarTemplate" parentKey="healthSB"/>
+        <Frame inherits="NeemLargePowerStatusBarTemplate" parentKey="powerSB"/>
+        <Frame inherits="NeemLargeIconFrameTemplate" parentKey="iconF"/>
+        
+        <Button parentKey="targetF" inherits="NeemLargeTargetOfUnitTemplate"/>
+        
+        <Frame parentKey="manaF" inherits="NeemSmallPowerStatusBarTemplate" hidden="true" name="$parentManaFrame">
+            <Size x="120" y="14"/>
+            <Anchors>
+                <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
+                    <Offset x="-1" y="-1"/>
+                </Anchor>
+            </Anchors>
+            <Scripts>
+                <OnLoad function="NeemPlayerManaFrame_OnLoad"/>
+            </Scripts>
+        </Frame>
+    </Frames>
+    <Scripts>
+        <OnLoad function="NeemFocus_OnLoad"/>
+    </Scripts>
+</Button-->
+
+</Ui>
