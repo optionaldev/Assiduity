@@ -13,11 +13,21 @@ local PlayerClass = AssiduityGetPlayerLocalizedClass
 local HIDDEN_BUFFS = {
 	["Aquatic Form"] = 1,
 	["Bear Form"] = 1,
+	["Blessing of Kings"] = 1,
+	["Blessing of Might"] = 1,
+	["Blessing of Sanctuary"] = 1,
+	["Blessing of Wisdom"] = 1,
 	["Cat Form"] = 1,
 	["Clearcasting"] = 1,
 	["Cozy Fire"] = 1,
 	["Gift of the Wild"] = 1,
+	["Greater Blessing of Kings"] = 1,
+	["Greater Blessing of Might"] = 1,
+	["Greater Blessing of Sanctuary"] = 1,
+	["Greater Blessing of Wisdom"] = 1,
 	["Honorable Defender"] = 1,
+	["Horn of Winter"] = 1,
+	["Luck of the Draw"] = 1,
     ["Mark of the Wild"] = 1,
 	["Master Shapeshifter"] = 1,
 	["Prayer of Fortitude"] = 1,
@@ -536,7 +546,7 @@ do  --- AssiduityPlayer
 		self.unregister	  = unregister
         self.updateAura   = updateAura
         -- self.updateLeader = NPL_updateLeader
-        
+	
         self:SetAttribute( "unit", "focus" )
         self:SetAttribute( "type", "macro" )
         -- self:SetAttribute( "type1", "target" )

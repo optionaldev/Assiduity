@@ -3,13 +3,16 @@
 ## Author: optionaldev
 ## Version: 0.3
 
+Assiduity.lua
+
 src\slash_commands.lua
 src\utility_functions.lua
 
 src\fonts.xml
 
-src\templates\templates.xml
-src\templates\player.xml
+src\new_frames\frames_constants.lua
+src\new_frames\templates.xml
+src\new_frames\player.xml
 
 src\common_tables.lua
 src\timing.xml
