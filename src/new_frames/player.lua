@@ -48,136 +48,13 @@ local SHOWN_BUFFS = {
 
 local BUFF_TO_FILTERED = {
 
-    -- ["Abomination's Might"]         = true,
-    -- ["Aquatic Form"]                = true,
-    -- ["Arcane Brilliance"]           = true,
-    -- ["Arcane Intellect"]            = true,
-    -- -- ["Arena Preparation"]           = true,
-    -- ["Battle Shout"]                = true,
-    -- ["Bear Form"]                   = true,
-    -- ["Blessing of Kings"]           = true,
-    -- ["Blessing of Wisdom"]          = true,
-    -- ["Blood Pact"]                  = true,
-    -- ["Cat Form"]                    = true,
-    -- ["Clearcasting"]                = true,
-    -- ["Commanding Shout"]            = true,
-    -- ["Concentration Aura"]          = true,
-    -- ["Crusader Aura"]               = true,
-    -- ["Dalaran Intellect"]           = true,
-    -- ["Dalaran Brilliance"]          = true,
-    -- ["Devotion Aura"]               = true,
-    -- ["Dire Bear Form"]              = true,
-    -- ["Divine Spirit"]               = true,
-    -- ["Elemental Oath"]              = true,
-    -- ["Energized"]                   = true,
-    -- ["Fade"]                        = true,
-    -- ["Fel Intelligence"]            = true,
-    -- ["Fire Resistance"]             = true,
-    -- ["Fire Resistance Aura"]        = true,
-    -- ["Fire Shield"]                 = true,
-    -- ["Flash of Light"]              = true,
-    -- ["Flametongue Totem"]           = true,
-    -- ["Focus Magic"]                 = true,
-    -- ["Frost Resistance"]            = true,
-    -- ["Frost Resistance Aura"]       = true,
-    -- ["Gift of the Wild"]            = true,
-    -- ["Grace"]                       = true,
-    -- ["Greater Blessing of Kings"]   = true,
-    -- ["Greater Blessing of Wisdom"]  = true,
-    -- ["Heroic Presence"]             = true,
-    -- ["Honorless Target"]            = true,
-    -- ["Horn of Winter"]              = true,
-    -- ["Improved Icy Talons"]         = true,
-    -- ["Inspiration"]                 = true,
-    -- ["Leader of the Pack"]          = true,
-    -- ["Mana Spring"]                 = true,
-    -- ["Master Shapeshifter"]         = true,
-    -- ["Moonkin Aura"]                = true,
-    -- ["Moonkin Form"]                = true,
-    -- ["Nature Resistance"]           = true,
-    -- ["Power Word: Fortitude"]       = true,
-    -- ["Prayer of Fortitude"]         = true,
-    -- ["Prayer of Shadow Protection"] = true,
-    -- ["Prayer of Spirit"]            = true,
-	-- ["Prowl"]						= true,
-    -- -- ["Preparation"]                 = true,
-    -- ["Rampage"]                     = true,
-    -- ["Relentless Survival"]         = true,
-    -- ["Replenishment"]               = true,
-    -- ["Renewed Hope"]                = true,
-    -- ["Retribution Aura"]            = true,
-    -- ["Shadow Protection"]           = true,
-    -- ["Sheath of Light"]             = true,
-    -- ["Stoneskin"]                   = true,
-    -- ["Strength of Earth"]           = true,
-    -- ["Thorns"]          			= true,
-    -- ["Totem of Wrath"]              = true,
-    -- ["Travel Form"]                 = true,
-    -- ["Tree of Life"]                = true,
-    -- ["Trueshot Aura"]               = true,
-    -- ["Unending Breath"]             = true,
-    -- ["Unleashed Rage"]              = true,
-    -- ["Vampiric Embrace"]            = true,
-    -- ["Vengeance"]                   = true,
-    -- ["Vicious"]                     = true,
-    -- ["Vigilance"]                   = true,
-    -- ["Water Breathing"]             = true,
-    -- ["Water Walking"]               = true,
-    -- ["Windfury Totem"]              = true,
-    -- ["Wrath of Air Totem"]          = true,
-    -- ["Wrath of Elune"]              = true,
-    -- [""] = true,
 }
 
 local DEBUFF_TO_FILTERED = {
 
-    -- ["Blood Frenzy"]          = true,
-    -- ["Death Grip"]            = true,
-    -- ["Demoralizing Shout"]    = true,
-    -- ["Demoralizing Roar"]     = true,
-    -- -- ["Desecration"]           = true,
-    -- ["Deserter"]              = true,
-    -- ["Drain Life"]            = true,
-    -- ["Drain Mana"]            = true,
-    -- ["Drain Soul"]            = true,
-    -- ["Earth and Moon"]        = true,
-    -- ["Earth Shock"]           = true,
-    -- ["Ebon Plague"]           = true,
-    -- ["Exhaustion"]            = true,
-    -- -- ["Expose Armor"]          = true,
-    -- ["Forbearance"]           = true,
-    -- ["Frost Vulnerability"]   = true,
-    -- ["Growl"]                 = true,
-    -- ["Heart of the Crusader"] = true,
-    -- -- ["Hemorrhage"]            = true,
-    -- ["Hellfire"]              = true,
-    -- ["Honorless Target"]      = true,
-    -- ["Improved Scorch"]       = true,
-    -- ["Mangle (Bear)"]         = true,
-    -- ["Mangle (Cat)"]          = true,
-    -- ["Mind Flay"]             = true,
-    -- ["Misery"]                = true,
-    -- ["Recently Bandaged"]     = true,
-    -- ["Sated"]                 = true,
-    -- ["Savage Combat"]         = true,
-    -- ["Shadowburn"]            = true,
-    -- ["Stormstrike"]           = true,
-    -- ["Summon Gargoyle"]       = true,
-    -- -- ["Sunder Armor"]          = true,
-    -- ["Thunder Clap"]          = true,
-    -- ["Totem of Wrath"]        = true,
-    -- ["Trauma"]                = true,
-    -- ["Vindication"]           = true,
-    -- ["Weakened Soul"]         = true,
 }
 
 local PLAYER_ALLOWED_BUFFS = {
-	-- ["Rejuvenation"] = 1,
-	-- ["Regrowth"] = 1,
-	-- ["Frenzied Regeneration"] = 1,
-	-- ["Prowl"] = 1,
-	-- ["Lifebloom"] = 1,
-	-- ["Abolish Poison"] = 1
 }
 
 local AURA_ROWS     = 3
@@ -445,78 +322,8 @@ do  --- AssiduityPlayer
         --self:updateLeader()
     end
 	
-    AssiduityTarget_OnLoad = function( self )
-
-        local DEBUFFS  = {
-			"Moonfire",
-			"Insect Swarm",
-			"Wrath(Rank 1)"     --- adjust
-		}
-        
-        -- self.PARTY_LEADER_CHANGED   = NPL_PARTY_LEADER_CHANGED
-        self.PLAYER_ENTERING_WORLD  = PLAYER_ENTERING_WORLD
-		self.PLAYER_TARGET_CHANGED = PLAYER_X_CHANGED
-        self.UNIT_MANA              = UNIT_MANA
-        self.UNIT_AURA              = UNIT_AURA
-        
-        _, self.class     = UnitClass( "target" )
-		self.register	  = register
-        self.string       = {
-			["bgOffset"]      = 3,
-			["castOffset"]    = 10,
-			["healthHeight"]  = 30,
-			["height"]        = 48,
-			["spacing"]       = LARGE_SPACING,
-			["width"]         = 230,
-		}
-        self.unit         = "target"
-		self.unregister	  = unregister
-        self.updateAura   = updateAura
-        -- self.updateLeader = NPL_updateLeader
-        
-        self:SetAttribute( "unit", "target" )
-        self:SetAttribute( "type", "macro" )
-        -- self:SetAttribute( "type1", "target" )
-        -- self:SetAttribute( "ctrl-macrotext3", "/forfeit" )
-        -- self:SetAttribute( "shift-macrotext3", "/run LeaveParty()" )
-        
-        self:SetScript( "OnEvent", function( self, event, ... )
-			if self[event] == nil then
-				print("player211:")
-				print(event)
-			end
-            self[event]( self, ... )
-        end )
-        
-        self:RegisterForClicks( "AnyUp" )
-        -- self:RegisterEvent( "PARTY_LEADER_CHANGED" )
-        self:RegisterEvent( "PLAYER_ENTERING_WORLD" )
-        self:RegisterEvent( "PLAYER_TARGET_CHANGED" )
-        -- self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
-        -- self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
-        --self:RegisterEvent( "UNIT_AURA" )
-        -- self:RegisterEvent( "UNIT_TARGET" )
-        
-        UnitFrameInit( self, "RIGHT" )
-        
-        self:SetPoint( "BOTTOMRIGHT", UIParent, "BOTTOM",
-                       SETTINGS.bigFrameOffsetV * 3, SETTINGS.bigFrameOffsetH )
-        
-        -- debug( "player196 self, buffF", self, self.buffF, self.buffF.init )
-        
-        self.buffF:init( BUFF_TO_FILTERED)
-        self.playerBuffF:init( nil, PLAYER_ALLOWED_BUFFS)
-        self.debuffF:init(DEBUFF_TO_FILTERED)
-        
-        self.powerSB:register()
-        
-        self:updateAura()
-        --self:updateLeader()
-		
-		if not UnitExists( "target" ) then
-			self:Hide()
-		end
-    end
+	--[[
+   
 	
     AssiduityFocus_OnLoad = function( self )
 
@@ -590,6 +397,7 @@ do  --- AssiduityPlayer
 		end
         --self:updateLeader()
     end
+	]]
 end
 
 --- Mana Bar

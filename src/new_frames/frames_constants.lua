@@ -45,6 +45,7 @@ local HIDDEN_BUFFS = {
 	"Greater Blessing of Sanctuary",
 	"Greater Blessing of Wisdom",
 	"Honorable Defender",
+	"Honorless Target",
 	"Horn of Winter",
 	"Luck of the Draw",
     "Mark of the Wild",
@@ -95,7 +96,7 @@ local SHOWN_BUFFS = {
 	virtually immediate attention, as opposed to just buffs 
 ]]
 local PROCS = {
-	
+	"Clearcasting",
 }
 
 Assiduity.HIDDEN_BUFFS   = HIDDEN_BUFFS

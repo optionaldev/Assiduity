@@ -43,6 +43,7 @@ local guildsToFilter = {
 	"bad luck",
 	"balanced insanity",
 	"balkanski guild",
+	"blizzard",
 	"bloody butchers",
 	"calavera",
 	"cant afford retail",
@@ -121,6 +122,7 @@ local guildsToFilter = {
 	"snow doves",
 	"the dead center",
 	"tempered insanity",
+	"the old guard",
 	"the outcast",
 	"the patiant",
 	"the pug society",
@@ -203,6 +205,7 @@ local reservingToFilter = {
 
 local otherFilters = {
 	"hyjal",
+	"latina",
 	"molten core",
 	"rs10",
 	"rs25",
