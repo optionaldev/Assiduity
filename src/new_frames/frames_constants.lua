@@ -38,7 +38,9 @@ local HIDDEN_BUFFS = {
 	"Cat Form",
 	"Clearcasting",
 	"Cozy Fire",
+	"Devotion Aura",
 	"Dire Bear Form",
+	"Ferocious Inspiration",
 	"Gift of the Wild",
 	"Greater Blessing of Kings",
 	"Greater Blessing of Might",
@@ -56,6 +58,7 @@ local HIDDEN_BUFFS = {
 	"Precious's Ribbon",
 	"Preparation",
 	"Retribution Aura",
+	"Strength of Wrynn",
 	"Swift Flight Form",
 	"Swift Stormsaber",
 	"Swift White Mechanostrider",
@@ -68,7 +71,7 @@ local HIDDEN_BUFFS = {
 	and should be known based on the class / spec / race you're facing.=
 ]]
 local HIDDEN_DEBUFFS = {
-
+	"Chill of the Throne",
 }
 
 --[[

@@ -112,7 +112,6 @@ local onUpdate = function(self)
 				if link then 
 					local name, _, rarity = GetItemInfo(link) 
 					if rarity == 0 or (rarity == 1 and COMMON_ITEMS_TO_DELETE[name]) then 
-						print("Deleting item: " .. name)
 						PickupContainerItem(bag,slot) 
 						DeleteCursorItem() 
 						return

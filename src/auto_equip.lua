@@ -36,15 +36,11 @@ local onUpdate = function(self)
 		if currentChestIndex == #chests then
 			currentChestIndex = 1
 		end
-		print("currentChestIndex = " .. tostring(currentChestIndex))
-	
+		
 		EquipItemByName(chests[currentChestIndex])
 	
 		local randomNumber = math_random(NEXT_CHEST_UPDATE_MIN, NEXT_CHEST_UPDATE_MAX)
 		nextChestUpdateTime = currentTime + randomNumber
-		
-		print("Wearing " .. chests[currentChestIndex])
-		print("Scheduled chest update in " .. tostring(randomNumber))
 		
 		currentChestIndex = currentChestIndex + 1
 	end

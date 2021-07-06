@@ -1498,12 +1498,8 @@ do  --- Unit Frame
         
         self.bgT:SetTexture( unpack( SETTINGS.bgColor ))
         
-		AssiduityPrintTable(SETTINGS)
-		
         local SETTING = SETTINGS[ self.string ]
         
-		AssiduityPrintTable(SETTING)
-		
         local bgOffset     = SETTING.bgOffset
         local height       = SETTING.height
         local healthHeight = SETTING.healthHeight

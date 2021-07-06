@@ -7,8 +7,8 @@
         - handle cooldowns that start after usage
 ]]
 
---local debug = print
-local debug = function() end
+local debug = print
+--local debug = function() end
 ------------------------
 -- Imports and locals --
 ------------------------
@@ -131,11 +131,11 @@ local formatting = function( self, timer )
     end
 end
 
-local getButtonHoldings = function( self )
+getButtonHoldings = function( self )
 
-    for i, button in ipairs( BUTTONS ) do
+    for _, button in ipairs( BUTTONS ) do
         local action = button.action
-        if HasAction( action ) then
+        if HasAction(action) then
             local action, id, _, spellID = GetActionInfo( action )
             
             if action == "item"  then 
@@ -158,13 +158,10 @@ end
 local start = function( self, duration )
 
     self.timerF.coolingT:Show()
-    debug( "abt108 button start called for", self.holding )
     if duration then
-        debug( "abt113 started", self.holding, "with", duration )
         self.timerF:startDuration( duration )
     else
         _, duration = GetActionCooldown( self.action )
-        debug( "abt113 started", self.holding, "with", duration )
         self.timerF:startDuration( duration )
     end
 end
@@ -177,14 +174,12 @@ local OnClick = function( self, button )
     if button == "MiddleButton" and lastSentTime + 2 < GetTime() and
         self.timerF.expiration
     then
-        debug( "abt180", self.holding, "has", math.ceil( self.timerF.expiration - GetTime()), "seconds left." )
         lastSentTime = GetTime()
     end
 end
 
 local OnHide = function( self )
 
-    debug( "abt197 reseting timers" )
     resetTimers()
 end
 
@@ -199,18 +194,33 @@ end
 local ADDON_LOADED = function( self, addon )
 
     if addon == "Assiduity" then
-        self:UnregisterEvent( "ADDON_LOADED" )
-        getButtonHoldings()
+		debug("addon loaded for action button timers")
+        self:UnregisterEvent("ADDON_LOADED")
         
-        for i, button in ipairs( BUTTONS ) do
+        for i, button in ipairs(BUTTONS) do
             button.start = start
             if button.timerF then
-                button.timerF:init( AssiduityLargeYellowFont, formatting )
+                button.timerF:init(AssiduityLargeYellowFont, formatting)
             end
-            button:HookScript( "OnClick", OnClick )
-            button:HookScript( "OnClick", button_OnHide )
-            _G[ button:GetName() .. "Cooldown" ]:SetAlpha( 0 )
+            button:HookScript("OnClick", OnClick)
+            button:HookScript("OnClick", button_OnHide)
+			
+			--[[ 
+				The default blizzard frame already has a cooldown
+				We hide that one and replace it with our own, darker, with text 
+			]]
+            _G[button:GetName() .. "Cooldown"]:SetAlpha(0)
         end
+		
+		self:RegisterEvent("ADDON_LOADED")
+		self:RegisterEvent("ACTIONBAR_HIDEGRID")
+		self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
+		self:RegisterEvent("CHAT_MSG_SYSTEM")
+		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+		self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
+		self:RegisterEvent("PLAYER_ENTERING_WORLD")
+		self:RegisterEvent("UNIT_AURA")
+		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     end
 end
 
@@ -231,7 +241,6 @@ end
 local CHAT_MSG_SYSTEM = function( self, message )
 
     if message == "Duel starting: 1" then
-        debug( "237 delayed hide" )
         TimingLibDelayedHide( self, 1 )
     end
 end
@@ -262,6 +271,8 @@ end
 --- @function: Reset timers if entered arena
 local PLAYER_ENTERING_WORLD = function( self )
     
+	getButtonHoldings()
+	
     if GetInstanceType() == "arena" then
         resetTimers()
     end
@@ -287,9 +298,8 @@ end
 local UNIT_SPELLCAST_SUCCEEDED = function( self, unit, action )
     
     if unit == "player" and not AFTER_USE_COOLDOWNS[action] then
-        local button = actionToButton[ getActualName( action )]
+        local button = actionToButton[getActualName(action)]
         if button then
-            debug( "abt265", unit, AFTER_USE_COOLDOWNS[action], action, button.holding, getActualName( action ))
             updateButton = button
         end
     end
@@ -306,22 +316,14 @@ do
     self.ADDON_LOADED                = ADDON_LOADED
     self.ACTIONBAR_HIDEGRID          = ACTIONBAR_HIDEGRID
     self.ACTIONBAR_UPDATE_COOLDOWN   = ACTIONBAR_UPDATE_COOLDOWN
-    self.CHAT_MSG_SYSTEM   = CHAT_MSG_SYSTEM
+    self.CHAT_MSG_SYSTEM   			 = CHAT_MSG_SYSTEM
     self.COMBAT_LOG_EVENT_UNFILTERED = COMBAT_LOG_EVENT_UNFILTERED
     self.PET_BAR_UPDATE_COOLDOWN     = PET_BAR_UPDATE_COOLDOWN
     self.PLAYER_ENTERING_WORLD       = PLAYER_ENTERING_WORLD
     self.UNIT_AURA                   = UNIT_AURA
     self.UNIT_SPELLCAST_SUCCEEDED    = UNIT_SPELLCAST_SUCCEEDED
     
-    self:RegisterEvent( "ADDON_LOADED" )
-    self:RegisterEvent( "ACTIONBAR_HIDEGRID" )
-    self:RegisterEvent( "ACTIONBAR_UPDATE_COOLDOWN" )
-    self:RegisterEvent( "CHAT_MSG_SYSTEM" )
-    self:RegisterEvent( "COMBAT_LOG_EVENT_UNFILTERED" )
-    self:RegisterEvent( "PET_BAR_UPDATE_COOLDOWN" )
-    self:RegisterEvent( "PLAYER_ENTERING_WORLD" )
-    self:RegisterEvent( "UNIT_AURA" )
-    self:RegisterEvent( "UNIT_SPELLCAST_SUCCEEDED" )
+    self:RegisterEvent("ADDON_LOADED")
     
     self:SetScript( "OnEvent", function( self, event, ... )
         self[event]( self, ... )

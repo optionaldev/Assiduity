@@ -62,7 +62,6 @@ do
                 if not isReagentEnough(reagent) then
                     local name = GetItemInfo(reagent)
 					if name ~= nil then
-						print("Low on " .. name)
 						Warn("Low on " .. name)
 					end
                 end

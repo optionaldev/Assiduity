@@ -50,44 +50,4 @@
     </Scripts>
 </Frame>
 
-
-<Button name="NeemFocus" inherits="NeemUnitFrameTemplate" id="0">
-    <Frames>
-        <Frame inherits="NeemNameFrameTemplate" parentKey="nameF">
-            <Anchors>
-                <Anchor point="TOPLEFT">
-                    <Offset x="1" y="-1"/>
-                </Anchor>
-            </Anchors>
-        </Frame>
-    
-        <Frame inherits="NeemLargeBuffsFrameTemplate" parentKey="buffF"/>
-        <Frame inherits="NeemLargeBuffsFrameTemplate" parentKey="playerBuffF"/>
-        <Frame inherits="NeemLargeDebuffsFrameTemplate" parentKey="debuffF"/>
-        
-        <StatusBar inherits="NeemCastingBarTemplate" name="$parentCastBar" parentKey="castSB"/>
-        
-        <Frame inherits="NeemLargeHealthStatusBarTemplate" parentKey="healthSB"/>
-        <Frame inherits="NeemLargePowerStatusBarTemplate" parentKey="powerSB"/>
-        <Frame inherits="NeemLargeIconFrameTemplate" parentKey="iconF"/>
-        
-        <Button parentKey="targetF" inherits="NeemLargeTargetOfUnitTemplate"/>
-        
-        <Frame parentKey="manaF" inherits="NeemSmallPowerStatusBarTemplate" hidden="true" name="$parentManaFrame">
-            <Size x="120" y="14"/>
-            <Anchors>
-                <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT">
-                    <Offset x="-1" y="-1"/>
-                </Anchor>
-            </Anchors>
-            <Scripts>
-                <OnLoad function="NeemPlayerManaFrame_OnLoad"/>
-            </Scripts>
-        </Frame>
-    </Frames>
-    <Scripts>
-        <OnLoad function="NeemFocus_OnLoad"/>
-    </Scripts>
-</Button-->
-
 </Ui>

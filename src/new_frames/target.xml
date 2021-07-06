@@ -3,8 +3,6 @@
 
 <Script file="target.lua"/>
 
-
-
 <Button name="AssiduityTarget" inherits="AssiduityUnitFrameTemplate" id="0">
     <Frames>
         <Frame inherits="AssiduityNameFrameTemplate" parentKey="nameF">

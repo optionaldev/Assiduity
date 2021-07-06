@@ -49,7 +49,10 @@ local guildsToFilter = {
 	"cant afford retail",
 	"carbonite",
 	"carried",
+	"clear history",
 	"code",
+	"c o d e",
+	"con la guild",
 	"dej na wino",
 	"die raidgilde",
 	"drakkhen",
@@ -60,7 +63,6 @@ local guildsToFilter = {
 	"edora",
 	"el capitoli",
 	"el sol devastado",
-	"con la guild",
 	"empathy",
 	"essentials",
 	"evasion",
@@ -85,6 +87,7 @@ local guildsToFilter = {
 	"iranian house",
 	"iron alliance",
 	"iron line",
+	"ix legion",
 	"k e r v a n",
 	"knight champions",
 	"la brigada",
@@ -125,6 +128,7 @@ local guildsToFilter = {
 	"the old guard",
 	"the outcast",
 	"the patiant",
+	"the patient",
 	"the pug society",
 	"the rippers",
 	"the sons of norris",
@@ -134,6 +138,7 @@ local guildsToFilter = {
 	"toomanybuttons",
 	"trauma",
 	"twinkonomic",
+	"tyrannical",
 	"unison",
 	"vanguardia de escarcha",
 	"vendetta",
@@ -204,9 +209,12 @@ local reservingToFilter = {
 
 
 local otherFilters = {
+	"coins",
+	"c0ins",
 	"hyjal",
 	"latina",
 	"molten core",
+	"mount",
 	"rs10",
 	"rs25",
 	"rs 10",
@@ -246,8 +254,6 @@ local function spamFilter(self, event, message, _, language, ...)
 	
 	for _, substring in ipairs(temporaryFilters) do
 		if string_find(lowercaseMessage, substring, 1, true) then
-			print("Found substrings \"" .. substring .. "\" in message:")
-			print(lowercaseMessage)
 			return true
 		end
 	end	
@@ -279,9 +285,6 @@ local ADDON_LOADED = function( self, addon )
         self:UnregisterEvent( "ADDON_LOADED" )
 		
 		filteringSubstrings = guildsToFilter
-		
-		print("marketToFilter = ")
-		print(marketToFilter)
 		
 		for _, value in ipairs(reservingToFilter) do
 			table_insert(filteringSubstrings, value)
@@ -320,8 +323,6 @@ SLASH_ASSIDUITYCHATFILTER1 = "/assiduitychatfilter"
 SLASH_ASSIDUITYCHATFILTER2 = "/acf"
 
 SlashCmdList["ASSIDUITYCHATFILTER"] = function (message)
-	
-	print(message)
 	
 	if string_sub(message, 1, 7) == "filter " then
 		local filter = string_sub(message, 8)

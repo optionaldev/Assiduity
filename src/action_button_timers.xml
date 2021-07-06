@@ -17,7 +17,7 @@
     </Layers>
 </Frame>
 
-<Frame parent="MultiBarBottomLeftButton1" inherits="AssiduityActionButtonTimerTemplate" id="1"/>
+<Frame name="lolozaur" parent="MultiBarBottomLeftButton1" inherits="AssiduityActionButtonTimerTemplate" id="1"/>
 <Frame parent="MultiBarBottomLeftButton2" inherits="AssiduityActionButtonTimerTemplate" id="2"/>
 <Frame parent="MultiBarBottomLeftButton3" inherits="AssiduityActionButtonTimerTemplate" id="3"/>
 <Frame parent="MultiBarBottomLeftButton4" inherits="AssiduityActionButtonTimerTemplate" id="4"/>
