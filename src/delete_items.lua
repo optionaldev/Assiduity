@@ -82,7 +82,6 @@ local COMMON_ITEMS_TO_DELETE = {
 	["Shimmering Amice"] = 1,
 	["Simple Gloves"] = 1,
 	["Simple Shoes"] = 1,
-	["Small Furry Paw"] = 1,
 	["Solid Stone"] = 1,
 	["Spellbinder Belt"] = 1,
 	["Soldier's Cloak"] = 1,

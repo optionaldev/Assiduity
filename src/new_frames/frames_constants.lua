@@ -22,6 +22,8 @@
 -- Locals and imports --
 ------------------------
 
+local ipairs = ipairs
+
 --[[ 
 	Hidden buffs are hidden initally from the UI and only displayed on hover.
 	Even though it's important to know, especially for PvE, if you have or
@@ -30,28 +32,42 @@
 local HIDDEN_BUFFS = {
 
 	"Aquatic Form",
+	"Arcane Brilliance",
+	"Arcane Intellect",
 	"Bear Form",
 	"Blessing of Kings",
 	"Blessing of Might",
 	"Blessing of Sanctuary",
 	"Blessing of Wisdom",
+	"Blood Pact", --imp
 	"Cat Form",
-	"Clearcasting",
+	"Clearcasting", -- displayed as proc
+	"Concentration Aura",
 	"Cozy Fire",
 	"Devotion Aura",
+	"Demonic Pact",
 	"Dire Bear Form",
+	"Elemental Oath",
 	"Ferocious Inspiration",
+	"Focus Magic",
+	"Fortitude",
 	"Gift of the Wild",
 	"Greater Blessing of Kings",
 	"Greater Blessing of Might",
 	"Greater Blessing of Sanctuary",
 	"Greater Blessing of Wisdom",
+	"Heroic Presence",
 	"Honorable Defender",
 	"Honorless Target",
 	"Horn of Winter",
+	"Improved Icy Talons",
+	"Leader of the Pack",
+	"Lightweave", 	-- cloak enchant
 	"Luck of the Draw",
     "Mark of the Wild",
 	"Master Shapeshifter",
+	"Moonkin Aura",
+	"Moonkin Form",
 	"Prayer of Fortitude",
 	"Prayer of Shadow Protection",
 	"Prayer of Spirit",
@@ -62,7 +78,12 @@ local HIDDEN_BUFFS = {
 	"Swift Flight Form",
 	"Swift Stormsaber",
 	"Swift White Mechanostrider",
-	"Thorns"
+	"Thorns",
+	"Totem of Wrath",
+	"Tree of Life",
+	"Trueshot Aura",
+	"Well Fed",
+	"Wrath of Air Totem"
 }
 
 --[[
@@ -72,6 +93,7 @@ local HIDDEN_BUFFS = {
 ]]
 local HIDDEN_DEBUFFS = {
 	"Chill of the Throne",
+	"Sated"
 }
 
 --[[
@@ -101,6 +123,23 @@ local SHOWN_BUFFS = {
 local PROCS = {
 	"Clearcasting",
 }
+
+local convertArrayToDictionary = function(array) 
+
+	local result = {}
+	
+	for _, value in ipairs(array) do
+		result[value] = 1
+	end
+	
+	return result
+end
+
+do 
+	HIDDEN_BUFFS = convertArrayToDictionary(HIDDEN_BUFFS)
+	SHOWN_BUFFS = convertArrayToDictionary(SHOWN_BUFFS)
+	HIDDEN_DEBUFFS = convertArrayToDictionary(HIDDEN_DEBUFFS)
+end
 
 Assiduity.HIDDEN_BUFFS   = HIDDEN_BUFFS
 Assiduity.HIDDEN_DEBUFFS = HIDDEN_DEBUFFS

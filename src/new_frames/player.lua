@@ -10,52 +10,10 @@ local debug = print
 ------------------------
 local PlayerClass = AssiduityGetPlayerLocalizedClass
 
-local HIDDEN_BUFFS = {
-	["Aquatic Form"] = 1,
-	["Bear Form"] = 1,
-	["Blessing of Kings"] = 1,
-	["Blessing of Might"] = 1,
-	["Blessing of Sanctuary"] = 1,
-	["Blessing of Wisdom"] = 1,
-	["Cat Form"] = 1,
-	["Clearcasting"] = 1,
-	["Cozy Fire"] = 1,
-	["Gift of the Wild"] = 1,
-	["Greater Blessing of Kings"] = 1,
-	["Greater Blessing of Might"] = 1,
-	["Greater Blessing of Sanctuary"] = 1,
-	["Greater Blessing of Wisdom"] = 1,
-	["Honorable Defender"] = 1,
-	["Horn of Winter"] = 1,
-	["Luck of the Draw"] = 1,
-    ["Mark of the Wild"] = 1,
-	["Master Shapeshifter"] = 1,
-	["Prayer of Fortitude"] = 1,
-	["Prayer of Shadow Protection"] = 1,
-	["Prayer of Spirit"] = 1,
-	["Precious's Ribbon"] = 1,
-	["Preparation"] = 1,
-	["Retribution Aura"] = 1,
-	["Swift Flight Form"] = 1,
-	["Swift Stormsaber"] = 1,
-	["Swift White Mechanostrider"] = 1,
-	["Thorns"] = 1,
-}
+local HIDDEN_BUFFS = Assiduity.HIDDEN_BUFFS
+local SHOWN_BUFFS = Assiduity.SHOWN_BUFFS
 
-local SHOWN_BUFFS = {
-	
-}
-
-local BUFF_TO_FILTERED = {
-
-}
-
-local DEBUFF_TO_FILTERED = {
-
-}
-
-local PLAYER_ALLOWED_BUFFS = {
-}
+local HIDDEN_DEBUFFS = Assiduity.HIDDEN_DEBUFFS
 
 local AURA_ROWS     = 3
 local AURAS_PER_ROW = 7
