@@ -30,209 +30,14 @@ local filteringSubstrings = {}
 
 local temporaryFilters = {}
 
-local guildsToFilter = {
-
-	--- Guilds ---
-	"advent",
-	"another memory",
-	"arise",
-	"asperity",
-	"atencion",
-	"autentic",
-	"back in blood",
-	"bad luck",
-	"balanced insanity",
-	"balkanski guild",
-	"blizzard",
-	"bloody butchers",
-	"calavera",
-	"cant afford retail",
-	"carbonite",
-	"careless heroes",
-	"carried",
-	"clear history",
-	"code",
-	"c o d e",
-	"con la guild",
-	"cognitive",
-	"consortium",
-	"courage",
-	"deleted user",
-	"dej na wino",
-	"die raidgilde",
-	"drakkhen",
-	"edora",
-	"el capitoli",
-	"el sol devastado",
-	"empathy",
-	"essentials",
-	"evasion",
-	"exalted spiritz",
-	"frenchdrama",
-	"for the aliance",
-	"freezing field",
-	"from bulgaria with love",
-	"guardian of the bulgaria",
-	"guild internacional",
-	"guild latina,",
-	"guilda cz/sk",
-	"guilty gear",
-	"i n s i g h t",
-	"i n s u r r",
-	"impaled",
-	"infest",
-	"injustice",
-	"integrity knights",
-	"intense",
-	"invaders",
-	"iranian house",
-	"iron alliance",
-	"iron line",
-	"ix legion",
-	"k e r v a n",
-	"knight champions",
-	"la brigada",
-	"la caja de pandora",
-	"la sauce",
-	"les traitres",
-	"legado de wrynn",
-	"life power",
-	"lonsdaleites",
-	"macedonian bloodline",
-	"magyar guild",
-	"mai una gioia",
-	"mastodon",
-	"moria guildi",
-	"nowa polska",
-	"nueva guild los",
-	"orgrimmar gankers",
-	"our guild welcome",
-	"out laws",
-	"olympos",
-	"penumbra d la desolacion",
-	"pouch my tenis",
-	"pride",
-	"pvp guild",
-	"pvp nao e pra gringos",
-	"rebel knights",
-	"red ribbon army",
-	"r e s u r r e c t i o n",
-	"remorselesses",
-	"renegados brasil",
-	"retaliation",
-	"rising angels",
-	"saints and soldiers",
-	"serbian knights",
-	"shadow house",
-	"shield of light",
-	"silent spectrum",
-	"snow doves",
-	"the dead center",
-	"tempered insanity",
-	"the old guard",
-	"the outcast",
-	"the patiant",
-	"the patient",
-	"the pug society",
-	"the rippers",
-	"the sons of norris",
-	"the walkiing dead",
-	"t o x i n",
-	"toxicology",
-	"toomanybuttons",
-	"trauma",
-	"twinkonomic",
-	"tyrannical",
-	"unison",
-	"vanguardia de escarcha",
-	"vendetta",
-	"wap squad",
-	"warmane br",
-	"w i p e",
-	"what makes us strong",
-	"whispers in the dark",
-	"wrynn legacy",
-	"yeezus"
-}
-
-local marketIdentiers = {
-	"wts",
-	"wtb",
-	"selling",
-	"buying"
-}
-
-local marketToFilter = {
-	
-	"50",
-	"100",
-	"150",
-	"200",
-	"a lot of",
-	"blackrock",
-	"bis",
-	"boom",
-	"char",
-	"dk",
-	"druid",
-	"fresh naked",
-	"fury",
-	"gnome",
-	"hpala",
-	"human",
-	"hunt",
-	"lock",
-	"rogue",
-	"mage",
-	"paladin",
-	"pala",
-	"prebis",
-	"priest",
-	"resto",
-	"ret",
-	"shaman",
-	"this",
-	"twink",
-	"via trade",
-	"warlock",
-	"war"
-}
-
 --[[ 
-	Raids often reserve items and I don't plan on joining these types of 
-	raids, so might as well ignore them completely.
+	These will be read from the AssiduityWarmane module.
 ]]
-local reservingToFilter = {
-	
-	"b+o+p",
-	"boe+p",
-	"b+p+sfs",
-	"b+p",
-	"boe/primo"
-}
-
-
-local otherFilters = {
-	"[Orcish]",
-	"coins",
-	"c0ins",
-	"hyjal",
-	"latina",
-	"molten core",
-	"mount",
-	"rs10",
-	"rs25",
-	"rs 10",
-	"rs 25",
-	"tempest keep",
-	"temple of ahn",
-	"the black temple",
-	"trade",
-	"tmog",
-	"twitch.tv",
-	"warmane trade",
-	"xmog"
-}
+local GUILDS_TO_FILTER
+local MARKET_IDENTIFIERS
+local MARKET_TO_FILTER
+local RESERVING_TO_FILTER
+local OTHER_FILTERS
 
 --[[
 	Keeps a list of messages that have been filtered so far. Sometimes
@@ -263,9 +68,9 @@ local function spamFilter(self, event, message, _, language, ...)
 		end
 	end	
 	
-	for _, filter in ipairs(marketToFilter) do
+	for _, filter in ipairs(MARKET_TO_FILTER) do
 		if string_find(lowercaseMessage, filter, 1, true) then
-			for _, identifier in ipairs(marketIdentiers) do
+			for _, identifier in ipairs(MARKET_IDENTIFIERS) do
 				if string_find(lowercaseMessage, identifier, 1, true) then
 					return true
 				end
@@ -286,16 +91,22 @@ end
 
 local ADDON_LOADED = function( self, addon )
 
-    if addon == "Assiduity" then
-        self:UnregisterEvent( "ADDON_LOADED" )
+    if addon == "AssiduityWarmane" then
+		GUILDS_TO_FILTER    = Assiduity.GUILDS_TO_FILTER
+		MARKET_IDENTIFIERS  = Assiduity.MARKET_IDENTIFIERS
+		MARKET_TO_FILTER    = Assiduity.MARKET_TO_FILTER
+		RESERVING_TO_FILTER = Assiduity.RESERVING_TO_FILTER
+		OTHER_FILTERS       = Assiduity.OTHER_FILTERS
 		
-		filteringSubstrings = guildsToFilter
+		self:UnregisterEvent("ADDON_LOADED")
 		
-		for _, value in ipairs(reservingToFilter) do
+		filteringSubstrings = GUILDS_TO_FILTER
+		
+		for _, value in ipairs(RESERVING_TO_FILTER) do
 			table_insert(filteringSubstrings, value)
 		end
 		
-		for _, value in ipairs(otherFilters) do
+		for _, value in ipairs(OTHER_FILTERS) do
 			table_insert(filteringSubstrings, value)
 		end
 		
