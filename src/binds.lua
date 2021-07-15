@@ -137,7 +137,7 @@ local BINDS = {
     ["DEATHKNIGHT"] = {},
     ["DRUID"] = {
         ["F1"] = "SPELL Track Humanoids",
-        ["F2"] = "SPELL Track Minerals",
+        ["F2"] = "SPELL Find Minerals",
         ["F3"] = "SPELL Find Fish"
     },
     ["HUNTER"] = {},

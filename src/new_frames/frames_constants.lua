@@ -31,9 +31,12 @@ local ipairs = ipairs
 ]]
 local HIDDEN_BUFFS = {
 
-	"Aquatic Form",
-	"Arcane Brilliance",
-	"Arcane Intellect",
+	"Abomination's Might", 	-- DK passive, +10% AP
+	"Aquatic Form",			
+	"Arcane Brilliance",	-- Arcane m
+	"Arcane Empowerment", 	-- Arcane Mage talent, 3% damage increase
+	"Arcane Intellect",		-- Mage buff, 
+	"Battle Shout",
 	"Bear Form",
 	"Blessing of Kings",
 	"Blessing of Might",
@@ -44,6 +47,8 @@ local HIDDEN_BUFFS = {
 	"Clearcasting", -- displayed as proc
 	"Concentration Aura",
 	"Cozy Fire",
+	"Dalaran Brilliance",
+	"Dalaran Intellect",
 	"Devotion Aura",
 	"Demonic Pact",
 	"Dire Bear Form",
@@ -73,6 +78,8 @@ local HIDDEN_BUFFS = {
 	"Prayer of Spirit",
 	"Precious's Ribbon",
 	"Preparation",
+	"Rampage", 
+	"Renewed Hope",			-- Priest ta
 	"Retribution Aura",
 	"Strength of Wrynn",
 	"Swift Flight Form",

@@ -69,3 +69,12 @@ AssiduityTableJoin = function(table1, table2)
         table_insert(table1, value)
     end
 end
+
+
+local SOUND_FOLDER_LOCATION = "Interface\\AddOns\\Assiduity\\sounds\\"
+
+AssiduityPlaySound = function(soundFileName)
+
+	local fullPath = SOUND_FOLDER_LOCATION .. soundFileName .. ".wav"
+	PlaySoundFile( fullPath, "Music" )
+end
