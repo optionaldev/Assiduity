@@ -13,6 +13,7 @@ src\fonts.xml
 src\new_frames\frames_constants.lua
 src\new_frames\templates.xml
 src\new_frames\player.xml
+src\new_frames\new_target.lua
 
 src\common_tables.lua
 src\timing.xml

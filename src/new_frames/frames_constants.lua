@@ -53,6 +53,7 @@ local HIDDEN_BUFFS = {
 	"Demonic Pact",
 	"Dire Bear Form",
 	"Elemental Oath",
+	"Fel Intelligence",				-- Felhunter passive buff
 	"Ferocious Inspiration",
 	"Focus Magic",
 	"Fortitude",
@@ -89,6 +90,7 @@ local HIDDEN_BUFFS = {
 	"Totem of Wrath",
 	"Tree of Life",
 	"Trueshot Aura",
+	"Vigilance", 		-- Prot war, reduce threat generated and increases stamina
 	"Well Fed",
 	"Wrath of Air Totem"
 }

@@ -12,18 +12,26 @@ local PlaySound = AssiduityPlaySound
 
 local nextPlay = 0
 
-local BATTLEFIELD_MGR_ENTRY_INVITE = function()
+
+------------
+-- Events --
+------------
+local BATTLEFIELD_MGR_ENTRY_INVITE = function(self)
 	
 	PlaySound("wintergrasp")
+	
+	self:SetScript("OnUpdate", OnUpdate)
 	
 	nextPlay = 0
 	self:SetScrip
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
-local PLAYER_ENTERING_WORLD = function()
+--[[
 	
-	self:SetScript("OnUpdate", OnUpdate)
+]]
+local PLAYER_ENTERING_WORLD = function(self)
+	self:SetScript("OnUpdate", nil)
 end
 
 -------------
