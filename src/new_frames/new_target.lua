@@ -1,19 +1,38 @@
 local DISTANCE_TO_EDGE = 3
 local BAR_WIDTH = 180
-local HEALTH_BAR_HEIGHT = 25
-local POWER_BAR_HEIGHT = 15
+local HEALTH_BAR_HEIGHT = 28
+local POWER_BAR_HEIGHT = 12
 local PORTRAIT_SIZE = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDGE
 
-AssiduityNewTarget = CreateFrame("Frame")
+AssiduityNewTarget = CreateFrame("Button", "AssiduityNewTarget", UIParent, "SecureUnitButtonTemplate")
 
 AssiduityNewTarget:SetSize(BAR_WIDTH + PORTRAIT_SIZE + 3 * DISTANCE_TO_EDGE, 
 						   PORTRAIT_SIZE + 2 * DISTANCE_TO_EDGE)
 
 AssiduityNewTarget:ClearAllPoints()
-AssiduityNewTarget:SetPoint("CENTER", UIParent, "CENTER")
+AssiduityNewTarget:SetPoint("CENTER", UIParent, "CENTER", 200, 150) 
+AssiduityNewTarget:SetAlpha(0)
 
 do 
 	local self = AssiduityNewTarget
+	self:EnableKeyboard(true)
+	self:RegisterForClicks("AnyUp")
+	self:RegisterForClicks("AnyDown")
+    self:SetAttribute("unit", "target")
+    self:SetAttribute("type", "spell")
+	
+    self:SetAttribute("*helpbutton1", "heal1")
+    self:SetAttribute("*helpbutton2", "heal2")
+	
+    self:SetAttribute("spell-heal1", "Rejuvenation")
+    self:SetAttribute("ctrl-spell-heal1", "Regrowth")
+    self:SetAttribute("shift-spell-heal1", "Wild Growth")
+    self:SetAttribute("alt-spell-heal1", "Rejuvenation")
+	
+    self:SetAttribute("spell-heal2", "Lifebloom")
+    self:SetAttribute("ctrl-spell-heal2", "Nourish")
+    self:SetAttribute("shift-spell-heal2", "Remove Curse")
+    self:SetAttribute("alt-spell-heal2", "Abolish Poison")
 
 	local background = self:CreateTexture(nil, "BACKGROUND")
 	background:SetTexture(0, 0, 0, 0.4)
@@ -44,7 +63,7 @@ do
 					  
 	
 	local portrait = self:CreateTexture(nil, "BACKGROUND")
-	AssiduityNewTarget.portrait:SetTexture(1, 1, 1)
+	portrait:SetTexture(1, 1, 1)
 	portrait:SetSize(PORTRAIT_SIZE, PORTRAIT_SIZE)
 	portrait:SetPoint("RIGHT", 
 					  self, 
@@ -52,5 +71,6 @@ do
 					  -DISTANCE_TO_EDGE, 
 					  0)
 	self.portrait = portrait
+	
 end
 

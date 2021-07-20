@@ -1708,29 +1708,9 @@ do  --- Unit Frame
 end
 
 
+--[[
+	CreateFrame frame types
+	https://wowwiki-archive.fandom.com/wiki/UIOBJECT_Frame
+]]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+AssiduityAuraFrameTemplate = CreateFrame("Button", "$Aura")
