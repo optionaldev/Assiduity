@@ -10,9 +10,19 @@ AssiduityGetPlayerLocalizedClass = function()
     return localizedClass
 end
 
+AssiduityGetUnitLocalizedClass = function(unit)
+
+    local _, localizedClass = UnitClass(unit)
+    return localizedClass
+end
+
 AssiduityGetInstanceType = function()
     local _, instanceType = IsInInstance()
     return instanceType
+end
+
+AssiduityUnitAuraSource = function(unit, auraName)
+	return select(8, UnitAura(unit, auraName)) == unit
 end
 
 AssiduityPrintTable = function(tbl)

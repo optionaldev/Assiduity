@@ -1,4 +1,12 @@
 
+------------------------
+-- Locals and imports --
+------------------------
+
+local table_insert = table.insert
+local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
+local UnitAuraSource = AssiduityUnitAuraSource
+
 local BUTTON_WIDTH = 50
 local BUTTON_HEIGHT = 40
 local SEPARATOR_SIZE = 7
@@ -14,18 +22,189 @@ local BAR_WIDTH = BUTTON_WIDTH - 2 * DISTANCE_TO_EDGE
 
 -- Main frame that will also handle the events
 AssiduityGroupsFrame = CreateFrame("Frame", AssiduityGroupsFrame, UIParent)
+AssiduityGroupsFrame:Hide()
+
+local tankFrames
+local mdpsFrames
+local rdpsFrames
+local healFrames
+
+local tankUnits
+local mdpsUnits
+local rdpsUnits
+local healUnits
+
+--[[ 
+	Here we put units that we can't classify based on hp / mana / passive buffs
+	We need to wait for them to cast some spell specific for their talents (spec)
+]] 
+local unclassifiedUnits
+
+---------------
+-- Functions --
+---------------
+
+local applyBaseClasification = function(unit)
+	
+	local class = UnitLocalizedClass(unit)
+	
+	if class == "MAGE" or class == "WARLOCK" or class == "HUNTER" then
+		table_insert(rdpsUnits, unit)
+	elseif class == "ROGUE" then
+		table_insert(mdpsUnits, unit)
+	elseif class == "DRUID" then
+		if UnitAura(unit, "Moonkin Form") then
+			table_insert(rdpsUnits, unit)
+		elseif UnitAuraSource(unit, "Tree of Life") then
+			table_insert(healUnits, unit)
+		elseif UnitHealthMax(unit) > 45000 then
+			table_insert(tankUnits, unit)
+		else
+			table_insert(unclassifiedUnits, unit)
+		end
+	elseif class == "PALADIN" then
+		if UnitPowerMax(unit) > 15000 then
+			table_insert(healUnits, unit)
+		elseif UnitHealthMax(unit) > 45000 then
+			table_insert(tankUnits, unit)
+		else
+			table_insert(mdpsUnits, unit)
+		end
+	elseif class == "SHAMAN" then
+		if UnitAuraSource(unit, "Elemental Oath") then
+			table_insert(rdpsUnits, unit)
+		elseif UnitPowerMax(unit) < 15000 then
+			table_insert(mdpsUnits, unit)
+		else
+			table_insert(healUnits, unit)
+		end
+	elseif class == "WARRIOR" and UnitAura(unit, "Rampage") then
+		table_insert(mdpsUnits, unit)
+	elseif class == "DEATHKNIGHT" or class == "WARRIOR" then
+		if UnitHealthMax(unit) > 45000 then
+			table_insert(tankUnits, unit)
+		else 
+			table_insert(mdpsUnits, unit)
+		end
+	elseif class == "PRIEST" then
+		if UnitAura(unit, "Shadowform") then
+			table_insert(rdpsUnits, unit)
+		else 
+			table_insert(unclassifiedUnits, unit)
+		end
+	end
+end
+
+local evaluateParty = function() 
+
+end
+
+local evaluateGroup = function()
+
+	if GetRealNumRaidMembers() ~= 0 then
+		evaluateRaid()
+	elseif GetRealNumPartyMembers() ~= 0 then
+		evaluateParty()
+	elseif GetNumRaidMembers() ~= 0 then
+		evaluateBattleground()
+	end
+end
+
+evaluateBattleground = function()
+	evaluateRaid()
+end
+
+local printUnitTable = function(tbl) 
+
+	for _, unit in ipairs(tbl) do
+		if UnitExists(unit) then
+			print(UnitName(unit) .. " " .. unit .. " " .. UnitLocalizedClass(unit))
+		end
+	end
+end
+
+
+evaluateRaid = function()
+
+	tankUnits = {}
+	mdpsUnits = {}
+	rdpsUnits = {}
+	healUnits = {}
+	unclassifiedUnits = {}
+	
+	for index = 1, 40 do
+		local unit = "raid" .. index
+		if UnitExists(unit) then
+			applyBaseClasification(unit)
+		end
+	end
+	
+	if #unclassifiedUnits ~= 0 then
+		AssiduityGroupsFrame:RegisterEvent("UNIT_AURA")
+	end
+end
+
+printRaid = function()
+	
+	print("evaluateRaid")
+	print("")
+	print("Tanks:")
+	print("------")
+	printUnitTable(tankUnits)
+	print("")
+	print("MDPS:")
+	print("-----")
+	printUnitTable(mdpsUnits)
+	print("")
+	print("RDPS:")
+	print("-----")
+	printUnitTable(rdpsUnits)
+	print("")
+	print("Healers:")
+	print("--------")
+	printUnitTable(healUnits)
+	print("")
+	print("Unclassified units:")
+	print("-------------------")
+	printUnitTable(unclassifiedUnits)
+end
 
 local handleCurrentState = function()
 
 	if GetRealNumPartyMembers() == 0 and GetRealNumRaidMembers() == 0 then
-		AssiduityGroupsFrame:SetAlpha(0.2)
+		AssiduityGroupsFrame:SetAlpha(0.1)
 	elseif not IsInInstance() then
-		AssiduityGroupsFrame:SetAlpha(0.5)
+		AssiduityGroupsFrame:SetAlpha(0.4)
 	else 
 		AssiduityGroupsFrame:SetAlpha(1)
 	end
+end 
+
+------------
+-- Events --
+------------
+
+local PARTY_MEMBERS_CHANGED = function()
+
+	evaluateGroup()
 end
 
+local PLAYER_ENTERING_WORLD = function()
+
+	handleCurrentState()
+end
+
+local UNIT_AURA = function() 
+	-- Pala gaining Vengeance -> retri
+end
+
+local UNIT_SPELLCAST_START = function()
+	
+end
+
+-----------
+-- Frame --
+-----------
 do 
 	local self = AssiduityGroupsFrame
 	
@@ -37,6 +216,18 @@ do
 	background:SetAllPoints()
 	
 	handleCurrentState()
+	
+    self:SetScript("OnEvent", function(self, event, ...)
+        self[event](self, ...)
+    end)    
+	
+	self.PARTY_MEMBERS_CHANGED = PARTY_MEMBERS_CHANGED
+	self.PLAYER_ENTERING_WORLD = PLAYER_ENTERING_WORLD
+	self.UNIT_AURA 			   = UNIT_AURA
+	self.UNIT_SPELLCAST_START  = UNIT_SPELLCAST_START
+	
+	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 --[[
@@ -156,18 +347,19 @@ do
 	local self = AssiduityGroupsFrame
 
 	-- Should have a maximum of 3 tanks
-	local tank  = handleFrameCreation("tank")
+	local tank1 = handleFrameCreation("tank")
 	local tank2 = handleFrameCreation("tank")
 	local tank3 = handleFrameCreation("tank")
 	
-	tank:SetPoint("BOTTOMLEFT", AssiduityGroupsFrameTankHealSeparator, "TOPLEFT")
+	tank1:SetPoint("BOTTOMLEFT", AssiduityGroupsFrameTankHealSeparator, "TOPLEFT")
 	
-	position(tank2, "RIGHT", tank)
+	position(tank2, "RIGHT", tank1)
 	position(tank3, "RIGHT", tank2)
 	
+	tankFrames = { tank1, tank2, tank3 }
 	
 	-- Should have a maximum of 10 rdps
-	local rdps   = handleFrameCreation("rdps")
+	local rdps1  = handleFrameCreation("rdps")
 	local rdps2  = handleFrameCreation("rdps")
 	local rdps3  = handleFrameCreation("rdps")
 	local rdps4  = handleFrameCreation("rdps")
@@ -178,20 +370,22 @@ do
 	local rdps9  = handleFrameCreation("rdps")
 	local rdps10 = handleFrameCreation("rdps")
 	
-	rdps:SetPoint("TOPRIGHT", AssiduityGroupsFrameDpsSeparator, "BOTTOMRIGHT")
+	rdpsFrames = { rdps1, rdps2, rdps3, rdps4, rdps5, rdps6, rdps7, rdps8, rdps9, rdps10 }
 	
-	position(rdps2,  "LEFT",  rdps)
+	rdps1:SetPoint("TOPRIGHT", AssiduityGroupsFrameDpsSeparator, "BOTTOMRIGHT")
+	
+	position(rdps2,  "LEFT",  rdps1)
 	position(rdps3,  "LEFT",  rdps2)
 	position(rdps4,  "LEFT",  rdps3)
 	position(rdps5,  "LEFT",  rdps4)
-	position(rdps6,  "BOTTOM", rdps)
+	position(rdps6,  "BOTTOM", rdps1)
 	position(rdps7,  "BOTTOM", rdps2)
 	position(rdps8,  "BOTTOM", rdps3)
 	position(rdps9,  "BOTTOM", rdps4)
 	position(rdps10, "BOTTOM", rdps5)
 	
 	-- Should have a maximum of 10 mdps
-	local mdps   = handleFrameCreation("mdps")
+	local mdps1  = handleFrameCreation("mdps")
 	local mdps2  = handleFrameCreation("mdps")
 	local mdps3  = handleFrameCreation("mdps")
 	local mdps4  = handleFrameCreation("mdps")
@@ -202,21 +396,23 @@ do
 	local mdps9  = handleFrameCreation("mdps")
 	local mdps10 = handleFrameCreation("mdps")
 	
-	mdps:SetPoint("BOTTOMRIGHT", AssiduityGroupsFrameDpsSeparator, "TOPRIGHT")
+	mdpsFrames = { mdps1, mdps2, mdps3, mdps4, mdps5, mdps6, mdps7, mdps8, mdps9, mdps10 }
 	
-	position(mdps2,	 "LEFT",   mdps)
-	position(mdps3,  "LEFT",   mdps2)
-	position(mdps4,  "LEFT",   mdps3)
-	position(mdps5,  "LEFT",   mdps4)
-	position(mdps6,  "TOP", mdps)
-	position(mdps7,  "TOP", mdps2)
-	position(mdps8,  "TOP", mdps3)
-	position(mdps9,  "TOP", mdps4)
-	position(mdps10, "TOP", mdps5)
+	mdps1:SetPoint("BOTTOMRIGHT", AssiduityGroupsFrameDpsSeparator, "TOPRIGHT")
+	
+	position(mdps2,	 "LEFT", mdps1)
+	position(mdps3,  "LEFT", mdps2)
+	position(mdps4,  "LEFT", mdps3)
+	position(mdps5,  "LEFT", mdps4)
+	position(mdps6,  "TOP",  mdps1)
+	position(mdps7,  "TOP",  mdps2)
+	position(mdps8,  "TOP",  mdps3)
+	position(mdps9,  "TOP",  mdps4)
+	position(mdps10, "TOP",  mdps5)
 
 	
 	-- Usually there's 5, but might have more in Valithria encounter
-	local heal   = handleFrameCreation("heal")
+	local heal1  = handleFrameCreation("heal")
 	local heal2  = handleFrameCreation("heal")
 	local heal3  = handleFrameCreation("heal")
 	local heal4  = handleFrameCreation("heal")
@@ -225,17 +421,18 @@ do
 	local heal7  = handleFrameCreation("heal")
 	local heal8  = handleFrameCreation("heal")
 	local heal9  = handleFrameCreation("heal")
-	local heal10 = handleFrameCreation("heal")
 	
-	heal:SetPoint("TOPLEFT", AssiduityGroupsFrameTankHealSeparator, "BOTTOMLEFT")
+	healFrames = { heal1, heal2, heal3, heal4, heal5, heal6, heal7, heal8, heal9 }
 	
 	--[[ Positions
 		1 - 2 - 7
 		3 - 4 - 8
 		5 - 6 - 9
 	]]
-	position(heal2,  "RIGHT",  heal)
-	position(heal3,  "BOTTOM", heal)
+	heal1:SetPoint("TOPLEFT", AssiduityGroupsFrameTankHealSeparator, "BOTTOMLEFT")
+	
+	position(heal2,  "RIGHT",  heal1)
+	position(heal3,  "BOTTOM", heal1)
 	position(heal4,  "BOTTOM", heal2)
 	position(heal5,  "BOTTOM", heal3)
 	position(heal6,  "BOTTOM", heal4)

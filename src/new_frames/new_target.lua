@@ -11,7 +11,7 @@ AssiduityNewTarget:SetSize(BAR_WIDTH + PORTRAIT_SIZE + 3 * DISTANCE_TO_EDGE,
 
 AssiduityNewTarget:ClearAllPoints()
 AssiduityNewTarget:SetPoint("CENTER", UIParent, "CENTER", 200, 150) 
-AssiduityNewTarget:SetAlpha(0)
+AssiduityNewTarget:Hide()
 
 do 
 	local self = AssiduityNewTarget
