@@ -113,6 +113,7 @@ local DYNAMIC_GCD = {
         ["Starfall"]              = 1,
         ["Thorns"]                = 1,
         ["Typhoon"]               = 1,
+		["Wild Growth"] 		  = 1
     },
     ["HUNTER"] = {},
     ["MAGE"] = {},

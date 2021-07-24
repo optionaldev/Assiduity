@@ -26,7 +26,7 @@ local ADDON_LOADED = function(self, addon)
 	if addon == "Assiduity" then
 		self:UnregisterEvent("ADDON_LOADED")
 		
-		PlayerFrame:SetAlpha(0.2)
+		PlayerFrame:SetAlpha(0.1)
 		
 		--[[
 		MultiBarBottomLeft:SetMovable() 
@@ -34,6 +34,12 @@ local ADDON_LOADED = function(self, addon)
 		MultiBarBottomLeft:SetPoint( "BOTTOMRIGHT", UIParent, "BOTTOM", -58, 10 )
 		MultiBarBottomLeft:SetUserPlaced( 1 )
 		]]
+		
+		-- Hide default Casting Bar
+		CastingBarFrame:UnregisterAllEvents()
+		
+		-- Hide shapeshift forms bar
+		ShapeshiftBarFrame:SetAlpha(0)
 		
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 		self:RegisterEvent("PLAYER_TARGET_CHANGED")

@@ -108,11 +108,11 @@
 <!-- Cast StatusBar -->
 
 <StatusBar name="AssiduityCastingBarTemplate" drawLayer="BORDER" virtual="true" hidden="false">
-    <Size x="80" y="14"/>
+    <Size x="100" y="15"/>
     <Layers>
         <Layer level="BACKGROUND">
             <Texture setAllPoints="true">
-                <Color r="0" g="0" b="0" a="0.5"/>
+                <Color r="0" g="0" b="0" a="1"/>
             </Texture>		
         </Layer>
         <Layer level="ARTWORK">

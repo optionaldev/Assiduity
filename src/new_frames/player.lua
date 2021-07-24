@@ -36,7 +36,7 @@ local UNIT_TARGET_FRAME = "UNIT_TARGET_FRAME"
 
 local SETTINGS = {
     ["bgColor"]         = STANDARD_BACKGROUND_COLOR,
-    ["bigFrameOffsetH"] = 350,
+    ["bigFrameOffsetH"] = 330,
     ["bigFrameOffsetV"] = 150,
     [AURA_FRAME_SMALL] = {
         ["countFont"]   = "AssiduityAuraCountFontSmall",

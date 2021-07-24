@@ -194,7 +194,6 @@ end
 local ADDON_LOADED = function( self, addon )
 
     if addon == "Assiduity" then
-		debug("addon loaded for action button timers")
         self:UnregisterEvent("ADDON_LOADED")
         
         for i, button in ipairs(BUTTONS) do

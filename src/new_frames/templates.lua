@@ -129,7 +129,7 @@ local SETTINGS = {
     },
     [UNIT_FRAME_SMALL] = {
         ["bgOffset"]      = 2,
-        ["castOffset"]    = 7,
+        ["castOffset"]    = 17,
         ["healthHeight"]  = 25,
         ["height"]        = 38,
         ["spacing"]       = SMALL_SPACING,
@@ -137,7 +137,7 @@ local SETTINGS = {
     },
     [UNIT_FRAME_LARGE] = {
         ["bgOffset"]      = 3,
-        ["castOffset"]    = 10,
+        ["castOffset"]    = 30,
         ["healthHeight"]  = 30,
         ["height"]        = 48,
         ["spacing"]       = LARGE_SPACING,
@@ -1515,8 +1515,8 @@ do  --- Unit Frame
         self.bgT:SetAlpha( 0.5 )
         
         if orientation == "LEFT" then
-            self.castSB:SetPoint( "RIGHT", self, "LEFT",    
-                                  SETTING.castOffset, 0 )
+            self.castSB:SetPoint( "LEFT", self, "RIGHT", SETTING.castOffset, -15 )
+            --self.castSB:SetPoint( "BOTTOMLEFT", self, "TOPLEFT", 0, 0 )
         
             self.healthSB:SetPoint( "TOPRIGHT", self, "TOPRIGHT" )
             self.healthSB:SetSize( SETTING.width - spacing - height, healthHeight )
@@ -1531,7 +1531,7 @@ do  --- Unit Frame
             
               
         else
-            self.castSB:SetPoint( "LEFT", self, "RIGHT",    
+            self.castSB:SetPoint( "RIGHT", self, "LEFT",    
 								  SETTING.castOffset, 0)
                                   --SETTING[self.string].castOffset + 20, 0 )
                       

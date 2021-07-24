@@ -7,13 +7,17 @@ local table_insert = table.insert
 local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
 local UnitAuraSource = AssiduityUnitAuraSource
 
-local BUTTON_WIDTH = 50
+local BUTTON_WIDTH = 70
 local BUTTON_HEIGHT = 40
 local SEPARATOR_SIZE = 7
 
 local DISTANCE_TO_EDGE = 1
 local HEALTH_BAR_HEIGHT = 14
 local POWER_BAR_HEIGHT = 3
+local AURA_SIZE = 15
+
+local RAID_TANK_MIN_HP = 45000
+local PARTY_TANK_MIN_HP = 35000
 
 local BAR_WIDTH = BUTTON_WIDTH - 2 * DISTANCE_TO_EDGE
 --local PORTRAIT_SIZE = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDGE
@@ -34,12 +38,33 @@ AssiduityGroupsFrame = CreateFrame("Frame", AssiduityGroupsFrame, UIParent)
 	
 	Also, doesn't make sense to add spec to this table if the role
 	doesn't change, such as for mages, hunters, rogues & warlocks.
+	
+	This value should NOT be reset unless leaving the party.
 ]]
-local nameToSpec
+nameToSpec = {}
+
+--[[
+	Once we've identified the spec, we want to know what role that spec uses.
+	
+	Only included specs for classes where it couldn't be identified from the get-go.
+	
+	Excluded Feral due to spec being used as both mdps and tank.
+	
+	This value should NOT be reset unless leaving the party.
+]]
+
+local PLAYER_BUFF_ORDER = {
+	"Rejuvenation",
+	"Regrowth",
+	"Lifebloom",
+	"Abolish Poison",
+	"Innervate"
+}
 
 local specToRole = {
 
 	["Balance"]	    = "rdps",
+	["Discipline"]  = "heal",
 	["Elemental"]   = "rdps",
 	["Enhancement"] = "mdps",
 	["Holy"]		= "heal",
@@ -48,25 +73,95 @@ local specToRole = {
 	["Retribution"] = "mdps"
 }
 
-local tankFrames
-local mdpsFrames
-local rdpsFrames
-local healFrames
+local BUFF_TO_SPEC = {
 
-local tankUnits
-local mdpsUnits
-local rdpsUnits
-local healUnits
+	-- Priest
+	["Divine Aegis"] = "Discipline",
+	["Grace"] 		 = "Discipline",
+	["Renewed Hope"] = "Discipline",
+	
+	["Body and Soul"] 	   = "Holy",
+	["Holy Concentration"] = "Holy",
+	["Serendipity"] 	   = "Holy",
+	
+	-- Druid
+	["Eclipse (Lunar)"] = "Balance",
+	["Eclipse (Solar)"] = "Balance",
+	
+	["Living Seed"] = "Restoration"
+}
+
+local SPELLCAST_TO_SPEC = {
+	
+	-- Priest
+	["Pain Suppression"] = "Discipline",
+	["Penance"] 		 = "Discipline",
+	["Power Infusion"] 	 = "Discipline",
+	
+	["Circle of Healing"] = "Holy",
+	["Guardian Spirit"]   = "Holy",
+	["Lightwell"] 		  = "Holy",
+	
+	-- Druid
+	["Force of Nature"] = "Balance",
+	["Insect Swarm"] 	= "Balance",
+	["Moonkin Form"] 	= "Balance",
+	["Starfall"] 		= "Balance",
+	["Typhoon"] 		= "Balance",
+	
+	["Swiftmend"]		   = "Restoration",
+	["Nature's Swiftness"] = "Restoration",
+	["Tree of Life"]	   = "Restoration",
+	["Wild Growth"]		   = "Restoration"
+}
+
+
+local OPPOSITE_POINT = {
+	["LEFT"]   = "RIGHT",
+	["RIGHT"]  = "LEFT",
+	["TOP"]    = "BOTTOM",
+	["BOTTOM"] = "TOP"
+}
+
+
+tankFrames = {}
+mdpsFrames = {}
+rdpsFrames = {}
+healFrames = {}
+
+tankUnits = {}
+mdpsUnits = {}
+rdpsUnits = {}
+healUnits = {}
 
 --[[ 
 	Here we put units that we can't classify based on hp / mana / passive buffs
 	We need to wait for them to cast some spell specific for their talents (spec)
 ]] 
-local unclassifiedUnits
+unclassifiedUnits = {}
 
 ---------------
 -- Functions --
 ---------------
+
+local isUnitRoleInTable = function(tbl, unit)
+	
+	for _, value in ipairs(tbl) do
+		if unit == value then
+			return true
+		end
+	end
+	
+	return false
+end
+
+local isUnitRoleDiscovered = function(unit)
+
+	return isUnitRoleInTable(tankUnits, unit) or 
+		   isUnitRoleInTable(mdpsUnits, unit) or
+		   isUnitRoleInTable(rdpsUnits, unit) or
+		   isUnitRoleInTable(healUnits, unit)
+end
 
 --[[
 	Clasify units based on simple and obvious metrics. These might not work
@@ -74,10 +169,10 @@ local unclassifiedUnits
 	important in RDFs and I might even hide the entire thing in dungeons
 	and just use key combos for selecting.
 ]]
-local applyBaseClasification = function(unit)
+local applyBaseClasification = function(unit, tankMinHp)
 	
 	local class = UnitLocalizedClass(unit)
-	local name, _ = UnitName(unit)
+	local name = UnitName(unit)
 	
 	if class == "MAGE" or class == "WARLOCK" or class == "HUNTER" then
 		table_insert(rdpsUnits, unit)
@@ -90,7 +185,7 @@ local applyBaseClasification = function(unit)
 		elseif UnitAuraSource(unit, "Tree of Life") then
 			table_insert(healUnits, unit)
 			nameToSpec[name] = "Restoration"
-		elseif UnitHealthMax(unit) > 45000 then
+		elseif UnitHealthMax(unit) > tankMinHp then
 			table_insert(tankUnits, unit)
 			nameToSpec[name] = "Feral"
 		else
@@ -100,7 +195,7 @@ local applyBaseClasification = function(unit)
 		if UnitPowerMax(unit) > 15000 then
 			table_insert(healUnits, unit)
 			nameToSpec[name] = "Holy"
-		elseif UnitHealthMax(unit) > 45000 then
+		elseif UnitHealthMax(unit) > tankMinHp then
 			table_insert(tankUnits, unit)
 			nameToSpec[name] = "Protection"
 		else
@@ -126,7 +221,7 @@ local applyBaseClasification = function(unit)
 			tank or dps and Frost tank or dps. Will need to see how 
 			we deal with it.
 		]]
-		if UnitHealthMax(unit) > 45000 then
+		if UnitHealthMax(unit) > tankMinHp then
 			table_insert(tankUnits, unit)
 		else 
 			table_insert(mdpsUnits, unit)
@@ -137,44 +232,101 @@ local applyBaseClasification = function(unit)
 			nameToSpec[name] = "Shadow"
 		else
 			--[[
-				Here could be disc or holy, will need to see how to distinguish
+				Here could be disc or holy or an SP not in shadow form currently.
 			]]		
 			table_insert(unclassifiedUnits, unit)
-			nameToSpec[name] = "Discipline"
+		end
+	else 
+		print("unit \"" .. unit .. "\" not part of any clasification")
+	end
+end
+
+local handleUnit = function(unit)
+
+	if not UnitExists(unit) then
+		return
+	end
+	applyBaseClasification(unit, RAID_TANK_MIN_HP)
+	if not isUnitRoleDiscovered(unit) then
+		local spec = nameToSpec[UnitName(unit)]
+		if spec then
+			local role = specToRole[spec]
+			if role then
+				if role == "tank" then
+					table_insert(tankUnits, unit)
+				elseif role == "rdps" then
+					table_insert(rdpsUnits, unit)
+				elseif role == "mdps" then
+					table_insert(mdpsUnits, unit)
+				elseif role == "heal" then
+					table_insert(healUnits, unit)
+				else 
+					print("inexistent role found \"" .. role .. "\"")
+				end
+			end
 		end
 	end
 end
 
 local evaluateParty = function() 
-
+	
+	for index = 1, 4 do
+		local unit = "party" .. tostring(index)
+		handleUnit(unit)
+	end
+	
+	--[[ 
+		Unlike in raids where "player" gets assigned a raid ID, here we 
+		have to handle it like a different entity not part of the party
+	]]
+	handleUnit("player")
 end
 
-local evaluateGroup = function()
-
-	if GetRealNumRaidMembers() ~= 0 then
-		evaluateRaid()
-	elseif GetRealNumPartyMembers() ~= 0 then
-		evaluateParty()
-	elseif GetNumRaidMembers() ~= 0 then
-		evaluateBattleground()
+local evaluateRaid = function()
+	
+	for index = 1, 40 do
+		local unit = "raid" .. index
+		handleUnit(unit)
 	end
 end
 
-evaluateBattleground = function()
+
+local evaluateBattleground = function()
+
 	evaluateRaid()
 end
 
-local printUnitTable = function(tbl) 
 
-	for _, unit in ipairs(tbl) do
+local updateFrames = function(frameList, units)
+	
+	for index, frame in ipairs(frameList) do
+		local unit = units[index]
+	
 		if UnitExists(unit) then
-			print(UnitName(unit) .. " " .. unit .. " " .. UnitLocalizedClass(unit))
+			frame:SetAttribute("unit", unit)
+			frame.healthBar:SetValue(UnitHealth(unit))
+			frame.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
+			frame.powerBar:SetValue(UnitMana(unit))
+			frame.powerBar:SetMinMaxValues(0, UnitManaMax(unit))
+			frame:RegisterEvent("UNIT_AURA")
+			frame:RegisterEvent("UNIT_HEALTH")
+			frame:RegisterEvent("UNIT_MAXHEALTH")
+			frame:RegisterEvent("UNIT_MANA")
+			frame:RegisterEvent("UNIT_MAXMANA")
+			frame:SetAlpha(1)
+		else
+			frame:SetAttribute("unit", nil)
+			frame:UnregisterEvent("UNIT_AURA")
+			frame:UnregisterEvent("UNIT_HEALTH")
+			frame:UnregisterEvent("UNIT_MAXHEALTH")
+			frame:UnregisterEvent("UNIT_MANA")
+			frame:UnregisterEvent("UNIT_MAXMANA")
+			frame:SetAlpha(0.1)
 		end
 	end
 end
 
-
-evaluateRaid = function()
+local evaluateGroup = function()
 
 	tankUnits = {}
 	mdpsUnits = {}
@@ -182,15 +334,46 @@ evaluateRaid = function()
 	healUnits = {}
 	unclassifiedUnits = {}
 	
-	for index = 1, 40 do
-		local unit = "raid" .. index
-		if UnitExists(unit) then
-			applyBaseClasification(unit)
-		end
+	if GetRealNumRaidMembers() ~= 0 then
+		evaluateRaid()
+	elseif GetRealNumPartyMembers() ~= 0 then
+		evaluateParty()
+	elseif GetNumRaidMembers() ~= 0 then
+		evaluateBattleground()
 	end
 	
-	if #unclassifiedUnits ~= 0 then
-		AssiduityGroupsFrame:RegisterEvent("UNIT_AURA")
+	AssiduityGroupsFrame:RegisterEvent("UNIT_AURA")
+	AssiduityGroupsFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	
+	--[[
+		TODO: Either make an unclassifiedUnit frame section
+		or apply a "best guess" until we know everyone's role.
+	]]
+	
+	updateFrames(tankFrames, tankUnits)
+	updateFrames(healFrames, healUnits)
+	updateFrames(mdpsFrames, mdpsUnits)
+	updateFrames(rdpsFrames, rdpsUnits)
+end
+
+local printUnitTable = function(tbl) 
+
+	if tbl == nil then
+		print("Table is nil")
+		return
+	end
+
+	for _, unit in ipairs(tbl) do
+		if UnitExists(unit) then
+			local name = UnitName(unit)
+			local result = name .. " " .. unit .. " " .. UnitLocalizedClass(unit) .. " "
+			if nameToSpec[name] then
+				result = result .. nameToSpec[name]
+			else
+				result = result .. "unknown spec"
+			end
+			print(result)
+		end
 	end
 end
 
@@ -222,13 +405,19 @@ end
 local handleCurrentState = function()
 
 	if GetRealNumPartyMembers() == 0 and GetRealNumRaidMembers() == 0 then
-		AssiduityGroupsFrame:SetAlpha(0.1)
+		AssiduityGroupsFrame:SetAlpha(1)
 	elseif not IsInInstance() then
-		AssiduityGroupsFrame:SetAlpha(0.4)
+		AssiduityGroupsFrame:SetAlpha(1)
 	else 
 		AssiduityGroupsFrame:SetAlpha(1)
 	end
 end 
+
+local position = function(anchored, point, origin)
+
+	local anchoredPoint = OPPOSITE_POINT[point]
+	anchored:SetPoint(anchoredPoint, origin, point)
+end
 
 ------------
 -- Events --
@@ -257,20 +446,119 @@ end
 ]]
 local PARTY_MEMBERS_CHANGED = function()
 
-	evaluateGroup()
+	if GetNumPartyMembers() == 0 then
+		--[[
+			Use this opportunity to reset certain tables.
+		]]
+		nameToSpec = {}
+	else 
+		evaluateGroup()
+	end
 end
 
 local PLAYER_ENTERING_WORLD = function()
 
 	handleCurrentState()
+	evaluateGroup()
 end
 
-local UNIT_AURA = function() 
-	-- Pala gaining Vengeance -> retri
-end
+local UNIT_AURA = function(self, unit) 
 
-local UNIT_SPELLCAST_START = function()
+	local index = 1
+	local buffName, _, _, _, _, _, _, source = UnitBuff(unit, index)
+	local changeDetected = false
 	
+	while buffName do
+		if not isUnitRoleDiscovered(source) then
+			local spec = BUFF_TO_SPEC[buffName]
+		
+			if spec then
+				nameToSpec[UnitName(unit)] = spec
+				changeDetected = true
+			end
+		end
+			
+		index = index + 1
+		buffName, _, _, _, _, _, _, source = UnitBuff(unit, index)
+	end
+	
+	if changeDetected then
+		evaluateGroup()
+	end
+end
+
+local CHILD_UNIT_AURA = function(self, unit)
+	
+	if self:GetAttribute("unit") ~= unit then
+		return
+	end
+	
+	local frameIndex = 1
+	
+	for _, buffName in ipairs(PLAYER_BUFF_ORDER) do
+		local _, _, icon, count, _, duration, expiration, source = UnitBuff(unit, buffName)
+		
+		if source and (source == "player" or UnitIsUnit(source, "player")) then
+			local frame = self.playerBuffs.frames[frameIndex] 
+			frame:SetAlpha(1)
+			frame.icon:SetTexture(icon)
+			
+			frame.cooldown:Show()
+			frame.cooldown:SetCooldown(expiration - duration, duration)
+			
+			if count == 0 then
+				frame.count:Hide()
+			else 
+				frame.count:Show()
+				frame.count:SetText(tostring(count))
+			end
+			
+			frameIndex = frameIndex + 1
+		end
+	end
+	
+	for index = frameIndex, 5 do
+		self.playerBuffs.frames[index]:SetAlpha(0)
+	end
+end
+
+local UNIT_SPELLCAST_SUCCEEDED = function(self, unit, spell)
+
+	local spec = SPELLCAST_TO_SPEC[spell]
+	
+	if spec then
+		nameToSpec[UnitName(unit)] = spec
+		
+		evaluateGroup()
+	end
+end
+
+local UNIT_HEALTH = function(self, unit)
+
+	if self:GetAttribute("unit") == unit then
+		self.healthBar:SetValue(UnitHealth(unit))
+	end
+end
+
+local UNIT_MAXHEALTH = function(self, unit)
+
+	if self:GetAttribute("unit") == unit then
+		self.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
+	end
+end
+
+local UNIT_MANA = function(self, unit)
+
+	if self:GetAttribute("unit") == unit then
+		self.powerBar:SetValue(UnitMana(unit))
+	end
+end
+
+local UNIT_MAXMANA = function(self, unit)
+
+	if self:GetAttribute("unit") == unit then
+		self.powerBar:SetMinMaxValues(0, UnitManaMax(unit))
+	end
 end
 
 -----------
@@ -292,10 +580,10 @@ do
         self[event](self, ...)
     end)    
 	
-	self.PARTY_MEMBERS_CHANGED = PARTY_MEMBERS_CHANGED
-	self.PLAYER_ENTERING_WORLD = PLAYER_ENTERING_WORLD
-	self.UNIT_AURA 			   = UNIT_AURA
-	self.UNIT_SPELLCAST_START  = UNIT_SPELLCAST_START
+	self.PARTY_MEMBERS_CHANGED    = PARTY_MEMBERS_CHANGED
+	self.PLAYER_ENTERING_WORLD    = PLAYER_ENTERING_WORLD
+	self.UNIT_AURA 			      = UNIT_AURA
+	self.UNIT_SPELLCAST_SUCCEEDED = UNIT_SPELLCAST_SUCCEEDED
 	
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -341,11 +629,32 @@ do
 	local self = CreateFrame("Frame", nil, AssiduityGroupsFrame)
 end
 
+local handleBuffFrameCreation = function()
+
+	local result = CreateFrame("Frame", nil, AssiduityGroupsFrame)
+	result:SetSize(AURA_SIZE, AURA_SIZE)
+	
+	local iconTexture = result:CreateTexture()
+	iconTexture:SetSize(AURA_SIZE, AURA_SIZE)
+	iconTexture:SetAllPoints()
+	result.icon = iconTexture
+	
+	local cooldown = CreateFrame("Cooldown", nil, result, "CooldownFrameTemplate")
+	cooldown:SetPoint("CENTER")
+	cooldown:SetReverse(true)
+	result.cooldown = cooldown
+	
+	local count = result:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+	count:SetPoint("BOTTOMRIGHT", result)
+	result.count = count
+	
+	return result
+end
 
 local handleFrameCreation = function(frameType)
 
 	local frameColors = {
-		["tank"] = { 1, 0, 0},
+		["tank"] = {1, 0, 0},
 		["rdps"] = {0, 0, 1},
 		["mdps"] = {1, 1, 0},
 		["heal"] = {0, 1, 0}
@@ -353,47 +662,105 @@ local handleFrameCreation = function(frameType)
 
 	local result = CreateFrame("Button", nil, AssiduityGroupsFrame, "SecureUnitButtonTemplate")
 	result:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+	result:RegisterForClicks("RightButtonDown")
+	--						 "MiddleButtonDown",
+	--						 "Button4Down",
+	--						 "Button5Down")
 	
-    result:SetAttribute("unit", "player")
-    result:SetAttribute("type", "spell")
+	result:SetAttribute("type", "macro")
+	result:SetAttribute("macrotext2", "/use Nature's Swiftness\n/use [@mouseover,exists] Healing Touch")
 	
-    result:SetAttribute("*helpbutton1", "heal1")
-    result:SetAttribute("*helpbutton2", "heal2")
+    --result:SetAttribute("helpbutton2", "heal2")
+    --result:SetAttribute("*helpbutton5", "heal5")
 	
-    result:SetAttribute("spell-heal1", "Rejuvenation")
-    result:SetAttribute("ctrl-spell-heal1", "Regrowth")
-    result:SetAttribute("shift-spell-heal1", "Wild Growth")
-    result:SetAttribute("alt-spell-heal1", "Rejuvenation")
+    --result:SetAttribute("spell-heal1", "Abolish Poison")
+    --result:SetAttribute("ctrl-spell-heal1", "Regrowth")
+    --result:SetAttribute("shift-spell-heal1", "Wild Growth")
+    --result:SetAttribute("alt-spell-heal1", "Rejuvenation")
+	--
+    --result:SetAttribute("spell-heal2", "Rejuvenation")
+    --result:SetAttribute("ctrl-spell-heal2", "Nourish")
+    --result:SetAttribute("shift-spell-heal2", "Remove Curse")
+    --result:SetAttribute("alt-spell-heal2", "Abolish Poison")
 	
-    result:SetAttribute("spell-heal2", "Lifebloom")
-    result:SetAttribute("ctrl-spell-heal2", "Nourish")
-    result:SetAttribute("shift-spell-heal2", "Remove Curse")
-    result:SetAttribute("alt-spell-heal2", "Abolish Poison")
+    --result:SetAttribute("spell-heal2", "Swiftmend")
+    --result:SetAttribute("*spell-heal2", "Nourish")
+	--
+    --result:SetAttribute("spell-heal5", "Wild Growth")
+	
+	result.UNIT_AURA 	  = CHILD_UNIT_AURA
+	result.UNIT_HEALTH 	  = UNIT_HEALTH
+	result.UNIT_MAXHEALTH = UNIT_MAXHEALTH
+	result.UNIT_MANA 	  = UNIT_MANA
+	result.UNIT_MAXMANA   = UNIT_MAXMANA
 	
 	local background = result:CreateTexture(nil, "BACKGROUND")
 	background:SetTexture(0, 0, 0, 0.4)
 	background:SetAllPoints()
 	
-	local healthBar = result:CreateTexture(nil, "BACKGROUND")
-	healthBar:SetTexture(unpack(frameColors[frameType]))
+	local healthBarBackground = result:CreateTexture(nil, "BACKGROUND")
+	healthBarBackground:SetTexture(0.2, 0.2, 0.2)
+	healthBarBackground:SetSize(BAR_WIDTH, HEALTH_BAR_HEIGHT)
+	healthBarBackground:SetPoint("TOPLEFT", 
+								 result, 
+								 "TOPLEFT",
+								 DISTANCE_TO_EDGE, 
+								 -DISTANCE_TO_EDGE)
+	
+	local healthBar = CreateFrame("StatusBar", nil, result) 
+	healthBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
+	healthBar:SetOrientation("HORIZONTAL")
+	healthBar:SetStatusBarColor(unpack(frameColors[frameType]))
 	healthBar:SetSize(BAR_WIDTH, HEALTH_BAR_HEIGHT)
 	healthBar:SetPoint("TOPLEFT", 
 					   result, 
 					   "TOPLEFT",
 					   DISTANCE_TO_EDGE, 
 					   -DISTANCE_TO_EDGE)
+	result.healthBar = healthBar
 				
 	
-	local powerBar = result:CreateTexture(nil, "BACKGROUND")
-	powerBar:SetTexture(0, 1, 1)
+	local powerBar = CreateFrame("StatusBar", nil, result) 
+	powerBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
+	powerBar:SetStatusBarColor(0, 1, 1)
+	powerBar:SetOrientation("HORIZONTAL")
 	powerBar:SetSize(BAR_WIDTH, POWER_BAR_HEIGHT)
 	powerBar:SetPoint("TOP", 
 					  healthBar, 
 					  "BOTTOM",
 					  0, 
-					  -1)
+					  -DISTANCE_TO_EDGE)
 	powerBar:SetAlpha(0.5)
+	result.powerBar = powerBar
 					  
+	local playerBuffs = CreateFrame("Frame", nil, result)
+	playerBuffs:SetSize(BAR_WIDTH, AURA_SIZE)
+	playerBuffs:SetPoint("TOP",
+						 powerBar,
+						 "BOTTOM",
+						 0,
+						 -DISTANCE_TO_EDGE)
+	
+	local playerBuff1 = handleBuffFrameCreation()
+	local playerBuff2 = handleBuffFrameCreation()
+	local playerBuff3 = handleBuffFrameCreation()
+	local playerBuff4 = handleBuffFrameCreation()
+	local playerBuff5 = handleBuffFrameCreation()
+	
+	playerBuff1:SetPoint("TOPLEFT", 
+						 playerBuffs,
+						 "TOPLEFT",
+						 DISTANCE_TO_EDGE,
+						 DISTANCE_TO_EDGE)
+	
+	position(playerBuff2, "RIGHT", playerBuff1)
+	position(playerBuff3, "RIGHT", playerBuff2)
+	position(playerBuff4, "RIGHT", playerBuff3)
+	position(playerBuff5, "RIGHT", playerBuff4)
+	
+	playerBuffs.frames = {playerBuff1, playerBuff2, playerBuff3, playerBuff4, playerBuff5}
+	
+	result.playerBuffs = playerBuffs
 	
 	--local portrait = result:CreateTexture(nil, "BACKGROUND")
 	--portrait:SetTexture(1, 1, 1)
@@ -404,6 +771,10 @@ local handleFrameCreation = function(frameType)
 	--				  -DISTANCE_TO_EDGE, 
 	--				  0)
 	--result.portrait = portrait
+	
+    result:SetScript("OnEvent", function(self, event, ...)
+        self[event](self, ...)
+    end)    
 	
 	return result
 end
@@ -416,21 +787,6 @@ end
 		point: The origin's side to which 'anchored' will be anchored to.
 		anchored: The frame that is getting anchored to 'origin' frame.
 ]]
-
-local OPPOSITE_POINT = {
-	["LEFT"]   = "RIGHT",
-	["RIGHT"]  = "LEFT",
-	["TOP"]    = "BOTTOM",
-	["BOTTOM"] = "TOP"
-}
-
-local position = function(anchored, point, origin)
-
-	local anchoredPoint = OPPOSITE_POINT[point]
-	anchored:SetPoint(anchoredPoint, origin, point)
-end
-
-rdps1  = handleFrameCreation("rdps")
 do
 	local self = AssiduityGroupsFrame
 
@@ -448,6 +804,7 @@ do
 	
 	-- Should have a maximum of 10 rdps
 
+	local rdps1  = handleFrameCreation("rdps")
 	local rdps2  = handleFrameCreation("rdps")
 	local rdps3  = handleFrameCreation("rdps")
 	local rdps4  = handleFrameCreation("rdps")

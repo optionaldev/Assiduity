@@ -7,7 +7,7 @@
     <Size x="30" y="30"/>
     <Anchors>
         <Anchor point="BOTTOMRIGHT" relativeTo="UIParent" relativePoint="BOTTOM">
-            <Offset x="-380" y="350"/>
+            <Offset x="-350" y="350"/>
         </Anchor>
     </Anchors>
     <Layers>

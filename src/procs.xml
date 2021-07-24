@@ -39,7 +39,7 @@
     <Size x="1" y="1"/>
     <Anchors>
         <Anchor point="BOTTOM" relativeTo="UIParent" relativePoint="BOTTOM">
-            <Offset x="-150" y="250"/>
+            <Offset x="-120" y="310"/>
         </Anchor>
     </Anchors>
     <Frames>

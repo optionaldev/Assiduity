@@ -29,5 +29,6 @@ src\binds.lua
 src\chat_filter.lua
 src\delete_items.lua
 src\equipment_flicker.lua
+src\macros.lua
 src\reagent_reminder.lua
 src\reposition_frames.lua

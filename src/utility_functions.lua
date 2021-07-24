@@ -1,5 +1,5 @@
 
-print("Loaded utility functions.")
+local select = select
 
 local table_insert = table.insert
 
@@ -22,7 +22,8 @@ AssiduityGetInstanceType = function()
 end
 
 AssiduityUnitAuraSource = function(unit, auraName)
-	return select(8, UnitAura(unit, auraName)) == unit
+	local source = select(8, UnitAura(unit, auraName))
+	return source == unit or (source == "player" and UnitIsUnit(unit, "player"))
 end
 
 AssiduityPrintTable = function(tbl)
