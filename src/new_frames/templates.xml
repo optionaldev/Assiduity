@@ -108,7 +108,7 @@
 <!-- Cast StatusBar -->
 
 <StatusBar name="AssiduityCastingBarTemplate" drawLayer="BORDER" virtual="true" hidden="false">
-    <Size x="100" y="15"/>
+    <Size x="120" y="15"/>
     <Layers>
         <Layer level="BACKGROUND">
             <Texture setAllPoints="true">
@@ -118,7 +118,7 @@
         <Layer level="ARTWORK">
             <FontString name="$parentText" inherits="GameFontHighlightSmall">
                 <Size>
-                    <AbsDimension x="80" y="16"/>
+                    <AbsDimension x="120" y="15"/>
                 </Size>
                 <Anchors>
                     <Anchor point="TOP">

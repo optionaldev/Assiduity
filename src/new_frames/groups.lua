@@ -303,6 +303,7 @@ local updateFrames = function(frameList, units)
 		local unit = units[index]
 	
 		if UnitExists(unit) then
+			frame.nameFontString:SetText(UnitName(unit))
 			frame:SetAttribute("unit", unit)
 			frame.healthBar:SetValue(UnitHealth(unit))
 			frame.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
@@ -719,6 +720,9 @@ local handleFrameCreation = function(frameType)
 					   -DISTANCE_TO_EDGE)
 	result.healthBar = healthBar
 				
+	local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+	nameFontString:SetPoint("CENTER", healthBar)
+	result.nameFontString = nameFontString
 	
 	local powerBar = CreateFrame("StatusBar", nil, result) 
 	powerBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
