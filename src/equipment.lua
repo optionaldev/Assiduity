@@ -55,22 +55,27 @@ end
 -- Events --
 ------------
 
-local PLAYER_ENTERING_WORLD = function()
+local UNIT_INVENTORY_CHANGED = function()
 	decideIfShowingHelm()
 end
 
-local UNIT_INVENTORY_CHANGED = function()
-	decideIfShowingHelm()
+local PLAYER_ENTERING_WORLD = function(self)
+
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
+	if UnitName("player") == "Talons" then
+		self.UNIT_INVENTORY_CHANGED = UNIT_INVENTORY_CHANGED
+		self:RegisterEvent("UNIT_INVENTORY_CHANGED")
+		decideIfShowingHelm()
+	end
 end
 
 do
 	local self = AssiduityEquipment
 	
 	self.PLAYER_ENTERING_WORLD = PLAYER_ENTERING_WORLD
-	self.UNIT_INVENTORY_CHANGED = UNIT_INVENTORY_CHANGED
 	
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("UNIT_INVENTORY_CHANGED")
 	
     self:SetScript( "OnEvent", function( self, event, ... )
         self[event]( self, ... )
@@ -82,10 +87,10 @@ ShowCloak(false)
 --------------------
 -- Slash Commands --
 --------------------
-SLASH_ASSIDUITYEQUIPMENTFLICKER1 = "/assiduitycloakflicker"
-SLASH_ASSIDUITYEQUIPMENTFLICKER2 = "/aef"
+SLASH_ASSIDUITYEQUIPMENT1 = "/assiduityequipment"
+SLASH_ASSIDUITYEQUIPMENT2 = "/ae"
 
-SlashCmdList["ASSIDUITYEQUIPMENTFLICKER"] = function ( msg )
+SlashCmdList["ASSIDUITYEQUIPMENT"] = function ( msg )
 
     if msg == "start" then
         startCloakFlicker()

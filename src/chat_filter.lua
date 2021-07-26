@@ -30,6 +30,13 @@ local filteringSubstrings = {}
 
 local temporaryFilters = {}
 
+--[[
+	This will hold all messages that have been detected to either
+	not reserve items or not reserve all items. Because these 
+	messages will be spammed, we want to print it once and that's it.
+]]
+local printedRecruitmentMessages = {}
+
 --[[ 
 	These will be read from the AssiduityWarmane module.
 ]]
@@ -54,7 +61,7 @@ local filteredMessages = {}
 ---------------------
 -- Local functions --
 ---------------------
-local function spamFilter(self, event, message, _, language, ...)
+local function spamFilter(self, event, message, author, language, ...)
 
 	if language == "Orcish" and GetZoneText() == "Dalaran" then
 		return true
@@ -82,6 +89,15 @@ local function spamFilter(self, event, message, _, language, ...)
 		-- Filter messages that contain substring. The 4th parameter (true) make string finding ignore regex syntax 
 		if string_find(lowercaseMessage, substring, 1, true) then
 			filteredMessages[lowercaseMessage] = true
+			if printedRecruitmentMessages[lowercaseMessage] == nil and 
+			   (string_find(lowercaseMessage, "nothing", 1, true) or
+			    string_find(lowercaseMessage, "free", 1, true) or
+			    string_find(lowercaseMessage, "roll", 1, true))
+			then
+				printedRecruitmentMessages[lowercaseMessage] = 1
+				print("\"" .. author .. "\" is looking for group:")
+				print(lowercaseMessage)
+			end
 			return true
 		end
 	end
