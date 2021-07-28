@@ -90,7 +90,9 @@ local function spamFilter(self, event, message, author, language, ...)
 		if string_find(lowercaseMessage, substring, 1, true) then
 			filteredMessages[lowercaseMessage] = true
 			if printedRecruitmentMessages[lowercaseMessage] == nil and 
-			   (string_find(lowercaseMessage, "nothing", 1, true) or
+			   (string_find(lowercaseMessage, "guild run", 1, true) or
+			    string_find(lowercaseMessage, "grun", 1, true) or
+			    string_find(lowercaseMessage, "nothing", 1, true) or
 			    string_find(lowercaseMessage, "free", 1, true) or
 			    string_find(lowercaseMessage, "roll", 1, true))
 			then

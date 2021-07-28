@@ -8,7 +8,7 @@ local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
 local UnitAuraSource = AssiduityUnitAuraSource
 
 local BUTTON_WIDTH = 70
-local BUTTON_HEIGHT = 40
+local BUTTON_HEIGHT = 50
 local SEPARATOR_SIZE = 7
 
 local DISTANCE_TO_EDGE = 1
@@ -18,6 +18,17 @@ local AURA_SIZE = 15
 
 local RAID_TANK_MIN_HP = 45000
 local PARTY_TANK_MIN_HP = 35000
+
+--local BACKGROUND_ALPHA   = 0.4
+--local HIDDEN_FRAME_ALPHA = 0.1
+--local PLAYER_BUFFS_ALPHA = 0.1
+--local POWER_BAR_ALPHA    = 0.5
+
+local BACKGROUND_ALPHA   = 0.15
+local OUT_OF_RANGE_ALPHA = 0.3
+local HIDDEN_FRAME_ALPHA = 0.03
+local PLAYER_BUFFS_ALPHA = 0
+local POWER_BAR_ALPHA    = 1
 
 local BAR_WIDTH = BUTTON_WIDTH - 2 * DISTANCE_TO_EDGE
 --local PORTRAIT_SIZE = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDGE
@@ -297,14 +308,33 @@ local evaluateBattleground = function()
 end
 
 
+local CLASS_TO_HEALTHCOLORS = {
+
+    ["DEATHKNIGHT"]	= { 0.77, 0.12, 0.23 },
+    ["DRUID"]		= { 1,    0.49, 0.04 },
+    ["HUNTER"]		= { 0.67, 0.83, 0.45 },
+    ["MAGE"]		= { 0.41, 0.8,  0.94 },
+    ["PALADIN"]		= { 0.96, 0.55, 0.73 },
+    ["PRIEST"]		= { 1,    1,    1    },
+    ["ROGUE"]		= { 1,    0.96, 0.41 },
+    ["SHAMAN"]	 	= { 0,    0.44, 0.87 },
+    ["WARLOCK"]		= { 0.58, 0.51, 0.79 },
+    ["WARRIOR"]		= { 0.78, 0.61, 0.43 }
+}
+
 local updateFrames = function(frameList, units)
 	
 	for index, frame in ipairs(frameList) do
 		local unit = units[index]
 	
 		if UnitExists(unit) then
+			local class = UnitLocalizedClass(unit)
+			local colors = CLASS_TO_HEALTHCOLORS[class]
+		
 			frame.nameFontString:SetText(UnitName(unit))
 			frame:SetAttribute("unit", unit)
+			
+			frame.healthBar:SetStatusBarColor(unpack(colors))
 			frame.healthBar:SetValue(UnitHealth(unit))
 			frame.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
 			frame.powerBar:SetValue(UnitMana(unit))
@@ -322,7 +352,7 @@ local updateFrames = function(frameList, units)
 			frame:UnregisterEvent("UNIT_MAXHEALTH")
 			frame:UnregisterEvent("UNIT_MANA")
 			frame:UnregisterEvent("UNIT_MAXMANA")
-			frame:SetAlpha(0.1)
+			frame:SetAlpha(HIDDEN_FRAME_ALPHA)
 		end
 	end
 end
@@ -418,6 +448,27 @@ local position = function(anchored, point, origin)
 
 	local anchoredPoint = OPPOSITE_POINT[point]
 	anchored:SetPoint(anchoredPoint, origin, point)
+end
+
+local handleRange = function(frames)
+
+	for _, frame in ipairs(frames) do
+		local unit = frame:GetAttribute("unit")
+		if unit and UnitInRange(unit) then
+		--if unit and IsSpellInRange(503, unit) then
+			frame:SetAlpha(1)
+		else 
+			frame:SetAlpha(OUT_OF_RANGE_ALPHA)
+		end
+	end
+end
+
+local onUpdate = function()
+
+	handleRange(tankFrames)
+	handleRange(healFrames)
+	handleRange(rdpsFrames)
+	handleRange(mdpsFrames)
 end
 
 ------------
@@ -519,7 +570,7 @@ local CHILD_UNIT_AURA = function(self, unit)
 	end
 	
 	for index = frameIndex, 5 do
-		self.playerBuffs.frames[index]:SetAlpha(0)
+		self.playerBuffs.frames[index]:SetAlpha(PLAYER_BUFFS_ALPHA)
 	end
 end
 
@@ -568,8 +619,8 @@ end
 do 
 	local self = AssiduityGroupsFrame
 	
-	self:SetSize(SEPARATOR_SIZE, 4 * BUTTON_HEIGHT + SEPARATOR_SIZE)
-	self:SetPoint("CENTER", UIParent, "CENTER", 0, -240)
+	self:SetSize(1, 1)
+	self:SetPoint("CENTER", UIParent, "CENTER", 240, -180)
 	
 	local background = self:CreateTexture(nil, "BACKGROUND")
 	background:SetTexture(0, 0, 0)
@@ -580,6 +631,7 @@ do
     self:SetScript("OnEvent", function(self, event, ...)
         self[event](self, ...)
     end)    
+	self:SetScript("OnUpdate", onUpdate)
 	
 	self.PARTY_MEMBERS_CHANGED    = PARTY_MEMBERS_CHANGED
 	self.PLAYER_ENTERING_WORLD    = PLAYER_ENTERING_WORLD
@@ -594,41 +646,41 @@ end
 	Create horizontal bar that separated mdps group from rdps group
 ]]
 
-local AssiduityGroupsFrameDpsSeparator = CreateFrame("Frame", nil, AssiduityGroupsFrame)
+-- local AssiduityGroupsFrameDpsSeparator = CreateFrame("Frame", nil, AssiduityGroupsFrame)
+-- 
+-- do 
+-- 	local self = AssiduityGroupsFrameDpsSeparator
+-- 	
+-- 	self:SetSize(BUTTON_WIDTH * 5, SEPARATOR_SIZE)
+-- 	self:SetPoint("RIGHT", 
+-- 				  AssiduityGroupsFrame, 
+-- 				  "LEFT")
+-- 	
+-- 	local background = self:CreateTexture(nil, "BACKGROUND")
+-- 	background:SetTexture(0, 0, 0)
+-- 	background:SetAllPoints()
+-- end
 
-do 
-	local self = AssiduityGroupsFrameDpsSeparator
-	
-	self:SetSize(BUTTON_WIDTH * 5, SEPARATOR_SIZE)
-	self:SetPoint("RIGHT", 
-				  AssiduityGroupsFrame, 
-				  "LEFT")
-	
-	local background = self:CreateTexture(nil, "BACKGROUND")
-	background:SetTexture(0, 0, 0)
-	background:SetAllPoints()
-end
+--local AssiduityGroupsFrameTankHealSeparator = CreateFrame("Frame", nil, AssiduityGroupsFrame)
+--
+--do 
+--	local self = AssiduityGroupsFrameTankHealSeparator
+--	
+--	self:SetSize(3 * BUTTON_WIDTH, SEPARATOR_SIZE)
+--	self:SetPoint("LEFT", 
+--				  AssiduityGroupsFrame, 
+--				  "RIGHT",
+--				  0,
+--				  BUTTON_HEIGHT)
+--	
+--	local background = self:CreateTexture(nil, "BACKGROUND")
+--	background:SetTexture(0, 0, 0)
+--	background:SetAllPoints()
+--end
 
-local AssiduityGroupsFrameTankHealSeparator = CreateFrame("Frame", nil, AssiduityGroupsFrame)
-
-do 
-	local self = AssiduityGroupsFrameTankHealSeparator
-	
-	self:SetSize(3 * BUTTON_WIDTH, SEPARATOR_SIZE)
-	self:SetPoint("LEFT", 
-				  AssiduityGroupsFrame, 
-				  "RIGHT",
-				  0,
-				  BUTTON_HEIGHT)
-	
-	local background = self:CreateTexture(nil, "BACKGROUND")
-	background:SetTexture(0, 0, 0)
-	background:SetAllPoints()
-end
-
-do 
-	local self = CreateFrame("Frame", nil, AssiduityGroupsFrame)
-end
+--do 
+--	local self = CreateFrame("Frame", nil, AssiduityGroupsFrame)
+--end
 
 local handleBuffFrameCreation = function()
 
@@ -655,10 +707,10 @@ end
 local handleFrameCreation = function(frameType)
 
 	local frameColors = {
-		["tank"] = {1, 0, 0},
-		["rdps"] = {0, 0, 1},
-		["mdps"] = {1, 1, 0},
-		["heal"] = {0, 1, 0}
+		["tank"] = {1, 0, 0, BACKGROUND_ALPHA},
+		["rdps"] = {0, 0, 1, BACKGROUND_ALPHA},
+		["mdps"] = {1, 1, 0, BACKGROUND_ALPHA},
+		["heal"] = {0, 1, 0, BACKGROUND_ALPHA}
 	}
 
 	local result = CreateFrame("Button", nil, AssiduityGroupsFrame, "SecureUnitButtonTemplate")
@@ -696,7 +748,7 @@ local handleFrameCreation = function(frameType)
 	result.UNIT_MAXMANA   = UNIT_MAXMANA
 	
 	local background = result:CreateTexture(nil, "BACKGROUND")
-	background:SetTexture(0, 0, 0, 0.4)
+	background:SetTexture(unpack(frameColors[frameType]))
 	background:SetAllPoints()
 	
 	local healthBarBackground = result:CreateTexture(nil, "BACKGROUND")
@@ -711,7 +763,6 @@ local handleFrameCreation = function(frameType)
 	local healthBar = CreateFrame("StatusBar", nil, result) 
 	healthBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
 	healthBar:SetOrientation("HORIZONTAL")
-	healthBar:SetStatusBarColor(unpack(frameColors[frameType]))
 	healthBar:SetSize(BAR_WIDTH, HEALTH_BAR_HEIGHT)
 	healthBar:SetPoint("TOPLEFT", 
 					   result, 
@@ -734,7 +785,7 @@ local handleFrameCreation = function(frameType)
 					  "BOTTOM",
 					  0, 
 					  -DISTANCE_TO_EDGE)
-	powerBar:SetAlpha(0.5)
+	powerBar:SetAlpha(POWER_BAR_ALPHA)
 	result.powerBar = powerBar
 					  
 	local playerBuffs = CreateFrame("Frame", nil, result)
@@ -799,66 +850,12 @@ do
 	local tank2 = handleFrameCreation("tank")
 	local tank3 = handleFrameCreation("tank")
 	
-	tank1:SetPoint("BOTTOMLEFT", AssiduityGroupsFrameTankHealSeparator, "TOPLEFT")
+	tank3:SetPoint("TOPLEFT", AssiduityGroupsFrame, "BOTTOMRIGHT")
 	
-	position(tank2, "RIGHT", tank1)
-	position(tank3, "RIGHT", tank2)
+	position(tank2, "LEFT", tank3)
+	position(tank1, "LEFT", tank2)
 	
 	tankFrames = { tank1, tank2, tank3 }
-	
-	-- Should have a maximum of 10 rdps
-
-	local rdps1  = handleFrameCreation("rdps")
-	local rdps2  = handleFrameCreation("rdps")
-	local rdps3  = handleFrameCreation("rdps")
-	local rdps4  = handleFrameCreation("rdps")
-	local rdps5  = handleFrameCreation("rdps")
-	local rdps6  = handleFrameCreation("rdps")
-	local rdps7  = handleFrameCreation("rdps")
-	local rdps8  = handleFrameCreation("rdps")
-	local rdps9  = handleFrameCreation("rdps")
-	local rdps10 = handleFrameCreation("rdps")
-	
-	rdpsFrames = { rdps1, rdps2, rdps3, rdps4, rdps5, rdps6, rdps7, rdps8, rdps9, rdps10 }
-	
-	rdps1:SetPoint("TOPRIGHT", AssiduityGroupsFrameDpsSeparator, "BOTTOMRIGHT")
-	
-	position(rdps2,  "LEFT",  rdps1)
-	position(rdps3,  "LEFT",  rdps2)
-	position(rdps4,  "LEFT",  rdps3)
-	position(rdps5,  "LEFT",  rdps4)
-	position(rdps6,  "BOTTOM", rdps1)
-	position(rdps7,  "BOTTOM", rdps2)
-	position(rdps8,  "BOTTOM", rdps3)
-	position(rdps9,  "BOTTOM", rdps4)
-	position(rdps10, "BOTTOM", rdps5)
-	
-	-- Should have a maximum of 10 mdps
-	local mdps1  = handleFrameCreation("mdps")
-	local mdps2  = handleFrameCreation("mdps")
-	local mdps3  = handleFrameCreation("mdps")
-	local mdps4  = handleFrameCreation("mdps")
-	local mdps5  = handleFrameCreation("mdps")
-	local mdps6  = handleFrameCreation("mdps")
-	local mdps7  = handleFrameCreation("mdps")
-	local mdps8  = handleFrameCreation("mdps")
-	local mdps9  = handleFrameCreation("mdps")
-	local mdps10 = handleFrameCreation("mdps")
-	
-	mdpsFrames = { mdps1, mdps2, mdps3, mdps4, mdps5, mdps6, mdps7, mdps8, mdps9, mdps10 }
-	
-	mdps1:SetPoint("BOTTOMRIGHT", AssiduityGroupsFrameDpsSeparator, "TOPRIGHT")
-	
-	position(mdps2,	 "LEFT", mdps1)
-	position(mdps3,  "LEFT", mdps2)
-	position(mdps4,  "LEFT", mdps3)
-	position(mdps5,  "LEFT", mdps4)
-	position(mdps6,  "TOP",  mdps1)
-	position(mdps7,  "TOP",  mdps2)
-	position(mdps8,  "TOP",  mdps3)
-	position(mdps9,  "TOP",  mdps4)
-	position(mdps10, "TOP",  mdps5)
-
 	
 	-- Usually there's 5, but might have more in Valithria encounter
 	local heal1  = handleFrameCreation("heal")
@@ -878,16 +875,67 @@ do
 		3 - 4 - 8
 		5 - 6 - 9
 	]]
-	heal1:SetPoint("TOPLEFT", AssiduityGroupsFrameTankHealSeparator, "BOTTOMLEFT")
+	position(heal1, "LEFT", tank1) 
+	position(heal2, "LEFT", heal1)
+	position(heal3, "LEFT", heal2)
+	position(heal4, "LEFT", heal3)
+	position(heal5, "LEFT", heal4)
+	position(heal6, "LEFT", heal5)
+	position(heal7, "LEFT", heal6)
+	position(heal8, "LEFT", heal7)
+	position(heal9, "LEFT", heal8)
 	
-	position(heal2,  "RIGHT",  heal1)
-	position(heal3,  "BOTTOM", heal1)
-	position(heal4,  "BOTTOM", heal2)
-	position(heal5,  "BOTTOM", heal3)
-	position(heal6,  "BOTTOM", heal4)
-	position(heal7,  "RIGHT",  heal2)
-	position(heal8,  "RIGHT",  heal4)
-	position(heal9,  "RIGHT",  heal6)
+	-- Should have a maximum of 10 rdps
+
+	local rdps1  = handleFrameCreation("rdps")
+	local rdps2  = handleFrameCreation("rdps")
+	local rdps3  = handleFrameCreation("rdps")
+	local rdps4  = handleFrameCreation("rdps")
+	local rdps5  = handleFrameCreation("rdps")
+	local rdps6  = handleFrameCreation("rdps")
+	local rdps7  = handleFrameCreation("rdps")
+	local rdps8  = handleFrameCreation("rdps")
+	local rdps9  = handleFrameCreation("rdps")
+	local rdps10 = handleFrameCreation("rdps")
+	
+	rdpsFrames = { rdps1, rdps2, rdps3, rdps4, rdps5, rdps6, rdps7, rdps8, rdps9, rdps10 }
+	
+	position(rdps1,  "BOTTOM", tank3)
+	position(rdps2,  "LEFT",   rdps1)
+	position(rdps3,  "LEFT",   rdps2)
+	position(rdps4,  "LEFT",   rdps3)
+	position(rdps5,  "LEFT",   rdps4)
+	position(rdps6,  "LEFT",   rdps5)
+	position(rdps7,  "LEFT",   rdps6)
+	position(rdps8,  "LEFT",   rdps7)
+	position(rdps9,  "LEFT",   rdps8)
+	position(rdps10, "LEFT",   rdps9)
+	
+	-- Should have a maximum of 10 mdps
+	local mdps1  = handleFrameCreation("mdps")
+	local mdps2  = handleFrameCreation("mdps")
+	local mdps3  = handleFrameCreation("mdps")
+	local mdps4  = handleFrameCreation("mdps")
+	local mdps5  = handleFrameCreation("mdps")
+	local mdps6  = handleFrameCreation("mdps")
+	local mdps7  = handleFrameCreation("mdps")
+	local mdps8  = handleFrameCreation("mdps")
+	local mdps9  = handleFrameCreation("mdps")
+	local mdps10 = handleFrameCreation("mdps")
+	
+	mdpsFrames = { mdps1, mdps2, mdps3, mdps4, mdps5, mdps6, mdps7, mdps8, mdps9, mdps10 }
+	
+	position(mdps1, "BOTTOM", rdps1)
+	position(mdps2,	 "LEFT",  mdps1)
+	position(mdps3,  "LEFT",  mdps2)
+	position(mdps4,  "LEFT",  mdps3)
+	position(mdps5,  "LEFT",  mdps4)
+	position(mdps6,  "LEFT",  mdps5)
+	position(mdps7,  "LEFT",  mdps6)
+	position(mdps8,  "LEFT",  mdps7)
+	position(mdps9,  "LEFT",  mdps8)
+	position(mdps10, "LEFT",  mdps9)
+
 end
 
 
