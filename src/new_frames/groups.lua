@@ -27,7 +27,7 @@ local PARTY_TANK_MIN_HP = 35000
 local BACKGROUND_ALPHA   = 0.15
 local OUT_OF_RANGE_ALPHA = 0.3
 local HIDDEN_FRAME_ALPHA = 0.03
-local PLAYER_BUFFS_ALPHA = 0
+local AURA_HIDDEN_ALPHA  = 0
 local POWER_BAR_ALPHA    = 1
 
 local BAR_WIDTH = BUTTON_WIDTH - 2 * DISTANCE_TO_EDGE
@@ -570,7 +570,35 @@ local CHILD_UNIT_AURA = function(self, unit)
 	end
 	
 	for index = frameIndex, 5 do
-		self.playerBuffs.frames[index]:SetAlpha(PLAYER_BUFFS_ALPHA)
+		self.playerBuffs.frames[index]:SetAlpha(AURA_HIDDEN_ALPHA)
+	end
+	
+	frameIndex = 1
+	
+	for debuffIndex = 1, 5 do 
+		local _, _, icon, count, _, duration, expiration, source = UnitDebuff(unit, debuffIndex)
+		
+		if icon then
+			local frame = self.debuffs.frames[frameIndex]
+			frame:SetAlpha(1)
+			frame.icon:SetTexture(icon)
+			
+			frame.cooldown:Show()
+			frame.cooldown:SetCooldown(expiration - duration, duration)
+			
+			if count == 0 then
+				frame.count:Hide()
+			else 
+				frame.count:Show()
+				frame.count:SetText(tostring(count))
+			end
+			
+			frameIndex = frameIndex + 1
+		end
+	end
+	
+	for index = frameIndex, 5 do
+		self.debuffs.frames[index]:SetAlpha(AURA_HIDDEN_ALPHA)
 	end
 end
 
@@ -682,7 +710,7 @@ end
 --	local self = CreateFrame("Frame", nil, AssiduityGroupsFrame)
 --end
 
-local handleBuffFrameCreation = function()
+local handleAuraFrameCreation = function()
 
 	local result = CreateFrame("Frame", nil, AssiduityGroupsFrame)
 	result:SetSize(AURA_SIZE, AURA_SIZE)
@@ -796,11 +824,11 @@ local handleFrameCreation = function(frameType)
 						 0,
 						 -DISTANCE_TO_EDGE)
 	
-	local playerBuff1 = handleBuffFrameCreation()
-	local playerBuff2 = handleBuffFrameCreation()
-	local playerBuff3 = handleBuffFrameCreation()
-	local playerBuff4 = handleBuffFrameCreation()
-	local playerBuff5 = handleBuffFrameCreation()
+	local playerBuff1 = handleAuraFrameCreation()
+	local playerBuff2 = handleAuraFrameCreation()
+	local playerBuff3 = handleAuraFrameCreation()
+	local playerBuff4 = handleAuraFrameCreation()
+	local playerBuff5 = handleAuraFrameCreation()
 	
 	playerBuff1:SetPoint("TOPLEFT", 
 						 playerBuffs,
@@ -816,6 +844,39 @@ local handleFrameCreation = function(frameType)
 	playerBuffs.frames = {playerBuff1, playerBuff2, playerBuff3, playerBuff4, playerBuff5}
 	
 	result.playerBuffs = playerBuffs
+	
+	
+	
+	-- Debuffs
+	
+	local debuffs = CreateFrame("Frame", nil, result)
+	debuffs:SetSize(BAR_WIDTH, AURA_SIZE)
+	debuffs:SetPoint("TOP",
+					 playerBuffs,
+					 "BOTTOM",
+					 0,
+					 -DISTANCE_TO_EDGE)
+	
+	local debuff1 = handleAuraFrameCreation()
+	local debuff2 = handleAuraFrameCreation()
+	local debuff3 = handleAuraFrameCreation()
+	local debuff4 = handleAuraFrameCreation()
+	local debuff5 = handleAuraFrameCreation()
+	
+	debuff1:SetPoint("TOPLEFT", 
+					 debuffs,
+					 "TOPLEFT",
+					 DISTANCE_TO_EDGE,
+					 DISTANCE_TO_EDGE)
+	
+	position(debuff2, "RIGHT", debuff1)
+	position(debuff3, "RIGHT", debuff2)
+	position(debuff4, "RIGHT", debuff3)
+	position(debuff5, "RIGHT", debuff4)
+	
+	debuffs.frames = {debuff1, debuff2, debuff3, debuff4, debuff5}
+	
+	result.debuffs = debuffs
 	
 	--local portrait = result:CreateTexture(nil, "BACKGROUND")
 	--portrait:SetTexture(1, 1, 1)
