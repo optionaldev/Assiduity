@@ -92,9 +92,7 @@ local function spamFilter(self, event, message, author, language, ...)
 			if printedRecruitmentMessages[lowercaseMessage] == nil and 
 			   (string_find(lowercaseMessage, "guild run", 1, true) or
 			    string_find(lowercaseMessage, "grun", 1, true) or
-			    string_find(lowercaseMessage, "nothing", 1, true) or
-			    string_find(lowercaseMessage, "free", 1, true) or
-			    string_find(lowercaseMessage, "roll", 1, true))
+			    string_find(lowercaseMessage, "guildrun", 1, true))
 			then
 				printedRecruitmentMessages[lowercaseMessage] = 1
 				print("\"" .. author .. "\" is looking for group:")
@@ -143,10 +141,10 @@ do
   
     self.ADDON_LOADED = ADDON_LOADED
     
-    self:RegisterEvent( "ADDON_LOADED" )
+    self:RegisterEvent("ADDON_LOADED")
     
-    self:SetScript( "OnEvent", function( self, event, ... )
-        self[event]( self, ... )
+    self:SetScript("OnEvent", function(self, event, ...)
+        self[event](self, ...)
     end )
 end
 

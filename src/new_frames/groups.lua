@@ -31,13 +31,9 @@ local AURA_HIDDEN_ALPHA  = 0
 local POWER_BAR_ALPHA    = 1
 
 local BAR_WIDTH = BUTTON_WIDTH - 2 * DISTANCE_TO_EDGE
---local PORTRAIT_SIZE = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDGE
-
---local BAR_HEIGHT = PORTRAIT_SIZE + 2 * DISTANCE_TO_EDGE
 
 -- Main frame that will also handle the events
 AssiduityGroupsFrame = CreateFrame("Frame", AssiduityGroupsFrame, UIParent)
---AssiduityGroupsFrame:Hide()
 
 --[[
 	If we already established a player's spec, aside from accounting
@@ -217,7 +213,7 @@ local applyBaseClasification = function(unit, tankMinHp)
 		if UnitAuraSource(unit, "Elemental Oath") then
 			table_insert(rdpsUnits, unit)
 			nameToSpec[name] = "Elemental"
-		elseif UnitPowerMax(unit) < 15000 then
+		elseif UnitAuraSource(unit, "Unleashed Rage") then
 			table_insert(mdpsUnits, unit)
 			nameToSpec[name] = "Enhancement"
 		else
@@ -454,11 +450,15 @@ local handleRange = function(frames)
 
 	for _, frame in ipairs(frames) do
 		local unit = frame:GetAttribute("unit")
-		if unit and UnitInRange(unit) then
-		--if unit and IsSpellInRange(503, unit) then
-			frame:SetAlpha(1)
+		if unit then
+			if UnitInRange(unit) then
+			--if unit and IsSpellInRange(503, unit) then
+				frame:SetAlpha(1)
+			else 
+				frame:SetAlpha(OUT_OF_RANGE_ALPHA)
+			end
 		else 
-			frame:SetAlpha(OUT_OF_RANGE_ALPHA)
+			frame:SetAlpha(0)
 		end
 	end
 end

@@ -49,7 +49,7 @@ end
 local ADDON_LOADED = function( self, addon )
 
     if addon == "Assiduity" then
-        self:UnregisterEvent( "ADDON_LOADED" )
+        self:UnregisterEvent("ADDON_LOADED")
 		
 		local name = UnitName("player")
 		if name == "Asymmetry" then
@@ -68,10 +68,10 @@ do
   
     self.ADDON_LOADED = ADDON_LOADED
     
-    self:RegisterEvent( "ADDON_LOADED" )
+    self:RegisterEvent("ADDON_LOADED")
     
-    self:SetScript( "OnEvent", function( self, event, ... )
-        self[event]( self, ... )
+    self:SetScript("OnEvent", function(self, event, ...)
+        self[event](self, ...)
     end )
 end
 
