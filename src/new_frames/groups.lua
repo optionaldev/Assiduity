@@ -325,6 +325,14 @@ local updateFrames = function(frameList, units)
 	
 		if UnitExists(unit) then
 			local class = UnitLocalizedClass(unit)
+			
+			if class == nil then
+				break
+			end
+			
+			if not CLASS_TO_HEALTHCOLORS[class] then
+				print("GROUPS: Found buggy class " .. class)
+			end
 			local colors = CLASS_TO_HEALTHCOLORS[class]
 		
 			frame.nameFontString:SetText(UnitName(unit))
@@ -427,6 +435,23 @@ printRaid = function()
 	print("Unclassified units:")
 	print("-------------------")
 	printUnitTable(unclassifiedUnits)
+end
+
+
+local handleAura = function(frame, icon, count, duration, expiration)
+	local frame = 
+	frame:SetAlpha(1)
+	frame.icon:SetTexture(icon)
+	
+	frame.cooldown:Show()
+	frame.cooldown:SetCooldown(expiration - duration, duration)
+	
+	if count and count > 1 then
+		frame.count:Show()
+		frame.count:SetText(tostring(count))
+	else 
+		frame.count:Hide()
+	end
 end
 
 local handleCurrentState = function()
@@ -552,18 +577,7 @@ local CHILD_UNIT_AURA = function(self, unit)
 		
 		if source and (source == "player" or UnitIsUnit(source, "player")) then
 			local frame = self.playerBuffs.frames[frameIndex] 
-			frame:SetAlpha(1)
-			frame.icon:SetTexture(icon)
-			
-			frame.cooldown:Show()
-			frame.cooldown:SetCooldown(expiration - duration, duration)
-			
-			if count == 0 then
-				frame.count:Hide()
-			else 
-				frame.count:Show()
-				frame.count:SetText(tostring(count))
-			end
+			handleAura(frame, icon, count, duration, expiration)
 			
 			frameIndex = frameIndex + 1
 		end
@@ -576,22 +590,11 @@ local CHILD_UNIT_AURA = function(self, unit)
 	frameIndex = 1
 	
 	for debuffIndex = 1, 5 do 
-		local _, _, icon, count, _, duration, expiration, source = UnitDebuff(unit, debuffIndex)
+		local _, _, icon, count, _, duration, expiration = UnitDebuff(unit, debuffIndex)
 		
 		if icon then
 			local frame = self.debuffs.frames[frameIndex]
-			frame:SetAlpha(1)
-			frame.icon:SetTexture(icon)
-			
-			frame.cooldown:Show()
-			frame.cooldown:SetCooldown(expiration - duration, duration)
-			
-			if count == 0 then
-				frame.count:Hide()
-			else 
-				frame.count:Show()
-				frame.count:SetText(tostring(count))
-			end
+			updateAura(frame, icon, count, duration, expiration)
 			
 			frameIndex = frameIndex + 1
 		end
