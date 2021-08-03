@@ -130,6 +130,11 @@ local OPPOSITE_POINT = {
 	["BOTTOM"] = "TOP"
 }
 
+local DEBUFFS_TO_IGNORE = {
+	["Chill of the Throne"] = 1,
+	["Exhaustion"] 			= 1,
+	["Weakened Soul"]		= 1
+}
 
 tankFrames = {}
 mdpsFrames = {}
@@ -439,7 +444,6 @@ end
 
 
 local handleAura = function(frame, icon, count, duration, expiration)
-	local frame = 
 	frame:SetAlpha(1)
 	frame.icon:SetTexture(icon)
 	
@@ -590,11 +594,11 @@ local CHILD_UNIT_AURA = function(self, unit)
 	frameIndex = 1
 	
 	for debuffIndex = 1, 5 do 
-		local _, _, icon, count, _, duration, expiration = UnitDebuff(unit, debuffIndex)
+		local name, _, icon, count, _, duration, expiration = UnitDebuff(unit, debuffIndex)
 		
-		if icon then
+		if icon and DEBUFFS_TO_IGNORE[name] == 1 then
 			local frame = self.debuffs.frames[frameIndex]
-			updateAura(frame, icon, count, duration, expiration)
+			handleAura(frame, icon, count, duration, expiration)
 			
 			frameIndex = frameIndex + 1
 		end

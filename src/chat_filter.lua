@@ -41,10 +41,12 @@ local printedRecruitmentMessages = {}
 	These will be read from the AssiduityWarmane module.
 ]]
 local GUILDS_TO_FILTER
+local HIGHLIGHT_MESSAGES
 local MARKET_IDENTIFIERS
 local MARKET_TO_FILTER
 local RESERVING_TO_FILTER
 local OTHER_FILTERS
+local TEMPORARY_FILTERS
 
 --[[
 	Keeps a list of messages that have been filtered so far. Sometimes
@@ -89,11 +91,7 @@ local function spamFilter(self, event, message, author, language, ...)
 		-- Filter messages that contain substring. The 4th parameter (true) make string finding ignore regex syntax 
 		if string_find(lowercaseMessage, substring, 1, true) then
 			filteredMessages[lowercaseMessage] = true
-			if printedRecruitmentMessages[lowercaseMessage] == nil and 
-			   (string_find(lowercaseMessage, "guild run", 1, true) or
-			    string_find(lowercaseMessage, "grun", 1, true) or
-			    string_find(lowercaseMessage, "guildrun", 1, true))
-			then
+			if HIGHLIGHT_MESSAGES[lowercaseMessage] then
 				printedRecruitmentMessages[lowercaseMessage] = 1
 				print("\"" .. author .. "\" is looking for group:")
 				print(lowercaseMessage)
@@ -109,10 +107,12 @@ local ADDON_LOADED = function( self, addon )
 
     if addon == "AssiduityWarmane" then
 		GUILDS_TO_FILTER    = Assiduity.GUILDS_TO_FILTER
+		HIGHLIGHT_MESSAGES  = Assiduity.HIGHLIGHT_MESSAGES
 		MARKET_IDENTIFIERS  = Assiduity.MARKET_IDENTIFIERS
 		MARKET_TO_FILTER    = Assiduity.MARKET_TO_FILTER
 		RESERVING_TO_FILTER = Assiduity.RESERVING_TO_FILTER
 		OTHER_FILTERS       = Assiduity.OTHER_FILTERS
+		TEMPORARY_FILTERS   = Assiduity.TEMPORARY_FILTERS
 		
 		self:UnregisterEvent("ADDON_LOADED")
 		
@@ -123,6 +123,10 @@ local ADDON_LOADED = function( self, addon )
 		end
 		
 		for _, value in ipairs(OTHER_FILTERS) do
+			table_insert(filteringSubstrings, value)
+		end
+		
+		for _, value in ipairs(TEMPORARY_FILTERS) do
 			table_insert(filteringSubstrings, value)
 		end
 		
