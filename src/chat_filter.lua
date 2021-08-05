@@ -65,6 +65,10 @@ local filteredMessages = {}
 ---------------------
 local function spamFilter(self, event, message, author, language, ...)
 
+	if author == UnitName("player") then
+		return false
+	end
+
 	if language == "Orcish" and GetZoneText() == "Dalaran" then
 		return true
 	end

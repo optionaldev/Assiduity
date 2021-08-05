@@ -159,6 +159,18 @@ unclassifiedUnits = {}
 -- Functions --
 ---------------
 
+local handleTableInsertion = function(tbl, unit) 
+
+	for index, existingUnit in ipairs(tbl) do
+		if UnitName(unit) < UnitName(existingUnit) then
+			table_insert(tbl, index, unit)
+			return
+		end
+	end
+	
+	table_insert(tbl, unit)
+end
+
 local isUnitRoleInTable = function(tbl, unit)
 	
 	for _, value in ipairs(tbl) do
@@ -190,46 +202,46 @@ local applyBaseClasification = function(unit, tankMinHp)
 	local name = UnitName(unit)
 	
 	if class == "MAGE" or class == "WARLOCK" or class == "HUNTER" then
-		table_insert(rdpsUnits, unit)
+		handleTableInsertion(rdpsUnits, unit)
 	elseif class == "ROGUE" then
-		table_insert(mdpsUnits, unit)
+		handleTableInsertion(mdpsUnits, unit)
 	elseif class == "DRUID" then
 		if UnitAura(unit, "Moonkin Form") then
-			table_insert(rdpsUnits, unit)
+			handleTableInsertion(rdpsUnits, unit)
 			nameToSpec[name] = "Balance"
 		elseif UnitAuraSource(unit, "Tree of Life") then
-			table_insert(healUnits, unit)
+			handleTableInsertion(healUnits, unit)
 			nameToSpec[name] = "Restoration"
 		elseif UnitHealthMax(unit) > tankMinHp then
-			table_insert(tankUnits, unit)
+			handleTableInsertion(tankUnits, unit)
 			nameToSpec[name] = "Feral"
 		else
 			table_insert(unclassifiedUnits, unit)
 		end
 	elseif class == "PALADIN" then
 		if UnitPowerMax(unit) > 15000 then
-			table_insert(healUnits, unit)
+			handleTableInsertion(healUnits, unit)
 			nameToSpec[name] = "Holy"
 		elseif UnitHealthMax(unit) > tankMinHp then
-			table_insert(tankUnits, unit)
+			handleTableInsertion(tankUnits, unit)
 			nameToSpec[name] = "Protection"
 		else
-			table_insert(mdpsUnits, unit)
+			handleTableInsertion(mdpsUnits, unit)
 			nameToSpec[name] = "Retribution"
 		end
 	elseif class == "SHAMAN" then
 		if UnitAuraSource(unit, "Elemental Oath") then
-			table_insert(rdpsUnits, unit)
+			handleTableInsertion(rdpsUnits, unit)
 			nameToSpec[name] = "Elemental"
 		elseif UnitAuraSource(unit, "Unleashed Rage") then
-			table_insert(mdpsUnits, unit)
+			handleTableInsertion(mdpsUnits, unit)
 			nameToSpec[name] = "Enhancement"
 		else
-			table_insert(healUnits, unit)
+			handleTableInsertion(healUnits, unit)
 			nameToSpec[name] = "Restoration"
 		end
 	elseif class == "WARRIOR" and UnitAura(unit, "Rampage") then
-		table_insert(mdpsUnits, unit)
+		handleTableInsertion(mdpsUnits, unit)
 	elseif class == "DEATHKNIGHT" or class == "WARRIOR" then
 		--[[
 			For DK, it's a bit more tricky because they can be Blood
@@ -237,13 +249,13 @@ local applyBaseClasification = function(unit, tankMinHp)
 			we deal with it.
 		]]
 		if UnitHealthMax(unit) > tankMinHp then
-			table_insert(tankUnits, unit)
+			handleTableInsertion(tankUnits, unit)
 		else 
-			table_insert(mdpsUnits, unit)
+			handleTableInsertion(mdpsUnits, unit)
 		end
 	elseif class == "PRIEST" then
 		if UnitAura(unit, "Shadowform") then
-			table_insert(rdpsUnits, unit)
+			handleTableInsertion(rdpsUnits, unit)
 			nameToSpec[name] = "Shadow"
 		else
 			--[[
@@ -268,13 +280,13 @@ local handleUnit = function(unit)
 			local role = specToRole[spec]
 			if role then
 				if role == "tank" then
-					table_insert(tankUnits, unit)
+					handleTableInsertion(tankUnits, unit)
 				elseif role == "rdps" then
-					table_insert(rdpsUnits, unit)
+					handleTableInsertion(rdpsUnits, unit)
 				elseif role == "mdps" then
-					table_insert(mdpsUnits, unit)
+					handleTableInsertion(mdpsUnits, unit)
 				elseif role == "heal" then
-					table_insert(healUnits, unit)
+					handleTableInsertion(healUnits, unit)
 				else 
 					print("inexistent role found \"" .. role .. "\"")
 				end
@@ -327,6 +339,10 @@ local CLASS_TO_HEALTHCOLORS = {
 }
 
 local updateFrames = function(frameList, units)
+	
+	local orderedFrameList = {}
+	
+	
 	
 	for index, frame in ipairs(frameList) do
 		local unit = units[index]
@@ -447,6 +463,7 @@ end
 
 
 local handleAura = function(frame, icon, count, duration, expiration)
+
 	frame:SetAlpha(1)
 	frame.icon:SetTexture(icon)
 	
@@ -753,12 +770,14 @@ local handleFrameCreation = function(frameType)
 
 	local result = CreateFrame("Button", nil, AssiduityGroupsFrame, "SecureUnitButtonTemplate")
 	result:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
-	result:RegisterForClicks("RightButtonDown")
+	result:RegisterForClicks("LeftButtonDown",
+							 "RightButtonDown")
 	--						 "MiddleButtonDown",
 	--						 "Button4Down",
 	--						 "Button5Down")
 	
 	result:SetAttribute("type", "macro")
+    result:SetAttribute("type1", "target")
 	result:SetAttribute("macrotext2", "/use Nature's Swiftness\n/use [@mouseover,exists] Healing Touch")
 	
     --result:SetAttribute("helpbutton2", "heal2")
@@ -968,19 +987,23 @@ do
 	local rdps8  = handleFrameCreation("rdps")
 	local rdps9  = handleFrameCreation("rdps")
 	local rdps10 = handleFrameCreation("rdps")
+	local rdps11 = handleFrameCreation("rdps")
+	local rdps12 = handleFrameCreation("rdps")
 	
-	rdpsFrames = { rdps1, rdps2, rdps3, rdps4, rdps5, rdps6, rdps7, rdps8, rdps9, rdps10 }
+	rdpsFrames = { rdps1, rdps2, rdps3, rdps4, rdps5, rdps6, rdps7, rdps8, rdps9, rdps10, rdps11, rdps12 }
 	
-	position(rdps1,  "BOTTOM", tank3)
+	position(rdps1,  "BOTTOM", heal1)
 	position(rdps2,  "LEFT",   rdps1)
-	position(rdps3,  "LEFT",   rdps2)
-	position(rdps4,  "LEFT",   rdps3)
-	position(rdps5,  "LEFT",   rdps4)
-	position(rdps6,  "LEFT",   rdps5)
-	position(rdps7,  "LEFT",   rdps6)
-	position(rdps8,  "LEFT",   rdps7)
+	position(rdps3,  "RIGHT",  rdps1)
+	position(rdps4,  "LEFT",   rdps2)
+	position(rdps5,  "RIGHT",  rdps3)
+	position(rdps6,  "LEFT",   rdps4)
+	position(rdps7,  "RIGHT",  rdps5)
+	position(rdps8,  "LEFT",   rdps6)
 	position(rdps9,  "LEFT",   rdps8)
 	position(rdps10, "LEFT",   rdps9)
+	position(rdps11, "LEFT",   rdps10)
+	position(rdps12, "LEFT",   rdps11)
 	
 	-- Should have a maximum of 10 mdps
 	local mdps1  = handleFrameCreation("mdps")
@@ -993,19 +1016,23 @@ do
 	local mdps8  = handleFrameCreation("mdps")
 	local mdps9  = handleFrameCreation("mdps")
 	local mdps10 = handleFrameCreation("mdps")
+	local mdps11 = handleFrameCreation("mdps")
+	local mdps12 = handleFrameCreation("mdps")
 	
-	mdpsFrames = { mdps1, mdps2, mdps3, mdps4, mdps5, mdps6, mdps7, mdps8, mdps9, mdps10 }
+	mdpsFrames = { mdps1, mdps2, mdps3, mdps4, mdps5, mdps6, mdps7, mdps8, mdps9, mdps10, mdps11, mdps12 }
 	
-	position(mdps1, "BOTTOM", rdps1)
-	position(mdps2,	 "LEFT",  mdps1)
-	position(mdps3,  "LEFT",  mdps2)
-	position(mdps4,  "LEFT",  mdps3)
-	position(mdps5,  "LEFT",  mdps4)
-	position(mdps6,  "LEFT",  mdps5)
-	position(mdps7,  "LEFT",  mdps6)
-	position(mdps8,  "LEFT",  mdps7)
-	position(mdps9,  "LEFT",  mdps8)
-	position(mdps10, "LEFT",  mdps9)
+	position(mdps1,  "BOTTOM", rdps1)
+	position(mdps2,	 "BOTTOM", rdps2)
+	position(mdps3,  "BOTTOM", rdps3)
+	position(mdps4,  "BOTTOM", rdps4)
+	position(mdps5,  "BOTTOM", rdps5)
+	position(mdps6,  "BOTTOM", rdps6)
+	position(mdps7,  "BOTTOM", rdps7)
+	position(mdps8,  "BOTTOM", rdps8)
+	position(mdps9,  "BOTTOM", rdps9)
+	position(mdps10, "BOTTOM", rdps10)
+	position(mdps11, "BOTTOM", rdps11)
+	position(mdps12, "BOTTOM", rdps12)
 
 end
 
