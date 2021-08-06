@@ -4,6 +4,7 @@
 ------------------------
 
 local table_insert = table.insert
+local table_sort   = table.sort
 local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
 local UnitAuraSource = AssiduityUnitAuraSource
 
@@ -342,7 +343,13 @@ local updateFrames = function(frameList, units)
 	
 	local orderedFrameList = {}
 	
+	for index = 1, #units do
+		table_insert(unorderedFrameList, frameList[index])
+	end
 	
+	table_sort(orderedFrameList, function(a, b) 
+		return a.position > b.position
+	end)
 	
 	for index, frame in ipairs(frameList) do
 		local unit = units[index]
@@ -759,7 +766,7 @@ local handleAuraFrameCreation = function(parent)
 	return result
 end
 
-local handleFrameCreation = function(frameType)
+local handleFrameCreation = function(frameType, framePosition)
 
 	local frameColors = {
 		["tank"] = {1, 0, 0, BACKGROUND_ALPHA},
@@ -921,6 +928,8 @@ local handleFrameCreation = function(frameType)
         self[event](self, ...)
     end)    
 	
+	result.position = framePosition
+	
 	return result
 end
 
@@ -936,9 +945,9 @@ do
 	local self = AssiduityGroupsFrame
 
 	-- Should have a maximum of 3 tanks
-	local tank1 = handleFrameCreation("tank")
-	local tank2 = handleFrameCreation("tank")
-	local tank3 = handleFrameCreation("tank")
+	local tank1 = handleFrameCreation("tank", 1)
+	local tank2 = handleFrameCreation("tank", 2)
+	local tank3 = handleFrameCreation("tank", 3)
 	
 	tank3:SetPoint("TOPLEFT", AssiduityGroupsFrame, "BOTTOMRIGHT")
 	
@@ -948,15 +957,15 @@ do
 	tankFrames = { tank1, tank2, tank3 }
 	
 	-- Usually there's 5, but might have more in Valithria encounter
-	local heal1  = handleFrameCreation("heal")
-	local heal2  = handleFrameCreation("heal")
-	local heal3  = handleFrameCreation("heal")
-	local heal4  = handleFrameCreation("heal")
-	local heal5  = handleFrameCreation("heal")
-	local heal6  = handleFrameCreation("heal")
-	local heal7  = handleFrameCreation("heal")
-	local heal8  = handleFrameCreation("heal")
-	local heal9  = handleFrameCreation("heal")
+	local heal1  = handleFrameCreation("heal", 9)
+	local heal2  = handleFrameCreation("heal", 8)
+	local heal3  = handleFrameCreation("heal", 7)
+	local heal4  = handleFrameCreation("heal", 6)
+	local heal5  = handleFrameCreation("heal", 5)
+	local heal6  = handleFrameCreation("heal", 4)
+	local heal7  = handleFrameCreation("heal", 3)
+	local heal8  = handleFrameCreation("heal", 2)
+	local heal9  = handleFrameCreation("heal", 1)
 	
 	healFrames = { heal1, heal2, heal3, heal4, heal5, heal6, heal7, heal8, heal9 }
 	
@@ -977,18 +986,18 @@ do
 	
 	-- Should have a maximum of 10 rdps
 
-	local rdps1  = handleFrameCreation("rdps")
-	local rdps2  = handleFrameCreation("rdps")
-	local rdps3  = handleFrameCreation("rdps")
-	local rdps4  = handleFrameCreation("rdps")
-	local rdps5  = handleFrameCreation("rdps")
-	local rdps6  = handleFrameCreation("rdps")
-	local rdps7  = handleFrameCreation("rdps")
-	local rdps8  = handleFrameCreation("rdps")
-	local rdps9  = handleFrameCreation("rdps")
-	local rdps10 = handleFrameCreation("rdps")
-	local rdps11 = handleFrameCreation("rdps")
-	local rdps12 = handleFrameCreation("rdps")
+	local rdps1  = handleFrameCreation("rdps", 9)
+	local rdps2  = handleFrameCreation("rdps", 8)
+	local rdps3  = handleFrameCreation("rdps", 10)
+	local rdps4  = handleFrameCreation("rdps", 7)
+	local rdps5  = handleFrameCreation("rdps", 11)
+	local rdps6  = handleFrameCreation("rdps", 6)
+	local rdps7  = handleFrameCreation("rdps", 12)
+	local rdps8  = handleFrameCreation("rdps", 5)
+	local rdps9  = handleFrameCreation("rdps", 4)
+	local rdps10 = handleFrameCreation("rdps", 3)
+	local rdps11 = handleFrameCreation("rdps", 2)
+	local rdps12 = handleFrameCreation("rdps", 1)
 	
 	rdpsFrames = { rdps1, rdps2, rdps3, rdps4, rdps5, rdps6, rdps7, rdps8, rdps9, rdps10, rdps11, rdps12 }
 	
@@ -1006,18 +1015,18 @@ do
 	position(rdps12, "LEFT",   rdps11)
 	
 	-- Should have a maximum of 10 mdps
-	local mdps1  = handleFrameCreation("mdps")
-	local mdps2  = handleFrameCreation("mdps")
-	local mdps3  = handleFrameCreation("mdps")
-	local mdps4  = handleFrameCreation("mdps")
-	local mdps5  = handleFrameCreation("mdps")
-	local mdps6  = handleFrameCreation("mdps")
-	local mdps7  = handleFrameCreation("mdps")
-	local mdps8  = handleFrameCreation("mdps")
-	local mdps9  = handleFrameCreation("mdps")
-	local mdps10 = handleFrameCreation("mdps")
-	local mdps11 = handleFrameCreation("mdps")
-	local mdps12 = handleFrameCreation("mdps")
+	local mdps1  = handleFrameCreation("mdps", 9)
+	local mdps2  = handleFrameCreation("mdps", 8)
+	local mdps3  = handleFrameCreation("mdps", 10)
+	local mdps4  = handleFrameCreation("mdps", 7)
+	local mdps5  = handleFrameCreation("mdps", 11)
+	local mdps6  = handleFrameCreation("mdps", 6)
+	local mdps7  = handleFrameCreation("mdps", 12)
+	local mdps8  = handleFrameCreation("mdps", 5)
+	local mdps9  = handleFrameCreation("mdps", 4)
+	local mdps10 = handleFrameCreation("mdps", 3)
+	local mdps11 = handleFrameCreation("mdps", 2)
+	local mdps12 = handleFrameCreation("mdps", 1)
 	
 	mdpsFrames = { mdps1, mdps2, mdps3, mdps4, mdps5, mdps6, mdps7, mdps8, mdps9, mdps10, mdps11, mdps12 }
 	
