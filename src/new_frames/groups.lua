@@ -20,19 +20,19 @@ local AURA_SIZE = 15
 local RAID_TANK_MIN_HP = 45000
 local PARTY_TANK_MIN_HP = 35000
 
---local AURA_HIDDEN_ALPHA  	  = 1
---local BACKGROUND_ALPHA   	  = 1
---local HIDDEN_FRAME_ALPHA 	  = 1
---local NON_EXISTING_UNIT_ALPHA = 1
---local OUT_OF_RANGE_ALPHA 	  = 1
---local POWER_BAR_ALPHA    	  = 1
+local AURA_HIDDEN_ALPHA  	  = 1
+local BACKGROUND_ALPHA   	  = 1
+local HIDDEN_FRAME_ALPHA 	  = 1
+local NON_EXISTING_UNIT_ALPHA = 1
+local OUT_OF_RANGE_ALPHA 	  = 1
+local POWER_BAR_ALPHA    	  = 1
 
-local AURA_HIDDEN_ALPHA  	    = 0
-local BACKGROUND_ALPHA   	    = 0.15
-local HIDDEN_FRAME_ALPHA 	    = 0.03
-local NON_EXISTING_UNIT_ALPHA   = 0
-local OUT_OF_RANGE_ALPHA 	    = 0.3
-local POWER_BAR_ALPHA    	    = 1
+--local AURA_HIDDEN_ALPHA  	    = 0
+--local BACKGROUND_ALPHA   	    = 0.15
+--local HIDDEN_FRAME_ALPHA 	    = 0.03
+--local NON_EXISTING_UNIT_ALPHA   = 0
+--local OUT_OF_RANGE_ALPHA 	    = 0.3
+--local POWER_BAR_ALPHA    	    = 1
 
 local BAR_WIDTH = BUTTON_WIDTH - 2 * DISTANCE_TO_EDGE
 
@@ -650,6 +650,11 @@ end
 local UNIT_HEALTH = function(self, unit)
 
 	if self:GetAttribute("unit") == unit then
+		if UnitIsDeadOrGhost(unit) then
+			self.deadFontString:SetAlpha(1)
+		else 
+			self.deadFontString:SetAlpha(0)
+		end
 		self.healthBar:SetValue(UnitHealth(unit))
 	end
 end
@@ -703,46 +708,6 @@ do
 	self:RegisterEvent("PARTY_MEMBERS_CHANGED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
-
---[[
-	Create horizontal bar that separated mdps group from rdps group
-]]
-
--- local AssiduityGroupsFrameDpsSeparator = CreateFrame("Frame", nil, AssiduityGroupsFrame)
--- 
--- do 
--- 	local self = AssiduityGroupsFrameDpsSeparator
--- 	
--- 	self:SetSize(BUTTON_WIDTH * 5, SEPARATOR_SIZE)
--- 	self:SetPoint("RIGHT", 
--- 				  AssiduityGroupsFrame, 
--- 				  "LEFT")
--- 	
--- 	local background = self:CreateTexture(nil, "BACKGROUND")
--- 	background:SetTexture(0, 0, 0)
--- 	background:SetAllPoints()
--- end
-
---local AssiduityGroupsFrameTankHealSeparator = CreateFrame("Frame", nil, AssiduityGroupsFrame)
---
---do 
---	local self = AssiduityGroupsFrameTankHealSeparator
---	
---	self:SetSize(3 * BUTTON_WIDTH, SEPARATOR_SIZE)
---	self:SetPoint("LEFT", 
---				  AssiduityGroupsFrame, 
---				  "RIGHT",
---				  0,
---				  BUTTON_HEIGHT)
---	
---	local background = self:CreateTexture(nil, "BACKGROUND")
---	background:SetTexture(0, 0, 0)
---	background:SetAllPoints()
---end
-
---do 
---	local self = CreateFrame("Frame", nil, AssiduityGroupsFrame)
---end
 
 local handleAuraFrameCreation = function(parent)
 
@@ -839,6 +804,7 @@ local handleFrameCreation = function(frameType, framePosition)
 	nameFontString:SetPoint("CENTER", healthBar)
 	result.nameFontString = nameFontString
 	
+	
 	local powerBar = CreateFrame("StatusBar", nil, result) 
 	powerBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
 	powerBar:SetStatusBarColor(0, 1, 1)
@@ -881,7 +847,13 @@ local handleFrameCreation = function(frameType, framePosition)
 	
 	result.playerBuffs = playerBuffs
 	
+	-- Shows when someone is dead for better visibility
 	
+	local deadFontString = playerBuffs:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+	deadFontString:SetPoint("CENTER", playerBuffs)
+	deadFontString:SetText("DEAD")
+	deadFontString:SetAlpha(0)
+	result.deadFontString = deadFontString
 	
 	-- Debuffs
 	
