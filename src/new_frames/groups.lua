@@ -140,21 +140,22 @@ local DEBUFFS_TO_IGNORE = {
 	["Weakened Soul"]		= 1
 }
 
-tankFrames = {}
-mdpsFrames = {}
-rdpsFrames = {}
-healFrames = {}
+local tankFrames = {}
+local mdpsFrames = {}
+local rdpsFrames = {}
+local healFrames = {}
+local uncategorizedFrames = {}
 
-tankUnits = {}
-mdpsUnits = {}
-rdpsUnits = {}
-healUnits = {}
+local tankUnits = {}
+local mdpsUnits = {}
+local rdpsUnits = {}
+local healUnits = {}
 
 --[[ 
 	Here we put units that we can't classify based on hp / mana / passive buffs
 	We need to wait for them to cast some spell specific for their talents (spec)
 ]] 
-unclassifiedUnits = {}
+local unclassifiedUnits = {}
 
 ---------------
 -- Functions --
@@ -217,7 +218,7 @@ local applyBaseClasification = function(unit, tankMinHp)
 			handleTableInsertion(tankUnits, unit)
 			nameToSpec[name] = "Feral"
 		else
-			table_insert(unclassifiedUnits, unit)
+			handleTableInsertion(unclassifiedUnits, unit)
 		end
 	elseif class == "PALADIN" then
 		if UnitPowerMax(unit) > 15000 then
@@ -262,7 +263,7 @@ local applyBaseClasification = function(unit, tankMinHp)
 			--[[
 				Here could be disc or holy or an SP not in shadow form currently.
 			]]		
-			table_insert(unclassifiedUnits, unit)
+			handleTableInsertion(unclassifiedUnits, unit)
 		end
 	else 
 		print("unit \"" .. unit .. "\" not part of any clasification")
@@ -420,6 +421,7 @@ local evaluateGroup = function()
 	updateFrames(healFrames, healUnits)
 	updateFrames(mdpsFrames, mdpsUnits)
 	updateFrames(rdpsFrames, rdpsUnits)
+	updateFrames(uncategorizedUnits, rdpsUnits)
 end
 
 local printUnitTable = function(tbl) 
@@ -1014,6 +1016,31 @@ do
 	position(mdps10, "BOTTOM", rdps10)
 	position(mdps11, "BOTTOM", rdps11)
 	position(mdps12, "BOTTOM", rdps12)
+	
+	
+	-- We have these frames to put uncategorized players in and try to find patterns to categorize
+	
+	local uncategorized1 = handleFrameCreation("mdps", 9)
+	local uncategorized2 = handleFrameCreation("mdps", 8)
+	local uncategorized3 = handleFrameCreation("mdps", 7)
+	local uncategorized4 = handleFrameCreation("mdps", 6)
+	local uncategorized5 = handleFrameCreation("mdps", 5)
+	local uncategorized6 = handleFrameCreation("mdps", 4)
+	local uncategorized7 = handleFrameCreation("mdps", 3)
+	local uncategorized8 = handleFrameCreation("mdps", 2)
+	local uncategorized9 = handleFrameCreation("mdps", 1)
+	
+	uncategorizedFrames = { uncategorized1, uncategorized2, uncategorized3, uncategorized4, uncategorized5, uncategorized7, uncategorized8, uncategorized9 }
+	
+	position(uncategorized1, "TOP",  tank1)
+	position(uncategorized2, "LEFT", uncategorized1)
+	position(uncategorized3, "LEFT", uncategorized2)
+	position(uncategorized4, "LEFT", uncategorized3)
+	position(uncategorized5, "LEFT", uncategorized4)
+	position(uncategorized6, "LEFT", uncategorized5)
+	position(uncategorized7, "LEFT", uncategorized6)
+	position(uncategorized8, "LEFT", uncategorized7)
+	position(uncategorized9, "LEFT", uncategorized8)
 
 end
 
