@@ -4,6 +4,7 @@
 ------------------------
 
 local table_insert = table.insert
+local table_remove = table.remove
 local table_sort   = table.sort
 local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
 local UnitAuraSource = AssiduityUnitAuraSource
@@ -20,19 +21,19 @@ local AURA_SIZE = 15
 local RAID_TANK_MIN_HP = 45000
 local PARTY_TANK_MIN_HP = 35000
 
-local AURA_HIDDEN_ALPHA  	  = 1
-local BACKGROUND_ALPHA   	  = 1
-local HIDDEN_FRAME_ALPHA 	  = 1
-local NON_EXISTING_UNIT_ALPHA = 1
-local OUT_OF_RANGE_ALPHA 	  = 1
-local POWER_BAR_ALPHA    	  = 1
+--local AURA_HIDDEN_ALPHA  	  = 1
+--local BACKGROUND_ALPHA   	  = 1
+--local HIDDEN_FRAME_ALPHA 	  = 1
+--local NON_EXISTING_UNIT_ALPHA = 1
+--local OUT_OF_RANGE_ALPHA 	  = 1
+--local POWER_BAR_ALPHA    	  = 1
 
---local AURA_HIDDEN_ALPHA  	    = 0
---local BACKGROUND_ALPHA   	    = 0.15
---local HIDDEN_FRAME_ALPHA 	    = 0.03
---local NON_EXISTING_UNIT_ALPHA   = 0
---local OUT_OF_RANGE_ALPHA 	    = 0.3
---local POWER_BAR_ALPHA    	    = 1
+local AURA_HIDDEN_ALPHA  	    = 0
+local BACKGROUND_ALPHA   	    = 0.15
+local HIDDEN_FRAME_ALPHA 	    = 0.03
+local NON_EXISTING_UNIT_ALPHA   = 0
+local OUT_OF_RANGE_ALPHA 	    = 0.3
+local POWER_BAR_ALPHA    	    = 1
 
 local BAR_WIDTH = BUTTON_WIDTH - 2 * DISTANCE_TO_EDGE
 
@@ -144,7 +145,7 @@ local tankFrames = {}
 local mdpsFrames = {}
 local rdpsFrames = {}
 local healFrames = {}
-local uncategorizedFrames = {}
+local unclassifiedFrames = {}
 
 local tankUnits = {}
 local mdpsUnits = {}
@@ -270,6 +271,16 @@ local applyBaseClasification = function(unit, tankMinHp)
 	end
 end
 
+local removeFromUnclassified = function(unit)
+	
+	for index, unclassifiedUnit in ipairs(unclassifiedUnits) do
+		if unclassifiedUnit == unit then
+			table_remove(unclassifiedUnits, index)
+			return
+		end
+	end
+end
+
 local handleUnit = function(unit)
 
 	if not UnitExists(unit) then
@@ -281,6 +292,7 @@ local handleUnit = function(unit)
 		if spec then
 			local role = specToRole[spec]
 			if role then
+				removeFromUnclassified(unit)
 				if role == "tank" then
 					handleTableInsertion(tankUnits, unit)
 				elseif role == "rdps" then
@@ -345,7 +357,7 @@ local updateFrames = function(frameList, units)
 	local orderedFrameList = {}
 	
 	for index = 1, #units do
-		table_insert(unorderedFrameList, frameList[index])
+		table_insert(orderedFrameList, frameList[index])
 	end
 	
 	table_sort(orderedFrameList, function(a, b) 
@@ -421,7 +433,7 @@ local evaluateGroup = function()
 	updateFrames(healFrames, healUnits)
 	updateFrames(mdpsFrames, mdpsUnits)
 	updateFrames(rdpsFrames, rdpsUnits)
-	updateFrames(uncategorizedUnits, rdpsUnits)
+	updateFrames(unclassifiedFrames, unclassifiedUnits)
 end
 
 local printUnitTable = function(tbl) 
@@ -735,11 +747,12 @@ end
 
 local handleFrameCreation = function(frameType, framePosition)
 
-	local frameColors = {
-		["tank"] = {1, 0, 0, BACKGROUND_ALPHA},
-		["rdps"] = {0, 0, 1, BACKGROUND_ALPHA},
-		["mdps"] = {1, 1, 0, BACKGROUND_ALPHA},
-		["heal"] = {0, 1, 0, BACKGROUND_ALPHA}
+	local frameColors = {          
+		["tank"]         = {1,   0,   0,   BACKGROUND_ALPHA},
+		["rdps"]         = {0,   0,   1,   BACKGROUND_ALPHA},
+		["mdps"]         = {1,   1,   0,   BACKGROUND_ALPHA},
+		["heal"]         = {0,   1,   0,   BACKGROUND_ALPHA},
+		["unclassified"] = {0.3, 0.3, 0.3, BACKGROUND_ALPHA},
 	}
 
 	local result = CreateFrame("Button", nil, AssiduityGroupsFrame, "SecureUnitButtonTemplate")
@@ -1018,30 +1031,29 @@ do
 	position(mdps12, "BOTTOM", rdps12)
 	
 	
-	-- We have these frames to put uncategorized players in and try to find patterns to categorize
+	-- We have these frames to put unclassified players in and try to find patterns to categorize
 	
-	local uncategorized1 = handleFrameCreation("mdps", 9)
-	local uncategorized2 = handleFrameCreation("mdps", 8)
-	local uncategorized3 = handleFrameCreation("mdps", 7)
-	local uncategorized4 = handleFrameCreation("mdps", 6)
-	local uncategorized5 = handleFrameCreation("mdps", 5)
-	local uncategorized6 = handleFrameCreation("mdps", 4)
-	local uncategorized7 = handleFrameCreation("mdps", 3)
-	local uncategorized8 = handleFrameCreation("mdps", 2)
-	local uncategorized9 = handleFrameCreation("mdps", 1)
+	local unclassified1 = handleFrameCreation("unclassified", 9)
+	local unclassified2 = handleFrameCreation("unclassified", 8)
+	local unclassified3 = handleFrameCreation("unclassified", 7)
+	local unclassified4 = handleFrameCreation("unclassified", 6)
+	local unclassified5 = handleFrameCreation("unclassified", 5)
+	local unclassified6 = handleFrameCreation("unclassified", 4)
+	local unclassified7 = handleFrameCreation("unclassified", 3)
+	local unclassified8 = handleFrameCreation("unclassified", 2)
+	local unclassified9 = handleFrameCreation("unclassified", 1)
 	
-	uncategorizedFrames = { uncategorized1, uncategorized2, uncategorized3, uncategorized4, uncategorized5, uncategorized7, uncategorized8, uncategorized9 }
+	unclassifiedFrames = { unclassified1, unclassified2, unclassified3, unclassified4, unclassified5, unclassified6, unclassified7, unclassified8, unclassified9 }
 	
-	position(uncategorized1, "TOP",  tank1)
-	position(uncategorized2, "LEFT", uncategorized1)
-	position(uncategorized3, "LEFT", uncategorized2)
-	position(uncategorized4, "LEFT", uncategorized3)
-	position(uncategorized5, "LEFT", uncategorized4)
-	position(uncategorized6, "LEFT", uncategorized5)
-	position(uncategorized7, "LEFT", uncategorized6)
-	position(uncategorized8, "LEFT", uncategorized7)
-	position(uncategorized9, "LEFT", uncategorized8)
-
+	position(unclassified1, "TOP",  tank1)
+	position(unclassified2, "LEFT", unclassified1)
+	position(unclassified3, "LEFT", unclassified2)
+	position(unclassified4, "LEFT", unclassified3)
+	position(unclassified5, "LEFT", unclassified4)
+	position(unclassified6, "LEFT", unclassified5)
+	position(unclassified7, "LEFT", unclassified6)
+	position(unclassified8, "LEFT", unclassified7)
+	position(unclassified9, "LEFT", unclassified8)
 end
 
 
