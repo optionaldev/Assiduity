@@ -172,7 +172,6 @@ do  --- AssiduityPlayer
         end
     end
 	
-
     local UNIT_MANA = function( self, unit )
         
         if unit == self.unit then
@@ -191,24 +190,15 @@ do  --- AssiduityPlayer
 	
 		self:RegisterEvent( "UNIT_AURA" )
 		_, self.class = UnitClass( self.unit )
-		
-		--self.cpF:register()
-		--self.nameF:update()
 		self.healthSB:register()
 		self.powerSB:register()
 		
-		--self.iconF:updateBuffless()
-		--self.targetF:register()
-		
-		--self:updateAuraFrames()
 		self:updateAura()
 	end
 	
 	local unregister = function( self )
-		--self.cpF:unregister()
 		self.healthSB:unregister()
 		self.powerSB:unregister()
-		--self.targetF:unregister()
 		self:UnregisterEvent( "UNIT_AURA" )
 	end
 	
@@ -231,20 +221,15 @@ do  --- AssiduityPlayer
 			"Wrath(Rank 1)"     --- adjust
 		}
         
-        -- self.PARTY_LEADER_CHANGED   = NPL_PARTY_LEADER_CHANGED
-        self.PLAYER_ENTERING_WORLD  = PLAYER_ENTERING_WORLD
-        -- self.PLAYER_REGEN_DISABLED  = NPL_PLAYER_REGEN_DISABLED 
-        -- self.PLAYER_REGEN_ENABLED   = NPL_PLAYER_REGEN_ENABLED 
-        self.UNIT_AURA              = UNIT_AURA  
-        self.UNIT_ENERGY            = UNIT_ENERGY
-        self.UNIT_MANA            = UNIT_MANA
+        self.PLAYER_ENTERING_WORLD = PLAYER_ENTERING_WORLD
+        self.UNIT_AURA             = UNIT_AURA  
+        self.UNIT_ENERGY           = UNIT_ENERGY
+        self.UNIT_MANA             = UNIT_MANA
         
         _, self.class     = UnitClass( "player" )
         self.string       = "UNIT_FRAME_LARGE"
         self.unit         = "player"
         self.updateAura   = updateAura
-
-        -- self.updateLeader = NPL_updateLeader
         
         self:SetAttribute( "unit", "player" )
         self:SetAttribute( "type", "macro" )
@@ -257,10 +242,7 @@ do  --- AssiduityPlayer
         end )
         
         self:RegisterForClicks( "AnyUp" )
-        -- self:RegisterEvent( "PARTY_LEADER_CHANGED" )
         self:RegisterEvent( "PLAYER_ENTERING_WORLD" )
-        -- self:RegisterEvent( "PLAYER_REGEN_DISABLED" )
-        -- self:RegisterEvent( "PLAYER_REGEN_ENABLED" )
         self:RegisterEvent( "UNIT_AURA" )
         self:RegisterEvent( "UNIT_MANA" )
         self:RegisterEvent( "UNIT_ENERGY" )
@@ -277,7 +259,6 @@ do  --- AssiduityPlayer
         self.powerSB:register()
         
         self:updateAura()
-        --self:updateLeader()
     end
 end
 
