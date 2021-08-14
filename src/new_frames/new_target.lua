@@ -4,6 +4,7 @@
 -- Constants -- 
 ---------------
 
+local AURA_SIZE = 20
 local DISTANCE_TO_EDGE = 3
 local BAR_WIDTH = 180
 local FRIENDLY = "FRIENDLY"
@@ -75,6 +76,28 @@ local getReaction = function()
 	return HOSTILE
 end
 
+local handleAuraFrameCreation = function(parent)
+
+	local result = CreateFrame("Frame", nil, parent)
+	result:SetSize(AURA_SIZE, AURA_SIZE)
+	
+	local iconTexture = result:CreateTexture()
+	iconTexture:SetSize(AURA_SIZE, AURA_SIZE)
+	iconTexture:SetAllPoints()
+	result.icon = iconTexture
+	
+	local cooldown = CreateFrame("Cooldown", nil, result, "CooldownFrameTemplate")
+	cooldown:SetPoint("CENTER")
+	cooldown:SetReverse(true)
+	result.cooldown = cooldown
+	
+	local count = result:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+	count:SetPoint("BOTTOMRIGHT", result)
+	result.count = count
+	
+	return result
+end
+
 local handleHealth = function(self)
 
 	local class = UnitLocalizedClass(TARGET)
@@ -117,6 +140,13 @@ local handleTargetChange = function(self)
 		self:UnregisterEvent("UNIT_MANA")
 		self:Hide()
 	end
+end
+
+
+local position = function(anchored, point, origin)
+
+	local anchoredPoint = OPPOSITE_POINT[point]
+	anchored:SetPoint(anchoredPoint, origin, point)
 end
 
 ------------
@@ -233,6 +263,91 @@ do
 					  DISTANCE_TO_EDGE, 
 					  DISTANCE_TO_EDGE)
 	self.powerBar = powerBar
+	
+	
+	local playerBuffs = CreateFrame("Frame", nil, self)
+	playerBuffs:SetSize(BAR_WIDTH, AURA_SIZE)
+	playerBuffs:SetPoint("TOP",
+						 powerBar,
+						 "BOTTOM",
+						 0,
+						 -DISTANCE_TO_EDGE)
+	
+	local buff1 = handleAuraFrameCreation(self)
+	local buff2 = handleAuraFrameCreation(self)
+	local buff3 = handleAuraFrameCreation(self)
+	local buff4 = handleAuraFrameCreation(self)
+	local buff5 = handleAuraFrameCreation(self)
+	local buff6 = handleAuraFrameCreation(self)
+	local buff7 = handleAuraFrameCreation(self)
+	local buff8 = handleAuraFrameCreation(self)
+	local buff9 = handleAuraFrameCreation(self)
+	
+	buff1:SetPoint("TOPLEFT", 
+				   playerBuffs,
+				   "TOPLEFT",
+				   DISTANCE_TO_EDGE,
+				   DISTANCE_TO_EDGE)
+	
+	position(buff2, "RIGHT", buff1)
+	position(buff3, "RIGHT", buff2)
+	position(buff4, "RIGHT", buff3)
+	position(buff5, "RIGHT", buff4)
+	position(buff6, "RIGHT", buff5)
+	position(buff7, "RIGHT", buff6)
+	position(buff8, "RIGHT", buff7)
+	position(buff9, "RIGHT", buff8)
+	
+	playerBuffs.frames = {buff1, buff2, buff3, buff4, buff5, buff6, buff7, buff8, buff9}
+	
+	self.playerBuffs = playerBuffs
+	
+	-- Shows when someone is dead for better visibility
+	
+	local deadFontString = playerBuffs:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+	deadFontString:SetPoint("CENTER", playerBuffs)
+	deadFontString:SetText("DEAD")
+	deadFontString:SetAlpha(0)
+	self.deadFontString = deadFontString
+	
+	-- Debuffs
+	
+	local debuffs = CreateFrame("Frame", nil, self)
+	debuffs:SetSize(BAR_WIDTH, AURA_SIZE)
+	debuffs:SetPoint("TOP",
+					 playerBuffs,
+					 "BOTTOM",
+					 0,
+					 -DISTANCE_TO_EDGE)
+	
+	local debuff1 = handleAuraFrameCreation(self)
+	local debuff2 = handleAuraFrameCreation(self)
+	local debuff3 = handleAuraFrameCreation(self)
+	local debuff4 = handleAuraFrameCreation(self)
+	local debuff5 = handleAuraFrameCreation(self)
+	local debuff6 = handleAuraFrameCreation(self)
+	local debuff7 = handleAuraFrameCreation(self)
+	local debuff8 = handleAuraFrameCreation(self)
+	local debuff9 = handleAuraFrameCreation(self)
+	
+	debuff1:SetPoint("TOPLEFT", 
+					 debuffs,
+					 "TOPLEFT",
+					 DISTANCE_TO_EDGE,
+					 DISTANCE_TO_EDGE)
+	
+	position(debuff2, "RIGHT", debuff1)
+	position(debuff3, "RIGHT", debuff2)
+	position(debuff4, "RIGHT", debuff3)
+	position(debuff5, "RIGHT", debuff4)
+	position(debuff6, "RIGHT", debuff5)
+	position(debuff7, "RIGHT", debuff6)
+	position(debuff8, "RIGHT", debuff7)
+	position(debuff9, "RIGHT", debuff8)
+	
+	debuffs.frames = {debuff1, debuff2, debuff3, debuff4, debuff5, debuff6, debuff7, debuff8, debuff9}
+	
+	self.debuffs = debuffs
 	
 	-- Events
 	self.PLAYER_TARGET_CHANGED = PLAYER_TARGET_CHANGED
