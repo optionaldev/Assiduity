@@ -4,6 +4,8 @@
 -- Constants -- 
 ---------------
 
+local table_insert = table.insert
+
 local AURA_SIZE = 20
 local DISTANCE_TO_EDGE = 3
 local BAR_WIDTH = 180
@@ -50,6 +52,15 @@ local REACTION = {
 	[FRIENDLY] = {0, 1, 0, 0.3},
 	[HOSTILE]  = {1, 0, 0, 0.3}
 }
+
+
+local OPPOSITE_POINT = {
+	["LEFT"]   = "RIGHT",
+	["RIGHT"]  = "LEFT",
+	["TOP"]    = "BOTTOM",
+	["BOTTOM"] = "TOP"
+}
+
 
 -------------
 -- Imports --
@@ -118,9 +129,133 @@ local handlePower = function(self)
 	self.powerBar:SetValue(UnitMana(TARGET))
 end
 
-local updateAura = function(self)
+local createAuraFrames = function(parent, superparent)
+		
+	local aura1 = handleAuraFrameCreation(superparent)
+	local aura2 = handleAuraFrameCreation(superparent)
+	local aura3 = handleAuraFrameCreation(superparent)
+	local aura4 = handleAuraFrameCreation(superparent)
+	local aura5 = handleAuraFrameCreation(superparent)
+	local aura6 = handleAuraFrameCreation(superparent)
+	local aura7 = handleAuraFrameCreation(superparent)
+	local aura8 = handleAuraFrameCreation(superparent)
+	local aura9 = handleAuraFrameCreation(superparent)
 	
-	-- TODO
+	buff1:SetPoint("TOPLEFT", 
+				   parent,
+				   "TOPLEFT",
+				   DISTANCE_TO_EDGE,
+				   DISTANCE_TO_EDGE)
+	
+	position(aura2, "RIGHT", aura1)
+	position(aura3, "RIGHT", aura2)
+	position(aura4, "RIGHT", aura3)
+	position(aura5, "RIGHT", aura4)
+	position(aura6, "RIGHT", aura5)
+	position(aura7, "RIGHT", aura6)
+	position(aura8, "RIGHT", aura7)
+	position(aura9, "RIGHT", aura8)
+	
+	parent.frames = {aura1, aura2, aura3, aura4, aura5, aura6, aura7, aura8, aura9}
+end
+
+--[[
+	friendly target
+	player sources buffs 
+	non-player buffs
+	target debuffs
+	
+	hostile target
+	player sourced debuffs
+	non-player debuffs
+	target buffs
+	
+	playerInclusion: can be "INCLUDED", "EXCLUDED", "EXCLUSIVE"
+]]
+local getAuras = function(self, auraFunction, playerInclusion)
+
+	local result = {}
+
+	local index = 1
+	local auraName, _, _, _, _, _, _, source = auraFunction(unit, index)
+	local changeDetected = false
+	
+	while auraName do
+		if source == "player" then 
+			if playerInclusion ~= "EXCLUDED" then
+				table_insert(result, auraName)
+			end
+		else
+			if playerInclusion ~= "EXCLUSIVE" then
+				table_insert(result, auraName)
+			end
+		end
+		
+		index = index + 1
+		auraName, _, _, _, _, _, _, source = auraFunction(unit, index)
+	end
+	
+	return result
+end
+
+local updateAura = function(self)
+
+    local firstAnchor  = self.background
+    local secondAnchor = self.background
+	
+	local firstRowAuras = {}
+	local secondRowAuras = {}
+	local thirdRowAuras = {}
+	
+	if getReaction() == FRIENDLY then
+		firstRowAuras  = getAuras(self, UnitBuff,   "EXCLUSIVE")
+		secondRowAuras = getAuras(self, UnitBuff,   "EXCLUDED")
+		thirdRowAuras  = getAuras(self, UnitDebuff, "INCLUDED")
+	else
+		firstRowAuras  = getAuras(self, UnitDebuff, "EXCLUSIVE")
+		secondRowAuras = getAuras(self, UnitDebuff, "EXCLUDED")
+		thirdRowAuras  = getAuras(self, UnitBuff,   "INCLUDED")
+	end
+	
+	if #firstRowAuras ~= 0 then
+		firstAnchor = self.buffFra
+	end
+	
+	local nonPlayerBuffs = self.buffF:getAuras()
+    
+	self.buffF:fill( nonPlayerBuffs )
+	
+    if #nonPlayerBuffs ~= 0 then
+        firstAnchor = self.buffF
+        
+        self.buffF:SetPoint( "TOPLEFT", self.bgT, "BOTTOMLEFT",
+                             0, -SETTINGS[self.string].bgOffset )
+    end
+    
+    local playerBuffs = self.playerBuffF:getAuras()
+	self.playerBuffF:fill( playerBuffs )
+        
+	if #playerBuffs ~= 0 then
+		secondAnchor = self.playerBuffs
+	end
+		
+    if #playerBuffs == 0 then
+        if #nonPlayerBuffs ~= 0 then
+            secondAnchor = self.buffF
+        end
+    else
+        secondAnchor = self.playerBuffF
+        self.playerBuffF:SetPoint( "TOPLEFT", firstAnchor, "BOTTOMLEFT",
+                                   0 , -SETTINGS[self.string].bgOffset )
+    end
+    
+    local debuffs = self.debuffF:getAuras()
+	self.debuffF:fill( debuffs )
+    
+    if #debuffs ~= 0 then
+        self.debuffF:SetPoint( "TOPLEFT", secondAnchor, "BOTTOMLEFT",
+                               0, -SETTINGS[ self.string ].bgOffset )
+    end
 end
 
 local handleTargetChange = function(self)
@@ -141,7 +276,6 @@ local handleTargetChange = function(self)
 		self:Hide()
 	end
 end
-
 
 local position = function(anchored, point, origin)
 
@@ -272,34 +406,7 @@ do
 						 "BOTTOM",
 						 0,
 						 -DISTANCE_TO_EDGE)
-	
-	local buff1 = handleAuraFrameCreation(self)
-	local buff2 = handleAuraFrameCreation(self)
-	local buff3 = handleAuraFrameCreation(self)
-	local buff4 = handleAuraFrameCreation(self)
-	local buff5 = handleAuraFrameCreation(self)
-	local buff6 = handleAuraFrameCreation(self)
-	local buff7 = handleAuraFrameCreation(self)
-	local buff8 = handleAuraFrameCreation(self)
-	local buff9 = handleAuraFrameCreation(self)
-	
-	buff1:SetPoint("TOPLEFT", 
-				   playerBuffs,
-				   "TOPLEFT",
-				   DISTANCE_TO_EDGE,
-				   DISTANCE_TO_EDGE)
-	
-	position(buff2, "RIGHT", buff1)
-	position(buff3, "RIGHT", buff2)
-	position(buff4, "RIGHT", buff3)
-	position(buff5, "RIGHT", buff4)
-	position(buff6, "RIGHT", buff5)
-	position(buff7, "RIGHT", buff6)
-	position(buff8, "RIGHT", buff7)
-	position(buff9, "RIGHT", buff8)
-	
-	playerBuffs.frames = {buff1, buff2, buff3, buff4, buff5, buff6, buff7, buff8, buff9}
-	
+
 	self.playerBuffs = playerBuffs
 	
 	-- Shows when someone is dead for better visibility
