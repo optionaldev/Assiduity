@@ -84,5 +84,11 @@
     <Color r="0" g="0" b="0"/>
 </Font>
 
+<Font name="AssiduityIconText" font="Interface\AddOns\Assiduity\fonts\BigerOver-ywyr3.ttf" virtual="true">
+    <FontHeight>
+        <AbsValue val="100"/>
+    </FontHeight>
+    <Color r="0" g="0" b="0"/>
+</Font>
 
 </Ui>

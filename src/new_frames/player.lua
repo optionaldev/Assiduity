@@ -73,10 +73,10 @@ local SETTINGS = {
         ["textFont"] = "AssiduityHealthStatusBarFontLarge",
     },
     [ICON_FRAME_SMALL] = {
-        ["textFont"] = "AssiduityIconTextFontSmall",
+        ["textFont"] = "AssiduityIconText",
     },
     [ICON_FRAME_LARGE] = {
-        ["textFont"] = "AssiduityIconTextFontLarge",
+        ["textFont"] = "AssiduityIconText",
     },
     [POWER_SB_SMALL] = {
         ["textFont"] = "AssiduityPowerStatusBarFontSmall",
