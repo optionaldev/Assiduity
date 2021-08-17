@@ -26,6 +26,9 @@ local FRAME_HEIGHT = PORTRAIT_SIZE + 2 * DISTANCE_TO_EDGE
 
 -- Tables
 
+local FILTERED_AURA = {
+}
+
 local CLASS_TO_HEALTHCOLORS = {
 
     ["DEATHKNIGHT"]	= {0.77, 0.12, 0.23},
@@ -57,18 +60,27 @@ local POWERTYPE_TO_COLORS = {
 }
 
 local REACTION = {
+
 	[FRIENDLY] = {0, 1, 0, 0.3},
 	[HOSTILE]  = {1, 0, 0, 0.3}
 }
 
 
 local OPPOSITE_POINT = {
+
 	["LEFT"]   = "RIGHT",
 	["RIGHT"]  = "LEFT",
 	["TOP"]    = "BOTTOM",
 	["BOTTOM"] = "TOP"
 }
 
+local DEBUFF_TYPE_TO_TEXTURE = {
+
+    ["Curse"]    = {1, 0, 1},
+    ["Disease"]  = {1, 1, 0},
+    ["Magic"]    = {0, 0, 1},
+    ["Poison"]   = {0, 1, 0}
+}
 
 -------------
 -- Imports --
@@ -80,7 +92,9 @@ local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
 -- Frame --
 -----------
 
-AssiduityTarget = CreateFrame("Button", "AssiduityNewTarget", UIParent, "SecureUnitButtonTemplate")
+AssiduityTarget = CreateFrame("Button", "AssiduityTarget", UIParent, "SecureUnitButtonTemplate")
+
+local self = AssiduityTarget
 
 ---------------
 -- Functions --
@@ -107,12 +121,18 @@ end
 
 local handleAuraFrameCreation = function(parent, size)
 
-	local result = CreateFrame("Frame", nil, parent)
+	local result = CreateFrame("Button", nil, parent)
 	result:SetSize(size, size)
 	
+	local background = result:CreateTexture(nil, "BACKGROUND")
+	background:SetSize(size, size)
+	background:SetAllPoints()
+	result.background = background
+	
 	local iconTexture = result:CreateTexture()
-	iconTexture:SetSize(size, size)
-	iconTexture:SetAllPoints()
+	iconTexture:SetSize(size - 2, size - 2)
+	iconTexture:SetPoint("CENTER")
+	iconTexture:SetAlpha(0.9)
 	result.icon = iconTexture
 	
 	local cooldown = CreateFrame("Cooldown", nil, result, "CooldownFrameTemplate")
@@ -127,7 +147,7 @@ local handleAuraFrameCreation = function(parent, size)
 	return result
 end
 
-local handleHealth = function(self)
+local handleHealth = function()
 
 	local class = UnitLocalizedClass(TARGET)
 	local colors = CLASS_TO_HEALTHCOLORS[class]
@@ -137,7 +157,7 @@ local handleHealth = function(self)
 	self.healthBar:SetValue(UnitHealth(TARGET))
 end
 
-local handlePower = function(self)
+local handlePower = function()
 	
 	local _, powerType = UnitPowerType(TARGET)
 	local colors = POWERTYPE_TO_COLORS[powerType]
@@ -147,17 +167,17 @@ local handlePower = function(self)
 	self.powerBar:SetValue(UnitMana(TARGET))
 end
 
-local createAuraFrames = function(parent, superparent, size)
+local createAuraFrames = function(parent, size)
 		
-	local aura1 = handleAuraFrameCreation(superparent, size)
-	local aura2 = handleAuraFrameCreation(superparent, size)
-	local aura3 = handleAuraFrameCreation(superparent, size)
-	local aura4 = handleAuraFrameCreation(superparent, size)
-	local aura5 = handleAuraFrameCreation(superparent, size)
-	local aura6 = handleAuraFrameCreation(superparent, size)
-	local aura7 = handleAuraFrameCreation(superparent, size)
-	local aura8 = handleAuraFrameCreation(superparent, size)
-	local aura9 = handleAuraFrameCreation(superparent, size)
+	local aura1 = handleAuraFrameCreation(self, size)
+	local aura2 = handleAuraFrameCreation(self, size)
+	local aura3 = handleAuraFrameCreation(self, size)
+	local aura4 = handleAuraFrameCreation(self, size)
+	local aura5 = handleAuraFrameCreation(self, size)
+	local aura6 = handleAuraFrameCreation(self, size)
+	local aura7 = handleAuraFrameCreation(self, size)
+	local aura8 = handleAuraFrameCreation(self, size)
+	local aura9 = handleAuraFrameCreation(self, size)
 	
 	aura1:SetPoint("TOPLEFT", 
 				   parent,
@@ -190,32 +210,44 @@ end
 	
 	playerInclusion: can be "INCLUDED", "EXCLUDED", "EXCLUSIVE"
 ]]
-local getAuras = function(self, auraFunction, playerInclusion)
+local getAuras = function(auraFunction, playerInclusion)
 
 	local result = {}
 
 	local index = 1
-	local auraName, _, icon, count, _, duration, expiration, source = auraFunction(TARGET, index)
+	local auraName, _, icon, count, dispelType, duration, expiration, source = auraFunction(TARGET, index)
 	local changeDetected = false
 	
 	while auraName do
-		local aura = {["aura"]       = auraName, 
+		local isBuff
+		
+		if auraFunction == UnitBuff then
+			isBuff = true
+		else 
+			isBuff = false
+		end
+		local aura = {["name"]       = auraName, 
+					  ["index"]  	 = index,
+					  ["isBuff"]     = isBuff,
 					  ["icon"]       = icon, 
 					  ["count"]      = count, 
+					  ["dispelType"] = dispelType,
 					  ["duration"]   = duration, 
 					  ["expiration"] = expiration}
-		if source == "player" then 
-			if playerInclusion ~= "EXCLUDED" then
-				table_insert(result, aura)
-			end
-		else
-			if playerInclusion ~= "EXCLUSIVE" then
-				table_insert(result, aura)
+		if not FILTERED_AURA[auraName] then
+			if source == "player" then 
+				if playerInclusion ~= "EXCLUDED" then
+					table_insert(result, aura)
+				end
+			else
+				if playerInclusion ~= "EXCLUSIVE" then
+					table_insert(result, aura)
+				end
 			end
 		end
 		
 		index = index + 1
-		auraName, _, icon, count, _, duration, expiration, source = auraFunction(TARGET, index)
+		auraName, _, icon, count, dispelType, duration, expiration, source = auraFunction(TARGET, index)
 	end
 	
 	return result
@@ -225,6 +257,14 @@ local handleAura = function(frame, aura)
 
 	frame:SetAlpha(1)
 	frame.icon:SetTexture(aura.icon)
+	
+	local dispelTexture = DEBUFF_TYPE_TO_TEXTURE[aura.dispelType]
+	
+	if dispelTexture then
+		frame.background:SetTexture(unpack(dispelTexture))
+	else
+		frame.background:SetTexture(1, 0, 0)
+	end
 	
 	if aura.duration and aura.duration > 0 then
 		frame.cooldown:Show()
@@ -239,9 +279,32 @@ local handleAura = function(frame, aura)
 	else 
 		frame.count:Hide()
 	end
+	
+	frame:SetScript("OnEnter", function() 
+        GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25)
+		if aura.isBuff then
+			GameTooltip:SetUnitBuff(TARGET, aura.index)
+		else 
+			GameTooltip:SetUnitDebuff(TARGET, aura.index)
+		end
+	end)
+	
+	frame:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+	
+	frame:SetScript("OnUpdate", function() 
+		if GameTooltip:IsOwned(self) then
+			if aura.isBuff then
+				GameTooltip:SetUnitBuff(TARGET, aura.index)
+			else 
+				GameTooltip:SetUnitDebuff(TARGET, aura.index)
+			end
+		end
+	end)
 end
 
-local handleHostility = function(self)
+local handleHostility = function()
 
 	self.background:SetTexture(unpack(REACTION[getReaction()]))
 end
@@ -259,7 +322,7 @@ local populateFramesWithAuras = function(row, auras)
 	end
 end
 
-local updateAura = function(self)
+local updateAura = function()
 
     local firstAnchor  = self.background
     local secondAnchor = self.background
@@ -269,13 +332,13 @@ local updateAura = function(self)
 	local thirdRowAuras = {}
 	
 	if getReaction() == FRIENDLY then
-		firstRowAuras  = getAuras(self, UnitBuff,   "EXCLUSIVE")
-		secondRowAuras = getAuras(self, UnitBuff,   "EXCLUDED")
-		thirdRowAuras  = getAuras(self, UnitDebuff, "INCLUDED")
+		firstRowAuras  = getAuras(UnitBuff,   "EXCLUSIVE")
+		secondRowAuras = getAuras(UnitBuff,   "EXCLUDED")
+		thirdRowAuras  = getAuras(UnitDebuff, "INCLUDED")
 	else
-		firstRowAuras  = getAuras(self, UnitDebuff, "EXCLUSIVE")
-		secondRowAuras = getAuras(self, UnitDebuff, "EXCLUDED")
-		thirdRowAuras  = getAuras(self, UnitBuff,   "INCLUDED")
+		firstRowAuras  = getAuras(UnitDebuff, "EXCLUSIVE")
+		secondRowAuras = getAuras(UnitDebuff, "EXCLUDED")
+		thirdRowAuras  = getAuras(UnitBuff,   "INCLUDED")
 	end
 	
 	populateFramesWithAuras(self.playerAuras, 	 firstRowAuras)
@@ -313,21 +376,24 @@ local handleTargetChange = function(self)
 	if UnitExists(TARGET) then
 		self:Show()
 		self.nameFontString:SetText(UnitName(TARGET))
-		handleHostility(self)
-		handleHealth(self)
-		handlePower(self)
-		updateAura(self)
+		handleHostility()
+		handleHealth()
+		handlePower()
+		updateAura()
 		self:RegisterEvent("UNIT_AURA")
+		self:RegisterEvent("UNIT_ENERGY")
 		self:RegisterEvent("UNIT_FACTION")
 		self:RegisterEvent("UNIT_HEALTH")
 		self:RegisterEvent("UNIT_MANA")
+		self:RegisterEvent("UNIT_RAGE")
 		self:RegisterEvent("UNIT_RUNIC_POWER")
-		
 	else 
 		self:UnregisterEvent("UNIT_AURA")
+		self:UnregisterEvent("UNIT_ENERGY")
 		self:UnregisterEvent("UNIT_FACTION")
 		self:UnregisterEvent("UNIT_HEALTH")
 		self:UnregisterEvent("UNIT_MANA")
+		self:UnregisterEvent("UNIT_RAGE")
 		self:UnregisterEvent("UNIT_RUNIC_POWER")
 		self:Hide()
 	end
@@ -350,41 +416,32 @@ end
 local UNIT_AURA = function(self, unit)
     
     if unit == self:GetAttribute("unit") then
-        updateAura(self)
+        updateAura()
     end
 end
 
 local UNIT_FACTION = function(self, unit)
 
 	if unit == self:GetAttribute("unit") then
-		handleHostility(self)
+		handleHostility()
 	end
 end
 
 local UNIT_HEALTH = function(self, unit)
 
 	if unit == self:GetAttribute("unit") then
-		handleHealth(self)
+		handleHealth()
 	end
 end
 
-local UNIT_MANA = function(self, unit)
+local UNIT_POWER = function(self, unit)
     
     if unit == self:GetAttribute("unit") then
-		handlePower(self)
-    end
-end
-
-local UNIT_RUNIC_POWER = function(self, unit)
-    
-    if unit == self:GetAttribute("unit") then
-		handlePower(self)
+		handlePower()
     end
 end
 
 do 
-	local self = AssiduityTarget
-	
 	-- Layout
 	self:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
 	self:SetPoint("CENTER", UIParent, "CENTER", 200, 150)
@@ -480,12 +537,12 @@ do
 						 "BOTTOMLEFT",
 						 0,
 						 -AURA_DISTANCE_TO_EDGE)
-	local playerAurasTexture = playerAuras:CreateTexture(nil, "BACKGROUND")
-	playerAurasTexture:SetTexture(0, 0, 1, 0.4)
-	playerAurasTexture:SetAllPoints()
 	self.playerAuras = playerAuras
+	createAuraFrames(playerAuras, PLAYER_AURA_SIZE)
+	--local playerAurasTexture = playerAuras:CreateTexture(nil, "BACKGROUND")
+	--playerAurasTexture:SetTexture(0, 0, 1, 0.4)
+	--playerAurasTexture:SetAllPoints()
 						 
-	createAuraFrames(playerAuras, self, PLAYER_AURA_SIZE)
 
 	-- Shows when someone is dead for better visibility
 	
@@ -495,12 +552,12 @@ do
 	]]
 	local nonPlayerAuras = CreateFrame("Frame", nil, self)
 	nonPlayerAuras:SetSize(FRAME_WIDTH, AURA_SIZE)
-	self.nonPlayerAuras = nonPlayerAuras		 
+	self.nonPlayerAuras = nonPlayerAuras		
+	createAuraFrames(nonPlayerAuras, AURA_SIZE)	 
 			
-	local nonPlayerAurasTexture = nonPlayerAuras:CreateTexture(nil, "BACKGROUND")
-	nonPlayerAurasTexture:SetTexture(0, 1, 0, 0.4)
-	nonPlayerAurasTexture:SetAllPoints()
-	createAuraFrames(nonPlayerAuras, self, AURA_SIZE)		 
+	--local nonPlayerAurasTexture = nonPlayerAuras:CreateTexture(nil, "BACKGROUND")
+	--nonPlayerAurasTexture:SetTexture(0, 1, 0, 0.4)
+	--nonPlayerAurasTexture:SetAllPoints()	 
 	
 	--[[ 3rd row: 
 		Friendly target: debuffs
@@ -509,11 +566,10 @@ do
 	local auras = CreateFrame("Frame", nil, self)
 	auras:SetSize(FRAME_WIDTH, AURA_SIZE)
 	self.auras = auras		 
-	local aurasTexture = auras:CreateTexture(nil, "BACKGROUND")
-	aurasTexture:SetTexture(1, 0, 0, 0.4)
-	aurasTexture:SetAllPoints()
-			
-	createAuraFrames(auras, self, AURA_SIZE)	
+	createAuraFrames(auras, AURA_SIZE)	
+	--local aurasTexture = auras:CreateTexture(nil, "BACKGROUND")
+	--aurasTexture:SetTexture(1, 0, 0, 0.4)
+	--aurasTexture:SetAllPoints()
 	
 	local deadFontString = playerAuras:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
 	deadFontString:SetPoint("CENTER", playerAuras)
@@ -527,8 +583,10 @@ do
 	self.UNIT_AURA             = UNIT_AURA 
 	self.UNIT_FACTION		   = UNIT_FACTION
 	self.UNIT_HEALTH           = UNIT_HEALTH
-	self.UNIT_MANA             = UNIT_MANA
-	self.UNIT_RUNIC_POWER      = UNIT_RUNIC_POWER
+	self.UNIT_MANA             = UNIT_POWER
+	self.UNIT_RUNIC_POWER      = UNIT_POWER
+	self.UNIT_ENERGY           = UNIT_POWER
+	self.UNIT_RAGE 			   = UNIT_POWER
 	
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
