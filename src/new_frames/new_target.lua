@@ -27,6 +27,101 @@ local FRAME_HEIGHT = PORTRAIT_SIZE + 2 * DISTANCE_TO_EDGE
 -- Tables
 
 local FILTERED_AURA = {
+
+	["Abomination's Might"] = 1,
+	["Amplify Magic"] = 1,
+	["Arcane Brilliance"] = 1,
+	["Arcane Intellect"] = 1,
+	["Aspect of the Beast"] = 1,
+	["Aspect of the Dragonhawk"] = 1,
+	["Aspect of the Hawk"] = 1,
+	["Aspect of the Monkey"] = 1,
+	["Aspect of the Wild"] = 1,
+	["Battle Shout"] = 1,
+	["Berserker Rage"] = 1,
+	["Blessing of Kings"] = 1,
+	["Blessing of Might"] = 1,
+	["Blessing of Sanctuary"] = 1,
+	["Blessing of Wisdom"] = 1,
+	["Bone Shield"] = 1,
+	["Chill of the Throne"] = 1,
+	["Commanding Shout"] = 1,
+	["Concentration Aura"] = 1,
+	["Dampen Magic"] = 1,
+	["Demoralizing Roar"] = 1,
+	["Devotion Aura"] = 1,
+	["Dalaran Brilliance"] = 1,
+	["Demon Armor"] = 1,
+	["Demonic Circle: Summon"] = 1,
+	["Demoralizing Shout"] = 1,
+	["Detect Invisibility"] = 1,
+	["Divine Plea"] = 1,
+	["Divine Sacrifice"] = 1,
+	["Divine Spirit"] = 1,
+	["Earth Shield"] = 1,
+	["Earth Shock"] = 1,
+	["Enrage"] = 1,
+	["Enraged Regeneration"] = 1,
+	["Fade"] = 1,
+	["Fel Armor"] = 1,
+	["Fire Resistance"] = 1,
+	["Fire Resistance Aura"] = 1,
+	["Fire Ward"] = 1,
+	["Flametongue Totem"] = 1,
+	["Focus Magic"] = 1,
+	["Frenzied Regeneration"] = 1,
+	["Frost Resistance"] = 1,
+	["Frost Resistance Aura"] = 1,
+	["Frost Ward"] = 1,
+	["Hand of Reckoning"] = 1,
+	["Hand of Salvation"] = 1,
+	["Heroic Presence"] = 1,
+	["Holy Shield"] = 1,
+	["Horn of Winter"] = 1,
+	["Hunter's Mark"] = 1,
+	["Gift of the Wild"] = 1,
+	["Greater Blessing of Kings"] = 1,
+	["Greater Blessing of Might"] = 1,
+	["Greater Blessing of Sanctuary"] = 1,
+	["Greater Blessing of Wisdom"] = 1,
+	["Ice Armor"] = 1,
+	["Inner Fire"] = 1,
+	["Inner Focus"] = 1,
+	["Judgement of Light"] = 1,
+	["Judgement of Wisdom"] = 1,
+	["Leader of the Pack"] = 1,
+	["Lightning Shield"] = 1,
+	["Mage Armor"] = 1,
+	["Mana Spring"] = 1,
+	["Mangle (Bear)"] = 1,
+	["Mangle (Cat)"] = 1,
+	["Mark of the Wild"] = 1,
+	["Master Shapeshifter"] = 1,
+	["Molten Armor"] = 1,
+	["Nature Resistance"] = 1,
+	["Prayer of Fortitude"] = 1,
+	["Prayer of Shadow Protection"] = 1,
+	["Prayer of Spirit"] = 1,
+	["Rampage"] = 1,
+	["Retribution Aura"] = 1,
+	["Righteous Fury"] = 1,
+	["Scorpid Sting"] = 1,
+	["Sentry Totem"] = 1,
+	["Shadow Resistance Aura"] = 1,
+	["Shadow Ward"] = 1,
+	["Shield of Righteousness"] = 1,
+	["Stoneskin"] = 1,
+	["Strength of Earth"] = 1,
+	["Sunder Armor"] = 1,
+	["Tiger's Fury"] = 1,
+	["Totem of Wrath"] = 1,
+	["Trueshot Aura"] = 1,
+	["Vigilance"] = 1,
+	["Water Shield"] = 1,
+	["Wild Growth"] = 1,
+	["Windfury Totem"] = 1,
+	["Wrath of Air Totem"] = 1,
+	["Wyrmrest Champion"] = 1
 }
 
 local CLASS_TO_HEALTHCOLORS = {
@@ -95,7 +190,7 @@ local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
 AssiduityTarget = CreateFrame("Button", "AssiduityTarget", UIParent, "SecureUnitButtonTemplate")
 
 local self = AssiduityTarget
-
+self:Hide()
 ---------------
 -- Functions --
 ---------------
@@ -160,9 +255,11 @@ end
 local handlePower = function()
 	
 	local _, powerType = UnitPowerType(TARGET)
-	local colors = POWERTYPE_TO_COLORS[powerType]
 	
-	self.powerBar:SetStatusBarColor(unpack(colors))
+	if powerType then
+		local colors = POWERTYPE_TO_COLORS[powerType]
+		self.powerBar:SetStatusBarColor(unpack(colors))
+	end
 	self.powerBar:SetMinMaxValues(0, UnitManaMax(TARGET))
 	self.powerBar:SetValue(UnitMana(TARGET))
 end
@@ -598,5 +695,7 @@ do
     end)
 	
 	handleTargetChange(self)
+	
+	RegisterUnitWatch(self)
 end
 
