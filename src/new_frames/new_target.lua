@@ -377,7 +377,7 @@ local handleAura = function(frame, aura)
 		frame.count:Hide()
 	end
 	
-	frame:SetScript("OnEnter", function() 
+	frame:SetScript("OnEnter", function(self) 
         GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25)
 		if aura.isBuff then
 			GameTooltip:SetUnitBuff(TARGET, aura.index)
@@ -390,7 +390,7 @@ local handleAura = function(frame, aura)
 		GameTooltip:Hide()
 	end)
 	
-	frame:SetScript("OnUpdate", function() 
+	frame:SetScript("OnUpdate", function(self) 
 		if GameTooltip:IsOwned(self) then
 			if aura.isBuff then
 				GameTooltip:SetUnitBuff(TARGET, aura.index)
@@ -541,7 +541,7 @@ end
 do 
 	-- Layout
 	self:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
-	self:SetPoint("CENTER", UIParent, "CENTER", 200, 150)
+	self:SetPoint("CENTER", UIParent, "CENTER", 500, -150)
 	
 	-- Interaction
 	self:EnableKeyboard(true)
@@ -621,6 +621,26 @@ do
 	powerBarBackground:SetTexture(0, 0, 0, 1)
 	powerBarBackground:SetAllPoints()
 	
+	-- Casting Bar
+	
+	local castBar = CreateFrame("StatusBar", "AssiduityTargetCastBar", self, "AssiduityCastingBarTemplate")
+    castBar:SetPoint("RIGHT", self, "LEFT", -10, -15)
+    self.castBar = castBar
+
+    CastingBarFrame_OnLoad(castBar, TARGET, false)
+    _G[castBar:GetName() .. "Icon"]:Show()
+    
+    castBar:SetScript("OnEvent", function(self, event, ...)
+        CastingBarFrame_OnEvent(self, event, ...)
+    end)
+    
+    castBar:SetScript("OnUpdate", function(self, elapsed)
+        CastingBarFrame_OnUpdate(self, elapsed)
+    end)
+    
+    castBar:SetScript("OnShow", function(self)
+        CastingBarFrame_OnShow(self)
+    end)    
 	
 	--[[ 1st row: 
 		Friendly target: player applied buffs
