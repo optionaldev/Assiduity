@@ -31,7 +31,9 @@ local FILTERED_AURA = {
 	["Abomination's Might"] = 1,
 	["Amplify Magic"] = 1,
 	["Arcane Brilliance"] = 1,
+	["Arcane Empowerment"] = 1,
 	["Arcane Intellect"] = 1,
+	["Argent Champion"] = 1,
 	["Aspect of the Beast"] = 1,
 	["Aspect of the Dragonhawk"] = 1,
 	["Aspect of the Hawk"] = 1,
@@ -44,9 +46,11 @@ local FILTERED_AURA = {
 	["Blessing of Sanctuary"] = 1,
 	["Blessing of Wisdom"] = 1,
 	["Bone Shield"] = 1,
+	["Champion of the Kirin Tor"] = 1,
 	["Chill of the Throne"] = 1,
 	["Commanding Shout"] = 1,
 	["Concentration Aura"] = 1,
+	["Cultivated Power"] = 1,	-- 
 	["Dampen Magic"] = 1,
 	["Demoralizing Roar"] = 1,
 	["Devotion Aura"] = 1,
@@ -58,17 +62,23 @@ local FILTERED_AURA = {
 	["Divine Plea"] = 1,
 	["Divine Sacrifice"] = 1,
 	["Divine Spirit"] = 1,
+	["Earth and Moon"] = 1,
 	["Earth Shield"] = 1,
 	["Earth Shock"] = 1,
+	["Elemental Oath"] = 1,
 	["Enrage"] = 1,
 	["Enraged Regeneration"] = 1,
 	["Fade"] = 1,
 	["Fel Armor"] = 1,
+	["Fel Intelligence"] = 1,
 	["Fire Resistance"] = 1,
 	["Fire Resistance Aura"] = 1,
 	["Fire Ward"] = 1,
 	["Flametongue Totem"] = 1,
+	["Flask of Endless Rage"] = 1,
+	["Flask of the Frost Wyrm"] = 1,
 	["Focus Magic"] = 1,
+	["Fortitude"] = 1,
 	["Frenzied Regeneration"] = 1,
 	["Frost Resistance"] = 1,
 	["Frost Resistance Aura"] = 1,
@@ -85,12 +95,15 @@ local FILTERED_AURA = {
 	["Greater Blessing of Sanctuary"] = 1,
 	["Greater Blessing of Wisdom"] = 1,
 	["Ice Armor"] = 1,
+	["Improved Icy Talons"] = 1,
+	["Infected Wounds"] = 1,
 	["Inner Fire"] = 1,
 	["Inner Focus"] = 1,
 	["Judgement of Light"] = 1,
 	["Judgement of Wisdom"] = 1,
 	["Leader of the Pack"] = 1,
 	["Lightning Shield"] = 1,
+	["Living Seed"] = 1,
 	["Mage Armor"] = 1,
 	["Mana Spring"] = 1,
 	["Mangle (Bear)"] = 1,
@@ -98,11 +111,14 @@ local FILTERED_AURA = {
 	["Mark of the Wild"] = 1,
 	["Master Shapeshifter"] = 1,
 	["Molten Armor"] = 1,
+	["Moonkin Aura"] = 1,
 	["Nature Resistance"] = 1,
 	["Prayer of Fortitude"] = 1,
 	["Prayer of Shadow Protection"] = 1,
 	["Prayer of Spirit"] = 1,
+	["Precious's Ribbon"] = 1,
 	["Rampage"] = 1,
+	["Renewed Hope"] = 1,
 	["Retribution Aura"] = 1,
 	["Righteous Fury"] = 1,
 	["Scorpid Sting"] = 1,
@@ -112,12 +128,14 @@ local FILTERED_AURA = {
 	["Shield of Righteousness"] = 1,
 	["Stoneskin"] = 1,
 	["Strength of Earth"] = 1,
+	["Strength of Wrynn"] = 1,
 	["Sunder Armor"] = 1,
 	["Tiger's Fury"] = 1,
 	["Totem of Wrath"] = 1,
 	["Trueshot Aura"] = 1,
 	["Vigilance"] = 1,
 	["Water Shield"] = 1,
+	["Well Fed"] = 1,
 	["Wild Growth"] = 1,
 	["Windfury Totem"] = 1,
 	["Wrath of Air Totem"] = 1,
@@ -247,18 +265,18 @@ local handleHealth = function()
 	local class = UnitLocalizedClass(TARGET)
 	local colors = CLASS_TO_HEALTHCOLORS[class]
 		
-	self.healthBar:SetStatusBarColor(unpack(colors))
+	self.healthBar:SetStatusBarColor(unpack(colors)) -- bug?
 	self.healthBar:SetMinMaxValues(0, UnitHealthMax(TARGET))
 	self.healthBar:SetValue(UnitHealth(TARGET))
 end
 
-local handlePower = function()
+local handlePower = function()  
 	
 	local _, powerType = UnitPowerType(TARGET)
 	
 	if powerType then
 		local colors = POWERTYPE_TO_COLORS[powerType]
-		self.powerBar:SetStatusBarColor(unpack(colors))
+		self.powerBar:SetStatusBarColor(unpack(colors)) -- bug?
 	end
 	self.powerBar:SetMinMaxValues(0, UnitManaMax(TARGET))
 	self.powerBar:SetValue(UnitMana(TARGET))
@@ -623,24 +641,24 @@ do
 	
 	-- Casting Bar
 	
-	local castBar = CreateFrame("StatusBar", "AssiduityTargetCastBar", self, "AssiduityCastingBarTemplate")
-    castBar:SetPoint("RIGHT", self, "LEFT", -10, -15)
-    self.castBar = castBar
-
-    CastingBarFrame_OnLoad(castBar, TARGET, false)
-    _G[castBar:GetName() .. "Icon"]:Show()
-    
-    castBar:SetScript("OnEvent", function(self, event, ...)
-        CastingBarFrame_OnEvent(self, event, ...)
-    end)
-    
-    castBar:SetScript("OnUpdate", function(self, elapsed)
-        CastingBarFrame_OnUpdate(self, elapsed)
-    end)
-    
-    castBar:SetScript("OnShow", function(self)
-        CastingBarFrame_OnShow(self)
-    end)    
+	--local castBar = CreateFrame("StatusBar", "AssiduityTargetCastBar", self, "AssiduityCastingBarTemplate")
+    --castBar:SetPoint("RIGHT", self, "LEFT", -10, -15)
+    --self.castBar = castBar
+	--
+    --CastingBarFrame_OnLoad(castBar, TARGET, false)
+    --_G[castBar:GetName() .. "Icon"]:Show()
+    --
+    --castBar:SetScript("OnEvent", function(self, event, ...)
+    --    CastingBarFrame_OnEvent(self, event, ...)
+    --end)
+    --
+    --castBar:SetScript("OnUpdate", function(self, elapsed)
+    --    CastingBarFrame_OnUpdate(self, elapsed)
+    --end)
+    --
+    --castBar:SetScript("OnShow", function(self)
+    --    CastingBarFrame_OnShow(self)
+    --end)    
 	
 	--[[ 1st row: 
 		Friendly target: player applied buffs
