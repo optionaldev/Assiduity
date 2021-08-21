@@ -10,10 +10,11 @@ src\utility_functions.lua
 
 src\fonts.xml
 
+src\new_frames\common.lua
 src\new_frames\frames_constants.lua
 src\new_frames\templates.xml
 src\new_frames\player.xml
-src\new_frames\new_target.lua
+src\new_frames\target.lua
 src\new_frames\groups.lua
 
 src\common_tables.lua

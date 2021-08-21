@@ -6,8 +6,8 @@ local PLAYER_TARGET_CHANGED = function(self)
 	-- Unlike PlayerFrame, TargetFrame doesn't exist initially, so we can only change
 	-- the anchors once the frame has appeared
 	
-	TargetFrame:ClearAllPoints()
-	TargetFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", 150, DISTANCE_FROM_BOTTOM - 50)
+	--TargetFrame:ClearAllPoints()
+	--TargetFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", 150, DISTANCE_FROM_BOTTOM - 50)
 end
 
 local PLAYER_FOCUS_CHANGED = function(self)
@@ -15,8 +15,8 @@ local PLAYER_FOCUS_CHANGED = function(self)
 	-- Unlike PlayerFrame, FocusFrame doesn't exist initially, so we can only change
 	-- the anchors once the frame has appeared
 	
-	FocusFrame:ClearAllPoints()
-	FocusFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", 150, DISTANCE_FROM_BOTTOM + 150)
+	--FocusFrame:ClearAllPoints()
+	--FocusFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOM", 150, DISTANCE_FROM_BOTTOM + 150)
 	
 	self:UnregisterEvent("PLAYER_FOCUS_CHANGED")
 end 
@@ -27,6 +27,8 @@ local ADDON_LOADED = function(self, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 		
 		PlayerFrame:SetAlpha(0.1)
+        TargetFrame:SetAlpha(0.1)
+        FocusFrame:SetAlpha(0.1)
 		
 		--[[
 		MultiBarBottomLeft:SetMovable() 

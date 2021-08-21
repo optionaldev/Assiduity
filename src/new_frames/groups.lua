@@ -266,8 +266,6 @@ local applyBaseClasification = function(unit, tankMinHp)
 			]]		
 			handleTableInsertion(unclassifiedUnits, unit)
 		end
-	else 
-		print("unit \"" .. unit .. "\" not part of any clasification")
 	end
 end
 
