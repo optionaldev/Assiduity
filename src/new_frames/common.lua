@@ -1,4 +1,9 @@
 
+
+-------------
+-- Globals --
+-------------
+
 ------------
 -- Locals --
 ------------
@@ -23,7 +28,6 @@ local PORTRAIT_SIZE     = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDG
 local FRAME_WIDTH  = BAR_WIDTH + PORTRAIT_SIZE + 3 * DISTANCE_TO_EDGE
 local FRAME_HEIGHT = PORTRAIT_SIZE + 2 * DISTANCE_TO_EDGE
 
-
 local FILTERED_AURA = {
 
 	["Abomination's Might"] = 1,
@@ -39,6 +43,7 @@ local FILTERED_AURA = {
 	["Aspect of the Wild"] = 1,
 	["Battle Shout"] = 1,
 	["Berserker Rage"] = 1,
+    ["Blessing of Forgotten Kings"] = 1,
 	["Blessing of Kings"] = 1,
 	["Blessing of Might"] = 1,
 	["Blessing of Sanctuary"] = 1,
@@ -49,6 +54,7 @@ local FILTERED_AURA = {
     ["Clearcasting"] = 1,
 	["Commanding Shout"] = 1,
 	["Concentration Aura"] = 1,
+    ["Cozy Fire"] = 1,
 	["Cultivated Power"] = 1,	-- 
 	["Dampen Magic"] = 1,
 	["Demoralizing Roar"] = 1,
@@ -103,6 +109,7 @@ local FILTERED_AURA = {
 	["Judgement of Wisdom"] = 1,
 	["Leader of the Pack"] = 1,
 	["Lightning Shield"] = 1,
+    ["Lightweave"] = 1,
 	["Living Seed"] = 1,
 	["Mage Armor"] = 1,
 	["Mana Spring"] = 1,
@@ -126,6 +133,7 @@ local FILTERED_AURA = {
 	["Shadow Resistance Aura"] = 1,
 	["Shadow Ward"] = 1,
 	["Shield of Righteousness"] = 1,
+    ["Soothing"] = 1,
 	["Stoneskin"] = 1,
 	["Strength of Earth"] = 1,
 	["Strength of Wrynn"] = 1,
@@ -636,24 +644,29 @@ AssiduityRegisterFrame = function(self)
 
     -- Casting Bar
 
-    --local castBar = CreateFrame("StatusBar", "AssiduityTargetCastBar", self, "AssiduityCastingBarTemplate")
-    --castBar:SetPoint("RIGHT", self, "LEFT", -10, -15)
-    --self.castBar = castBar
-    --
-    --CastingBarFrame_OnLoad(castBar, TARGET, false)
-    --_G[castBar:GetName() .. "Icon"]:Show()
-    --
-    --castBar:SetScript("OnEvent", function(self, event, ...)
-    --    CastingBarFrame_OnEvent(self, event, ...)
-    --end)
-    --
-    --castBar:SetScript("OnUpdate", function(self, elapsed)
-    --    CastingBarFrame_OnUpdate(self, elapsed)
-    --end)
-    --
-    --castBar:SetScript("OnShow", function(self)
-    --    CastingBarFrame_OnShow(self)
-    --end)
+    local unit = self:GetAttribute(UNIT)
+    local unitCapitalized = unit:sub(1,1):upper() .. unit:sub(2)
+
+    print("Unit capitalized = " .. unitCapitalized)
+
+    local castBar = CreateFrame("StatusBar", "Assiduity" .. unitCapitalized .. "CastBar", self, "AssiduityCastingBarTemplate")
+    castBar:SetPoint("RIGHT", self, "LEFT", -10, -15)
+    self.castBar = castBar
+    
+    CastingBarFrame_OnLoad(castBar, unit, false)
+    _G[castBar:GetName() .. "Icon"]:Show()
+    
+    castBar:SetScript("OnEvent", function(self, event, ...)
+        CastingBarFrame_OnEvent(self, event, ...)
+    end)
+    
+    castBar:SetScript("OnUpdate", function(self, elapsed)
+        CastingBarFrame_OnUpdate(self, elapsed)
+    end)
+    
+    castBar:SetScript("OnShow", function(self)
+        CastingBarFrame_OnShow(self)
+    end)
 
     --[[ 1st row:
         Friendly target: player applied buffs

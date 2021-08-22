@@ -21,19 +21,19 @@ local AURA_SIZE = 15
 local RAID_TANK_MIN_HP = 45000
 local PARTY_TANK_MIN_HP = 35000
 
---local AURA_HIDDEN_ALPHA  	  = 1
---local BACKGROUND_ALPHA   	  = 1
---local HIDDEN_FRAME_ALPHA 	  = 1
---local NON_EXISTING_UNIT_ALPHA = 1
---local OUT_OF_RANGE_ALPHA 	  = 1
---local POWER_BAR_ALPHA    	  = 1
-
 local AURA_HIDDEN_ALPHA  	    = 0
 local BACKGROUND_ALPHA   	    = 0.15
 local HIDDEN_FRAME_ALPHA 	    = 0.03
 local NON_EXISTING_UNIT_ALPHA   = 0
 local OUT_OF_RANGE_ALPHA 	    = 0.3
 local POWER_BAR_ALPHA    	    = 1
+
+--local AURA_HIDDEN_ALPHA  	  = 1
+--local BACKGROUND_ALPHA   	  = 1
+--local HIDDEN_FRAME_ALPHA 	  = 1
+--local NON_EXISTING_UNIT_ALPHA = 1
+--local OUT_OF_RANGE_ALPHA 	  = 1
+--local POWER_BAR_ALPHA    	  = 1
 
 local BAR_WIDTH = BUTTON_WIDTH - 2 * DISTANCE_TO_EDGE
 
@@ -699,7 +699,7 @@ do
 	local self = AssiduityGroupsFrame
 	
 	self:SetSize(1, 1)
-	self:SetPoint("CENTER", UIParent, "CENTER", 80, -180)
+	self:SetPoint("CENTER", UIParent, "CENTER", 12, -180)
 	
 	local background = self:CreateTexture(nil, "BACKGROUND")
 	background:SetTexture(0, 0, 0)
