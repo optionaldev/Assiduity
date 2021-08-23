@@ -1,14 +1,10 @@
 
-
--------------
--- Globals --
--------------
-
 ------------
 -- Locals --
 ------------
 
 local table_insert = table.insert
+local UnitLocalizedClass = Assiduity.UnitLocalizedClass
 
 local FRIENDLY = "FRIENDLY"
 local HOSTILE  = "HOSTILE"
@@ -21,6 +17,13 @@ local DISTANCE_TO_EDGE      = 3
 local HEALTH_BAR_HEIGHT     = 28
 local PLAYER_AURA_SIZE      = 25
 local POWER_BAR_HEIGHT      = 12
+
+local TARGET_FRAME_HEIGHT = 26
+local TARGET_FRAME_WIDTH  = 70
+local TARGET_PORTRAIT_SIZE = TARGET_FRAME_HEIGHT - 2
+local TARGET_HEALTH_BAR_HEIGHT = 13
+local TARGET_BAR_WIDTH = TARGET_FRAME_WIDTH - TARGET_PORTRAIT_SIZE - 3
+local TARGET_POWER_BAR_HEIGHT = TARGET_FRAME_HEIGHT - TARGET_HEALTH_BAR_HEIGHT - 3
 
 local PLAYER_BAR_HEIGHT = PLAYER_AURA_SIZE + 2 * AURA_DISTANCE_TO_EDGE
 local PORTRAIT_SIZE     = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDGE
@@ -60,6 +63,7 @@ local FILTERED_AURA = {
 	["Demoralizing Roar"] = 1,
 	["Devotion Aura"] = 1,
 	["Dalaran Brilliance"] = 1,
+	["Dalaran Intellect"] = 1,
 	["Demon Armor"] = 1,
 	["Demonic Circle: Summon"] = 1,
 	["Demoralizing Shout"] = 1,
@@ -70,6 +74,7 @@ local FILTERED_AURA = {
 	["Earth and Moon"] = 1,
 	["Earth Shield"] = 1,
 	["Earth Shock"] = 1,
+    ["Ebon Champion"] = 1,
     ["Effervescence"] = 1,
 	["Elemental Oath"] = 1,
 	["Enrage"] = 1,
@@ -138,9 +143,11 @@ local FILTERED_AURA = {
 	["Strength of Earth"] = 1,
 	["Strength of Wrynn"] = 1,
 	["Sunder Armor"] = 1,
+    ["Thorns"] = 1,
 	["Tiger's Fury"] = 1,
 	["Totem of Wrath"] = 1,
 	["Trueshot Aura"] = 1,
+    ["Vengeance"] = 1,
 	["Vigilance"] = 1,
 	["Water Shield"] = 1,
 	["Well Fed"] = 1,
@@ -201,6 +208,94 @@ local DEBUFF_TYPE_TO_TEXTURE = {
     ["Disease"]  = {1, 1, 0},
     ["Magic"]    = {0, 0, 1},
     ["Poison"]   = {0, 1, 0}
+}
+
+local CLASS_TO_ICON = {
+
+    ["Army of the Dead Ghoul"] = "Interface\\Icons\\Spell_DeathKnight_ArmyOfTheDead",
+    ["Ebon Gargoyle"]          = "Interface\\Icons\\Ability_Hunter_Pet_Bat",
+    ["Risen Ghoul"]            = "Interface\\Icons\\Spell_Shadow_AnimateDead",
+    ["Rune Weapon"]            = "Interface\\Icons\\INV_Sword_07",
+    ["Shadowfiend"]            = "Interface\\Icons\\Spell_Shadow_Shadowfiend",
+    ["Spirit Wolf"]            = "Interface\\Icons\\Spell_Shaman_FeralSpirit",
+    ["Treant"]                 = "Interface\\Icons\\Ability_Druid_ForceofNature",
+    ["Water Elemental"]        = "Interface\\Icons\\Spell_Frost_SummonWaterElemental_2"
+}
+
+local FAMILY_TO_ICON = {
+
+    ["Felguard"]   = "Interface\\Icons\\Spell_Shadow_SummonFelGuard",
+    ["Felhunter"]  = "Interface\\Icons\\Spell_Shadow_SummonFelHunter",
+    ["Ghoul"]      = "Interface\\Icons\\Spell_Shadow_AnimateDead",
+    ["Imp"]        = "Interface\\Icons\\Spell_Shadow_SummonImp",
+    ["Succubus"]   = "Interface\\Icons\\Spell_Shadow_SummonSuccubus",
+    ["Voidwalker"] = "Interface\\Icons\\Spell_Shadow_SummonVoidWalker"
+}
+
+local COLORS = {
+
+    ["BLACK"]  = {   0,   0,   0},
+    ["BLUE"]   = {   0,   0, 200},
+    ["GREEN"]  = {   0, 200,   0},
+    ["PURPLE"] = { 200,   0, 255},
+    ["RED"]    = { 200,   0,   0},
+    ["WHITE"]  = { 255, 255, 255},
+}
+
+local UNIT_TO_SETUP = {
+--- unit          = { txt, bgColor,       textColor    },
+    ["arena1"]    = { "1", COLORS.RED,    COLORS.BLACK },
+    ["arena2"]    = { "2", COLORS.RED,    COLORS.BLACK },
+    ["arena3"]    = { "3", COLORS.RED,    COLORS.BLACK },
+    ["arena4"]    = { "4", COLORS.RED,    COLORS.BLACK },
+    ["arena5"]    = { "5", COLORS.RED,    COLORS.BLACK },
+    
+    ["arenapet1"] = { "1", COLORS.PURPLE, COLORS.WHITE },
+    ["arenapet2"] = { "2", COLORS.PURPLE, COLORS.WHITE },
+    ["arenapet3"] = { "3", COLORS.PURPLE, COLORS.WHITE },
+    ["arenapet4"] = { "4", COLORS.PURPLE, COLORS.WHITE },
+    ["arenapet5"] = { "5", COLORS.PURPLE, COLORS.WHITE },
+    
+    ["party1"]    = { "1", COLORS.GREEN,  COLORS.BLACK },
+    ["party2"]    = { "2", COLORS.GREEN,  COLORS.BLACK },
+    ["party3"]    = { "3", COLORS.GREEN,  COLORS.BLACK },
+    ["party4"]    = { "4", COLORS.GREEN,  COLORS.BLACK },
+    
+    ["partypet1"] = { "1", COLORS.BLUE,   COLORS.WHITE },
+    ["partypet2"] = { "2", COLORS.BLUE,   COLORS.WHITE },
+    ["partypet3"] = { "3", COLORS.BLUE,   COLORS.WHITE },
+    ["partypet4"] = { "4", COLORS.BLUE,   COLORS.WHITE },
+    
+    ["player"]    = { "P", COLORS.WHITE,  COLORS.BLACK },
+    ["target"]    = { "G", COLORS.WHITE,  COLORS.BLACK },
+    ["focus"]     = { "F", COLORS.WHITE,  COLORS.BLACK },
+}
+
+local VALID_UNITS = {
+
+    "arena1",
+    "arena2",
+    "arena3",
+    "arena4",
+    "arena5",
+    "arenapet1",
+    "arenapet2",
+    "arenapet3",
+    "arenapet4",
+    "arenapet5",
+
+    "party1",
+    "party2",
+    "party3",
+    "party4",
+    "partypet1",
+    "partypet2",
+    "partypet3",
+    "partypet4",
+
+    "player",
+    "focus",
+    "target"
 }
 
 -------------
@@ -269,9 +364,11 @@ local handleHealth = function(self)
     local class = UnitLocalizedClass(unit)
     local colors = CLASS_TO_HEALTHCOLORS[class]
 
-    self.healthBar:SetStatusBarColor(unpack(colors)) -- bug?
-    self.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
-    self.healthBar:SetValue(UnitHealth(unit))
+    if colors then
+        self.healthBar:SetStatusBarColor(unpack(colors)) -- bug?
+        self.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
+        self.healthBar:SetValue(UnitHealth(unit))
+    end
 end
 
 local handlePower = function(self)
@@ -399,11 +496,12 @@ local handleAura = function(frame, aura)
     end
 
     frame:SetScript("OnEnter", function(self)
+        local unit = self:GetParent():GetAttribute(UNIT)
         GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 15, -25)
         if aura.isBuff then
-            GameTooltip:SetUnitBuff(TARGET, aura.index)
+            GameTooltip:SetUnitBuff(unit, aura.index)
         else
-            GameTooltip:SetUnitDebuff(TARGET, aura.index)
+            GameTooltip:SetUnitDebuff(unit, aura.index)
         end
     end)
 
@@ -412,15 +510,26 @@ local handleAura = function(frame, aura)
     end)
 
     frame:SetScript("OnUpdate", function(self)
+        local unit = self:GetParent():GetAttribute(UNIT)
         if GameTooltip:IsOwned(self) then
             if aura.isBuff then
-                GameTooltip:SetUnitBuff(TARGET, aura.index)
+                GameTooltip:SetUnitBuff(unit, aura.index)
             else
-                GameTooltip:SetUnitDebuff(TARGET, aura.index)
+                GameTooltip:SetUnitDebuff(unit, aura.index)
             end
         end
     end)
 end
+
+--local handleTarget = function(self)
+--
+--    local unit = self:GetAttribute(UNIT)
+--    local targetUnit = unit .. "target"
+--    
+--    for _, validUnit in ipairs(VALID_UNITS) do
+--    
+--    end
+--end
 
 local handleHostility = function(self)
 
@@ -489,6 +598,114 @@ local updateAura = function(self)
                         -DISTANCE_TO_EDGE)
 end
 
+local setIcon = function(self, icon, coord)
+
+    self.targetFontString:Hide()
+
+    self.targetPortrait:SetTexture(icon)
+    
+    if coord then
+        self.targetPortrait:SetTexCoord(unpack(coord))
+    else
+        self.targetPortrait:SetTexCoord(0, 1, 0, 1)
+    end
+end
+
+local setUnit = function(self, text, bgColorTable, fontColorTable )
+
+    self.targetPortrait:SetTexture(unpack(bgColorTable))
+    self.targetPortrait:SetTexCoord(0, 1, 0, 1)
+    self.targetFontString:SetTextColor(unpack(fontColorTable))
+    self.targetFontString:SetText(text)
+    self.targetFontString:Show()
+end
+
+local updateTarget = function(self)
+
+    local unit = self:GetAttribute(UNIT)
+    local unitTarget = unit .. "target"
+    local class = UnitLocalizedClass(unit)
+    
+    if UnitIsUnit(unit, unitTarget) then
+        setUnit(self, "S", COLORS.BLACK, COLORS.WHITE)
+    end
+    
+    if (UnitIsUnit(unit, "player") and UnitIsUnit(unitTarget, "player")) or 
+       not UnitExists(unitTarget) 
+    then
+        self.target:Hide()
+        self.target.healthBar:Hide()
+        self.target.powerBar:Hide()
+        self.targetBackground:Hide()
+        self.targetPortrait:Hide()
+        self.targetFontString:Hide()
+        return
+    end
+    
+    self.target:Show()
+    self.targetPortrait:Show()
+    self.targetFontString:Show()
+    
+    local detectedUnit
+    
+    --- Handle displaying unit artwork for valid units
+    
+    
+    for index, validUnit in ipairs(VALID_UNITS) do
+        if UnitIsUnit(unitTarget, validUnit) then
+            detectedUnit = validUnit
+            break
+        end
+    end
+    
+    if detectedUnit then
+        self.targetBackground:Hide()
+        self.target.healthBar:Hide()
+        self.target.powerBar:Hide()
+    else 
+        self.targetBackground:Show()
+        self.target.healthBar:Show()
+        self.target.powerBar:Show()
+        detectedUnit = unitTarget
+    end
+    
+    if UNIT_TO_SETUP[detectedUnit] then
+        setUnit(self, unpack(UNIT_TO_SETUP[detectedUnit]))
+    
+    --if UnitIsPlayer(detectedUnit) then
+    --self:setIcon( "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES", CLASS_ICON_TCOORDS[class] )
+        
+    elseif FAMILY_TO_ICON[UnitCreatureFamily(detectedUnit)] then
+        setIcon(self, FAMILY_TO_ICON[UnitCreatureFamily(detectedUnit)])
+        
+    elseif CLASS_TO_ICON[class] then
+        setIcon(self, CLASS_TO_ICON[class])
+        
+    elseif UnitHealthMax(unitTarget) == 4400 then
+        setIcon(self, "Interface\\Icons\\Spell_Magic_LesserInvisibilty")
+        
+    else
+        SetPortraitTexture(self.targetPortrait, detectedUnit)
+        self.targetPortrait:SetTexCoord(0, 1, 0, 1)
+        self.targetFontString:Hide()
+    end 
+end
+
+--[[
+    @func: can either be RegisterEvent or UnregisterEvent
+]]
+local observeEvents = function(self, func)
+    
+    func(self, "UNIT_AURA")
+    func(self, "UNIT_ENERGY")
+    func(self, "UNIT_FACTION")
+    func(self, "UNIT_HEALTH")
+    func(self, "UNIT_MANA")
+    func(self, "UNIT_RAGE")
+    func(self, "UNIT_RUNIC_POWER")
+    func(self, "UNIT_TARGET")
+end
+
 local handleUnitChange = function(self)
 
     local unit = self:GetAttribute(UNIT)
@@ -500,28 +717,84 @@ local handleUnitChange = function(self)
         handleHealth(self)
         handlePower(self)
         updateAura(self)
-        self:RegisterEvent("UNIT_AURA")
-        self:RegisterEvent("UNIT_ENERGY")
-        self:RegisterEvent("UNIT_FACTION")
-        self:RegisterEvent("UNIT_HEALTH")
-        self:RegisterEvent("UNIT_MANA")
-        self:RegisterEvent("UNIT_RAGE")
-        self:RegisterEvent("UNIT_RUNIC_POWER")
+        updateTarget(self)
+        observeEvents(self, self.RegisterEvent)
     else
-        self:UnregisterEvent("UNIT_AURA")
-        self:UnregisterEvent("UNIT_ENERGY")
-        self:UnregisterEvent("UNIT_FACTION")
-        self:UnregisterEvent("UNIT_HEALTH")
-        self:UnregisterEvent("UNIT_MANA")
-        self:UnregisterEvent("UNIT_RAGE")
-        self:UnregisterEvent("UNIT_RUNIC_POWER")
+        observeEvents(self, self.UnregisterEvent)
         self:Hide()
     end
 end
 
-local frameNeedsUpdate = function(self)
+local setupTarget = function(self)
 
-    handleUnitChange(self)
+    local target = CreateFrame("Button", self:GetName() .. "Target", UIParent, "SecureUnitButtonTemplate")
+    target:SetSize(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT)
+    target:SetPoint("LEFT",
+                    self,
+                    "RIGHT",
+                    10,
+                    0)
+    
+    target:SetAttribute(UNIT, self:GetAttribute(UNIT) .. "target")
+    target:SetAttribute("*type1", "target")
+    target:EnableKeyboard(true)
+    target:RegisterForClicks("AnyUp")
+    target:RegisterForClicks("AnyDown")
+    self.target = target
+    
+    local targetBackground = target:CreateTexture(nil, "BACKGROUND")
+    targetBackground:SetTexture(1, 1, 1)
+    targetBackground:SetAllPoints()
+    self.targetBackground = targetBackground
+    
+    local targetPortrait = target:CreateTexture(nil, "BACKGROUND") 
+    targetPortrait:SetSize(TARGET_PORTRAIT_SIZE, TARGET_PORTRAIT_SIZE)
+    targetPortrait:SetPoint("LEFT", target, "LEFT", 1, 0)
+    self.targetPortrait = targetPortrait
+    
+    local targetFontString = target:CreateFontString(nil, "BACKGROUND", "AssiduityIconTextSmall")
+    targetFontString:SetPoint("CENTER", targetPortrait)
+    self.targetFontString = targetFontString
+
+    local healthBar = CreateFrame("StatusBar", nil, target)
+    healthBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
+    healthBar:SetOrientation("HORIZONTAL")
+    healthBar:SetSize(TARGET_BAR_WIDTH, TARGET_HEALTH_BAR_HEIGHT)
+    healthBar:SetPoint("TOPRIGHT",
+                       target,
+                       "TOPRIGHT",
+                       -1,
+                       -1)
+    target.healthBar = healthBar
+
+    local healthBarBackground = healthBar:CreateTexture(nil, "BACKGROUND")
+    healthBarBackground:SetTexture(0, 0, 0, 1)
+    healthBarBackground:SetAllPoints()
+
+    local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+    nameFontString:SetPoint("CENTER", healthBar)
+    target.nameFontString = nameFontString
+
+    local powerBar = CreateFrame("StatusBar", nil, target)
+    powerBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
+    powerBar:SetStatusBarColor(0, 1, 1)
+    powerBar:SetOrientation("HORIZONTAL")
+    powerBar:SetSize(TARGET_BAR_WIDTH, TARGET_POWER_BAR_HEIGHT)
+    powerBar:SetPoint("TOPRIGHT",
+                      healthBar,
+                      "BOTTOMRIGHT",
+                      0,
+                      -1)
+    target.powerBar = powerBar
+
+    local powerBarBackground = powerBar:CreateTexture(nil, "BACKGROUND")
+    powerBarBackground:SetTexture(0, 0, 0, 1)
+    powerBarBackground:SetAllPoints()
+
+    target:SetScript("OnUpdate", function(self)
+        handleHealth(self)
+        handlePower(self)
+    end)
 end
 
 ------------
@@ -558,6 +831,13 @@ local UNIT_POWER = function(self, unit)
 
     if unit == self:GetAttribute(UNIT) then
         handlePower(self)
+    end
+end
+
+local UNIT_TARGET = function(self, unit)
+
+    if unit == self:GetAttribute(UNIT) then
+        updateTarget(self)
     end
 end
 
@@ -605,8 +885,13 @@ AssiduityRegisterFrame = function(self)
     local portraitFontString = portrait:CreateFontString(nil, nil, "AssiduityIconText")
     portraitFontString:SetPoint("CENTER", portrait)
     portraitFontString:SetText(self.portraitText)
-
-    -- Frames
+    
+    -- Target of unit
+    
+    setupTarget(self)
+    
+    -- Bars
+    
     local healthBar = CreateFrame("StatusBar", nil, self)
     healthBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
     healthBar:SetOrientation("HORIZONTAL")
@@ -646,8 +931,6 @@ AssiduityRegisterFrame = function(self)
 
     local unit = self:GetAttribute(UNIT)
     local unitCapitalized = unit:sub(1,1):upper() .. unit:sub(2)
-
-    print("Unit capitalized = " .. unitCapitalized)
 
     local castBar = CreateFrame("StatusBar", "Assiduity" .. unitCapitalized .. "CastBar", self, "AssiduityCastingBarTemplate")
     castBar:SetPoint("RIGHT", self, "LEFT", -10, -15)
@@ -729,6 +1012,7 @@ AssiduityRegisterFrame = function(self)
     self.UNIT_RUNIC_POWER      = UNIT_POWER
     self.UNIT_ENERGY           = UNIT_POWER
     self.UNIT_RAGE             = UNIT_POWER
+    self.UNIT_TARGET           = UNIT_TARGET
 
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     
@@ -740,7 +1024,7 @@ AssiduityRegisterFrame = function(self)
 
     self:SetScript("OnEvent", function(self, event, ...)
         if event == self.changeEvent then
-            frameNeedsUpdate(self)
+            handleUnitChange(self)
         else 
             self[event](self, ...)
         end
@@ -749,5 +1033,6 @@ AssiduityRegisterFrame = function(self)
     handleUnitChange(self)
 
     RegisterUnitWatch(self)
+    RegisterUnitWatch(self.target)
 end
 
