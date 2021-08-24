@@ -38,16 +38,16 @@
 
 <!-- Count -->
 
-<Font name="AssiduityAuraCountFontSmall" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+<Font name="AssiduityAuraCountFontLarge" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
     <FontHeight>
         <AbsValue val="15"/>
     </FontHeight>
     <Color r="0.8" g="0.8" b="0.8"/>
 </Font>
 
-<Font name="AssiduityAuraCountFontLarge" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
+<Font name="AssiduityAuraCountFontSmall" font="Fonts\FRIZQT__.TTF" virtual="true" outline="NORMAL">
     <FontHeight>
-        <AbsValue val="8"/>
+        <AbsValue val="10"/>
     </FontHeight>
     <Color r="0.8" g="0.8" b="0.8"/>
 </Font>

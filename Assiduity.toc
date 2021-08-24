@@ -17,6 +17,7 @@ src\new_frames\player.xml
 src\new_frames\target.lua
 src\new_frames\focus.lua
 src\new_frames\groups.lua
+src\new_frames\arena.lua
 
 src\common_tables.lua
 src\timing.xml

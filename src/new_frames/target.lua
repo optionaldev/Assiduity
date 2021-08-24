@@ -3,7 +3,6 @@ local frame = CreateFrame("Button", "AssiduityTarget", UIParent, "SecureUnitButt
 
 frame:SetPoint("CENTER", UIParent, "CENTER", 350, -205)
 frame:SetAttribute("unit", "target")
-frame.portraitText = "G"
 frame.changeEvent = "PLAYER_TARGET_CHANGED"
 
-AssiduityRegisterFrame(frame)
+AssiduityRegisterFrame(frame, "LARGE")

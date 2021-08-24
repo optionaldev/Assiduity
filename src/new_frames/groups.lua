@@ -736,7 +736,7 @@ local handleAuraFrameCreation = function(parent)
 	cooldown:SetReverse(true)
 	result.cooldown = cooldown
 	
-	local count = result:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+	local count = result:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
 	count:SetPoint("BOTTOMRIGHT", result)
 	result.count = count
 	
@@ -813,7 +813,7 @@ local handleFrameCreation = function(frameType, framePosition)
 					   -DISTANCE_TO_EDGE)
 	result.healthBar = healthBar
 				
-	local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+	local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
 	nameFontString:SetPoint("CENTER", healthBar)
 	result.nameFontString = nameFontString
 	

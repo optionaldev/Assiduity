@@ -10,26 +10,73 @@ local FRIENDLY = "FRIENDLY"
 local HOSTILE  = "HOSTILE"
 local UNIT     = "unit"
 
-local AURA_DISTANCE_TO_EDGE = 1
-local AURA_SIZE             = 20
-local BAR_WIDTH             = 180
-local DISTANCE_TO_EDGE      = 3
-local HEALTH_BAR_HEIGHT     = 28
-local PLAYER_AURA_SIZE      = 25
-local POWER_BAR_HEIGHT      = 12
+--local AURA_DISTANCE_TO_EDGE = 1
+--local AURA_SIZE             = 20
+--local BAR_WIDTH             = 180
+--local DISTANCE_TO_EDGE      = 3
+--local HEALTH_BAR_HEIGHT     = 28
+--local PLAYER_AURA_SIZE      = 25
+--local POWER_BAR_HEIGHT      = 12
+--
+--local TARGET_FRAME_HEIGHT = 26
+--local TARGET_FRAME_WIDTH  = 70
+--local TARGET_PORTRAIT_SIZE = TARGET_FRAME_HEIGHT - 2
+--local TARGET_HEALTH_BAR_HEIGHT = 13
+--local TARGET_BAR_WIDTH = TARGET_FRAME_WIDTH - TARGET_PORTRAIT_SIZE - 3
+--local TARGET_POWER_BAR_HEIGHT = TARGET_FRAME_HEIGHT - TARGET_HEALTH_BAR_HEIGHT - 3
+--
+--local PLAYER_BAR_HEIGHT = PLAYER_AURA_SIZE + 2 * AURA_DISTANCE_TO_EDGE
+--local PORTRAIT_SIZE     = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDGE
+--
+--local FRAME_WIDTH  = BAR_WIDTH + PORTRAIT_SIZE + 3 * DISTANCE_TO_EDGE
+--local FRAME_HEIGHT = PORTRAIT_SIZE + 2 * DISTANCE_TO_EDGE
 
-local TARGET_FRAME_HEIGHT = 26
-local TARGET_FRAME_WIDTH  = 70
-local TARGET_PORTRAIT_SIZE = TARGET_FRAME_HEIGHT - 2
-local TARGET_HEALTH_BAR_HEIGHT = 13
-local TARGET_BAR_WIDTH = TARGET_FRAME_WIDTH - TARGET_PORTRAIT_SIZE - 3
-local TARGET_POWER_BAR_HEIGHT = TARGET_FRAME_HEIGHT - TARGET_HEALTH_BAR_HEIGHT - 3
-
-local PLAYER_BAR_HEIGHT = PLAYER_AURA_SIZE + 2 * AURA_DISTANCE_TO_EDGE
-local PORTRAIT_SIZE     = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDGE
-
-local FRAME_WIDTH  = BAR_WIDTH + PORTRAIT_SIZE + 3 * DISTANCE_TO_EDGE
-local FRAME_HEIGHT = PORTRAIT_SIZE + 2 * DISTANCE_TO_EDGE
+local MEASUREMENTS = {
+    ["SMALL"] = {
+        ["AURA_DISTANCE_TO_EDGE"] =   1,
+        ["AURA_SIZE"]             =  16,
+        ["BAR_WIDTH"]             =  89,
+        ["CAST_BAR_OFFSET"]       =   7,
+        ["DISTANCE_TO_EDGE"]      =   2,
+        ["FRAME_HEIGHT"]          =  33,
+        ["FRAME_WIDTH"]           = 123,
+        ["HEALTH_BAR_HEIGHT"]     =  22,
+        ["PLAYER_AURA_SIZE"]      =  17,
+        ["PLAYER_BAR_HEIGHT"]     =  19,
+        ["PORTRAIT_SIZE"]         =  28,
+        ["POWER_BAR_HEIGHT"]      =   5,
+        ["TARGET"] = {
+            ["BAR_WIDTH"]          = 53,
+            ["FRAME_HEIGHT"]       = 26,
+            ["FRAME_WIDTH"]        = 70,
+            ["HEALTH_BAR_HEIGHT"]  = 13,
+            ["PORTRAIT_SIZE"]      = 24,
+            ["POWER_BAR_HEIGHT"]   = 10,
+        },
+    },
+    ["LARGE"] = {
+        ["AURA_DISTANCE_TO_EDGE"] =   1,
+        ["AURA_SIZE"]             =  20,
+        ["BAR_WIDTH"]             = 180,
+        ["CAST_BAR_OFFSET"]       =  15,
+        ["DISTANCE_TO_EDGE"]      =   3,
+        ["FRAME_HEIGHT"]          =  47,
+        ["FRAME_WIDTH"]           = 230,
+        ["HEALTH_BAR_HEIGHT"]     =  28,
+        ["PLAYER_AURA_SIZE"]      =  25,
+        ["PLAYER_BAR_HEIGHT"]     =  27,
+        ["PORTRAIT_SIZE"]         =  41,
+        ["POWER_BAR_HEIGHT"]      =  12,
+        ["TARGET"] = {
+            ["BAR_WIDTH"]          = 53,
+            ["FRAME_HEIGHT"]       = 26,
+            ["FRAME_WIDTH"]        = 70,
+            ["HEALTH_BAR_HEIGHT"]  = 13,
+            ["PORTRAIT_SIZE"]      = 24,
+            ["POWER_BAR_HEIGHT"]   = 10,
+        },
+    }
+}
 
 local FILTERED_AURA = {
 
@@ -325,7 +372,7 @@ local position = function(anchored, point, origin)
     anchored:SetPoint(anchoredPoint,
                       origin,
                       point,
-                      AURA_DISTANCE_TO_EDGE,
+                      1,
                       0)
 end
 
@@ -350,7 +397,7 @@ local handleAuraFrameCreation = function(parent, size)
     cooldown:SetReverse(true)
     result.cooldown = cooldown
 
-    local count = result:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+    local count = result:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
     count:SetPoint("BOTTOMRIGHT", result)
     result.count = count
 
@@ -365,9 +412,23 @@ local handleHealth = function(self)
     local colors = CLASS_TO_HEALTHCOLORS[class]
 
     if colors then
+        local health = UnitHealth(unit)
+        local maxHealth = UnitHealthMax(unit)
+        local percentage = math.floor((health / maxHealth) * 100)
+        local value
+        
+        if health > 3000 then
+            value = tostring(math.floor(health / 1000) .. "k")
+        else
+            value = health
+        end
+        
         self.healthBar:SetStatusBarColor(unpack(colors)) -- bug?
-        self.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
-        self.healthBar:SetValue(UnitHealth(unit))
+        self.healthBar:SetMinMaxValues(0, maxHealth)
+        self.healthBar:SetValue(health)
+        
+        self.healthValueFontString:SetText(tostring(value))
+        self.healthPercentageFontString:SetText(tostring(percentage) .. "%")
     end
 end
 
@@ -381,8 +442,19 @@ local handlePower = function(self)
         local colors = POWERTYPE_TO_COLORS[powerType]
         self.powerBar:SetStatusBarColor(unpack(colors))
     end
+    
+    local power = UnitMana(unit)
+    
+    if power > 3000 then
+        value = tostring(math.floor(power / 1000) .. "k")
+    else
+        value = tostring(power)
+    end
+    
+    self.powerValueFontString:SetText(value)
+    
     self.powerBar:SetMinMaxValues(0, UnitManaMax(unit))
-    self.powerBar:SetValue(UnitMana(unit))
+    self.powerBar:SetValue(power)
 end
 
 local createAuraFrames = function(self, parent, size)
@@ -400,8 +472,8 @@ local createAuraFrames = function(self, parent, size)
     aura1:SetPoint("TOPLEFT",
                    parent,
                    "TOPLEFT",
-                   AURA_DISTANCE_TO_EDGE,
-                   -AURA_DISTANCE_TO_EDGE)
+                   self.MEASUREMENTS.AURA_DISTANCE_TO_EDGE,
+                   -self.MEASUREMENTS.AURA_DISTANCE_TO_EDGE)
 
     position(aura2, "RIGHT", aura1)
     position(aura3, "RIGHT", aura2)
@@ -476,9 +548,10 @@ local handleAura = function(frame, aura)
     local dispelTexture = DEBUFF_TYPE_TO_TEXTURE[aura.dispelType]
 
     if dispelTexture then
+        frame.background:Show()
         frame.background:SetTexture(unpack(dispelTexture))
     else
-        frame.background:SetTexture(1, 0, 0)
+        frame.background:Hide() -- SetTexture(1, 0, 0)
     end
 
     if aura.duration and aura.duration > 0 then
@@ -589,13 +662,13 @@ local updateAura = function(self)
                                  firstAnchor,
                                  "BOTTOM",
                                  0,
-                                 -DISTANCE_TO_EDGE)
+                                 -self.MEASUREMENTS.DISTANCE_TO_EDGE)
 
     self.auras:SetPoint("TOP",
                         secondAnchor,
                         "BOTTOM",
                         0,
-                        -DISTANCE_TO_EDGE)
+                        -self.MEASUREMENTS.DISTANCE_TO_EDGE)
 end
 
 local setIcon = function(self, icon, coord)
@@ -627,6 +700,7 @@ local updateTarget = function(self)
     local class = UnitLocalizedClass(unit)
     
     if UnitIsUnit(unit, unitTarget) then
+        
         setUnit(self, "S", COLORS.BLACK, COLORS.WHITE)
     end
     
@@ -727,8 +801,10 @@ end
 
 local setupTarget = function(self)
 
+    local MEASUREMENTS = self.MEASUREMENTS.TARGET
+
     local target = CreateFrame("Button", self:GetName() .. "Target", UIParent, "SecureUnitButtonTemplate")
-    target:SetSize(TARGET_FRAME_WIDTH, TARGET_FRAME_HEIGHT)
+    target:SetSize(MEASUREMENTS.FRAME_WIDTH, MEASUREMENTS.FRAME_HEIGHT)
     target:SetPoint("LEFT",
                     self,
                     "RIGHT",
@@ -748,7 +824,7 @@ local setupTarget = function(self)
     self.targetBackground = targetBackground
     
     local targetPortrait = target:CreateTexture(nil, "BACKGROUND") 
-    targetPortrait:SetSize(TARGET_PORTRAIT_SIZE, TARGET_PORTRAIT_SIZE)
+    targetPortrait:SetSize(MEASUREMENTS.PORTRAIT_SIZE, MEASUREMENTS.PORTRAIT_SIZE)
     targetPortrait:SetPoint("LEFT", target, "LEFT", 1, 0)
     self.targetPortrait = targetPortrait
     
@@ -759,19 +835,19 @@ local setupTarget = function(self)
     local healthBar = CreateFrame("StatusBar", nil, target)
     healthBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
     healthBar:SetOrientation("HORIZONTAL")
-    healthBar:SetSize(TARGET_BAR_WIDTH, TARGET_HEALTH_BAR_HEIGHT)
+    healthBar:SetSize(MEASUREMENTS.BAR_WIDTH, MEASUREMENTS.HEALTH_BAR_HEIGHT)
     healthBar:SetPoint("TOPRIGHT",
                        target,
                        "TOPRIGHT",
-                       -1,
-                       -1)
+                       -self.MEASUREMENTS.DISTANCE_TO_EDGE,
+                       -self.MEASUREMENTS.DISTANCE_TO_EDGE)
     target.healthBar = healthBar
 
     local healthBarBackground = healthBar:CreateTexture(nil, "BACKGROUND")
     healthBarBackground:SetTexture(0, 0, 0, 1)
     healthBarBackground:SetAllPoints()
 
-    local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
+    local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
     nameFontString:SetPoint("CENTER", healthBar)
     target.nameFontString = nameFontString
 
@@ -779,7 +855,8 @@ local setupTarget = function(self)
     powerBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
     powerBar:SetStatusBarColor(0, 1, 1)
     powerBar:SetOrientation("HORIZONTAL")
-    powerBar:SetSize(TARGET_BAR_WIDTH, TARGET_POWER_BAR_HEIGHT)
+    powerBar:SetSize(MEASUREMENTS.BAR_WIDTH, 
+                     MEASUREMENTS.POWER_BAR_HEIGHT)
     powerBar:SetPoint("TOPRIGHT",
                       healthBar,
                       "BOTTOMRIGHT",
@@ -792,8 +869,8 @@ local setupTarget = function(self)
     powerBarBackground:SetAllPoints()
 
     target:SetScript("OnUpdate", function(self)
-        handleHealth(self)
-        handlePower(self)
+        --handleHealth(self)
+        --handlePower(self)
     end)
 end
 
@@ -841,9 +918,19 @@ local UNIT_TARGET = function(self, unit)
     end
 end
 
-AssiduityRegisterFrame = function(self)
+
+--[[
+    @size: can be either "SMALL" or "LARGE"
+]]
+AssiduityRegisterFrame = function(self, size)
+
+    local MEASUREMENTS = MEASUREMENTS[size]
+    self.MEASUREMENTS = MEASUREMENTS
+
+    local unit = self:GetAttribute(UNIT)
+    
     -- Layout
-    self:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
+    self:SetSize(MEASUREMENTS.FRAME_WIDTH, MEASUREMENTS.FRAME_HEIGHT)
 
     -- Interaction
     self:EnableKeyboard(true)
@@ -863,7 +950,7 @@ AssiduityRegisterFrame = function(self)
     --self:SetAttribute("ctrl-spell-heal2", "Nourish")
     --self:SetAttribute("shift-spell-heal2", "Remove Curse")
     --self:SetAttribute("alt-spell-heal2", "Abolish Poison")
-
+    
     -- Textures
     local background = self:CreateTexture(nil, "BACKGROUND")
     background:SetTexture(0, 0, 0, 0.4)
@@ -871,20 +958,21 @@ AssiduityRegisterFrame = function(self)
     self.background = background
 
     local portrait = CreateFrame("Frame", nil, self)
-    portrait:SetSize(PORTRAIT_SIZE, PORTRAIT_SIZE)
+    portrait:SetSize(MEASUREMENTS.PORTRAIT_SIZE, MEASUREMENTS.PORTRAIT_SIZE)
     portrait:SetPoint("RIGHT",
                       self,
                       "RIGHT",
-                      -DISTANCE_TO_EDGE,
+                      -MEASUREMENTS.DISTANCE_TO_EDGE,
                       0)
 
     local portraitBackground = portrait:CreateTexture(nil, "BACKGROUND")
-    portraitBackground:SetTexture(1, 1, 1)
+    portraitBackground:SetTexture(unpack(UNIT_TO_SETUP[unit][2]))
     portraitBackground:SetAllPoints()
 
     local portraitFontString = portrait:CreateFontString(nil, nil, "AssiduityIconText")
     portraitFontString:SetPoint("CENTER", portrait)
-    portraitFontString:SetText(self.portraitText)
+    portraitFontString:SetTextColor(unpack(UNIT_TO_SETUP[unit][3]))
+    portraitFontString:SetText(UNIT_TO_SETUP[unit][1])
     
     -- Target of unit
     
@@ -895,45 +983,60 @@ AssiduityRegisterFrame = function(self)
     local healthBar = CreateFrame("StatusBar", nil, self)
     healthBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
     healthBar:SetOrientation("HORIZONTAL")
-    healthBar:SetSize(BAR_WIDTH, HEALTH_BAR_HEIGHT)
+    healthBar:SetSize(MEASUREMENTS.BAR_WIDTH, MEASUREMENTS.HEALTH_BAR_HEIGHT)
     healthBar:SetPoint("TOPLEFT",
                        self,
                        "TOPLEFT",
-                       DISTANCE_TO_EDGE,
-                       -DISTANCE_TO_EDGE)
+                       MEASUREMENTS.DISTANCE_TO_EDGE,
+                       -MEASUREMENTS.DISTANCE_TO_EDGE)
     self.healthBar = healthBar
 
     local healthBarBackground = healthBar:CreateTexture(nil, "BACKGROUND")
     healthBarBackground:SetTexture(0, 0, 0, 1)
     healthBarBackground:SetAllPoints()
 
-    local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontLarge")
-    nameFontString:SetPoint("CENTER", healthBar)
+    local healthValueFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
+    healthValueFontString:SetPoint("TOPRIGHT", healthBar, -2, -3)
+    self.healthValueFontString = healthValueFontString
+    
+    local healthPercentageFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
+    healthPercentageFontString:SetPoint("TOPLEFT", healthBar, 2, -3)
+    self.healthPercentageFontString = healthPercentageFontString
+
+    local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
+    nameFontString:SetPoint("BOTTOM", self, "TOP", -2)
     self.nameFontString = nameFontString
 
     local powerBar = CreateFrame("StatusBar", nil, self)
     powerBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
     powerBar:SetStatusBarColor(0, 1, 1)
     powerBar:SetOrientation("HORIZONTAL")
-    powerBar:SetSize(BAR_WIDTH, POWER_BAR_HEIGHT)
+    powerBar:SetSize(MEASUREMENTS.BAR_WIDTH, MEASUREMENTS.POWER_BAR_HEIGHT)
     powerBar:SetPoint("BOTTOMLEFT",
                       self,
                       "BOTTOMLEFT",
-                      DISTANCE_TO_EDGE,
-                      DISTANCE_TO_EDGE)
+                      MEASUREMENTS.DISTANCE_TO_EDGE,
+                      MEASUREMENTS.DISTANCE_TO_EDGE)
     self.powerBar = powerBar
 
     local powerBarBackground = powerBar:CreateTexture(nil, "BACKGROUND")
     powerBarBackground:SetTexture(0, 0, 0, 1)
     powerBarBackground:SetAllPoints()
 
+    local powerValueFontString = powerBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
+    powerValueFontString:SetPoint("RIGHT", powerBar, -2, 0)
+    self.powerValueFontString = powerValueFontString
+    
     -- Casting Bar
 
-    local unit = self:GetAttribute(UNIT)
     local unitCapitalized = unit:sub(1,1):upper() .. unit:sub(2)
 
     local castBar = CreateFrame("StatusBar", "Assiduity" .. unitCapitalized .. "CastBar", self, "AssiduityCastingBarTemplate")
-    castBar:SetPoint("RIGHT", self, "LEFT", -10, -15)
+    castBar:SetPoint("RIGHT", 
+                     self, 
+                     "LEFT", 
+                     -10, 
+                     -MEASUREMENTS.CAST_BAR_OFFSET)
     self.castBar = castBar
     
     CastingBarFrame_OnLoad(castBar, unit, false)
@@ -957,14 +1060,14 @@ AssiduityRegisterFrame = function(self)
     ]]
 
     local playerAuras = CreateFrame("Frame", nil, self)
-    playerAuras:SetSize(FRAME_WIDTH, PLAYER_BAR_HEIGHT)
+    playerAuras:SetSize(MEASUREMENTS.FRAME_WIDTH, MEASUREMENTS.PLAYER_BAR_HEIGHT)
     playerAuras:SetPoint("TOPLEFT",
                          self,
                          "BOTTOMLEFT",
                          0,
-                         -AURA_DISTANCE_TO_EDGE)
+                         -MEASUREMENTS.AURA_DISTANCE_TO_EDGE)
     self.playerAuras = playerAuras
-    createAuraFrames(self, playerAuras, PLAYER_AURA_SIZE)
+    createAuraFrames(self, playerAuras, MEASUREMENTS.PLAYER_AURA_SIZE)
     --local playerAurasTexture = playerAuras:CreateTexture(nil, "BACKGROUND")
     --playerAurasTexture:SetTexture(0, 0, 1, 0.4)
     --playerAurasTexture:SetAllPoints()
@@ -977,9 +1080,9 @@ AssiduityRegisterFrame = function(self)
         Hostile  target: non-player debuffs
     ]]
     local nonPlayerAuras = CreateFrame("Frame", nil, self)
-    nonPlayerAuras:SetSize(FRAME_WIDTH, AURA_SIZE)
+    nonPlayerAuras:SetSize(MEASUREMENTS.FRAME_WIDTH, MEASUREMENTS.AURA_SIZE)
     self.nonPlayerAuras = nonPlayerAuras
-    createAuraFrames(self, nonPlayerAuras, AURA_SIZE)
+    createAuraFrames(self, nonPlayerAuras, MEASUREMENTS.AURA_SIZE)
 
     --local nonPlayerAurasTexture = nonPlayerAuras:CreateTexture(nil, "BACKGROUND")
     --nonPlayerAurasTexture:SetTexture(0, 1, 0, 0.4)
@@ -990,9 +1093,9 @@ AssiduityRegisterFrame = function(self)
         Hostile  target: buffs
     ]]
     local auras = CreateFrame("Frame", nil, self)
-    auras:SetSize(FRAME_WIDTH, AURA_SIZE)
+    auras:SetSize(MEASUREMENTS.FRAME_WIDTH, MEASUREMENTS.AURA_SIZE)
     self.auras = auras
-    createAuraFrames(self, auras, AURA_SIZE)
+    createAuraFrames(self, auras, MEASUREMENTS.AURA_SIZE)
     --local aurasTexture = auras:CreateTexture(nil, "BACKGROUND")
     --aurasTexture:SetTexture(1, 0, 0, 0.4)
     --aurasTexture:SetAllPoints()
