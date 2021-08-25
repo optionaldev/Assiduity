@@ -78,6 +78,12 @@ local MEASUREMENTS = {
     }
 }
 
+local FILTERED_AURA_IDS = {
+    [34123] = 1,    -- Druid Tree of Life passive buff
+    [59620] = 1,    -- Berserk weapon enchant proc
+    [67354] = 1,    -- Idol of Mutilation proc
+}
+
 local FILTERED_AURA = {
 
 	["Abomination's Might"] = 1,
@@ -98,9 +104,13 @@ local FILTERED_AURA = {
 	["Blessing of Might"] = 1,
 	["Blessing of Sanctuary"] = 1,
 	["Blessing of Wisdom"] = 1,
+    ["Bloodrage"] = 1,                              -- Warrior ability
+    ["Bloody Vengeance"] = 1,                       -- Blood DK talent, 3% extra physical damage, stacks up to 9%, 30s
 	["Bone Shield"] = 1,
 	["Champion of the Kirin Tor"] = 1,
+    ["Chaos Bane"] = 1,                             -- Shadowmourne proc
 	["Chill of the Throne"] = 1,
+    ["Chilling Knowledge"] = 1,                     -- Ashen verdict healer ring
     ["Clearcasting"] = 1,
 	["Commanding Shout"] = 1,
 	["Concentration Aura"] = 1,
@@ -113,7 +123,9 @@ local FILTERED_AURA = {
 	["Dalaran Intellect"] = 1,
 	["Demon Armor"] = 1,
 	["Demonic Circle: Summon"] = 1,
+    ["Demonic Knowledge"] = 1,                      -- Demo warlock talent
 	["Demoralizing Shout"] = 1,
+    ["Desolation"] = 1,                             -- Unholy DK talent, 5% additional damage with all attacks, 20s
 	["Detect Invisibility"] = 1,
 	["Divine Plea"] = 1,
 	["Divine Sacrifice"] = 1,
@@ -124,50 +136,68 @@ local FILTERED_AURA = {
     ["Ebon Champion"] = 1,
     ["Effervescence"] = 1,
 	["Elemental Oath"] = 1,
-	["Enrage"] = 1,
-	["Enraged Regeneration"] = 1,
-	["Fade"] = 1,
+    ["Elemental Devastation"] = 1,                  -- Enha shaman talent?
+    ["Elusive Power"] = 1,                          -- Abyssal Rune trinket, 590 sp 10s
+	["Enrage"] = 1,     
+    ["Enraged"] = 1,
+	["Enraged Regeneration"] = 1,       
+    ["Eradication"] = 1,                            -- Affliction talent, 20% haste 10s
+    ["Executioner"] = 1,                            -- Executioner weapon enchant proc
+	["Fade"] = 1,                                   -- Priest ability, reduce threat
 	["Fel Armor"] = 1,
-	["Fel Intelligence"] = 1,
+	["Fel Intelligence"] = 1,                       -- Warlock felhunter ability
+    ["Ferocious Inspiration"] = 1,                  -- BM hunt talent
 	["Fire Resistance"] = 1,
 	["Fire Resistance Aura"] = 1,
 	["Fire Ward"] = 1,
 	["Flametongue Totem"] = 1,
 	["Flask of Endless Rage"] = 1,
 	["Flask of the Frost Wyrm"] = 1,
+    ["Flurry"] = 1,                                 -- Fury war talent, 25% attack speed on next 3 attacks
 	["Focus Magic"] = 1,
 	["Fortitude"] = 1,
 	["Frenzied Regeneration"] = 1,
 	["Frost Resistance"] = 1,
 	["Frost Resistance Aura"] = 1,
 	["Frost Ward"] = 1,
+    ["Frostforged Champion"] = 1,                   -- Ashen verdict melee rings (ap & str)
+    ["Furious"] = 1,                                -- Shaman item idol slot
 	["Hand of Reckoning"] = 1,
 	["Hand of Salvation"] = 1,
 	["Heroic Presence"] = 1,
 	["Holy Shield"] = 1,
+    ["Holy Strength"] = 1,                       -- Libram of Valiance
 	["Horn of Winter"] = 1,
 	["Hunter's Mark"] = 1,
 	["Gift of the Wild"] = 1,
+    ["Glyph of Blocking"] = 1,                  -- Warrior glyph
 	["Greater Blessing of Kings"] = 1,
 	["Greater Blessing of Might"] = 1,
 	["Greater Blessing of Sanctuary"] = 1,
 	["Greater Blessing of Wisdom"] = 1,
-	["Ice Armor"] = 1,
-	["Improved Icy Talons"] = 1,
+	["Ice Armor"] = 1,                          
+    ["Icy Talons"] = 1,                         -- DK talent, 20% attack speed
+	["Improved Icy Talons"] = 1,                -- DK talent, 20% attack speed to other party members, 5% extra for DK
+    ["Improved Steady Shot"] = 1,               -- MM hunt talent, 15% extra damage on next Aimed/Arcane/Chimera shot
 	["Infected Wounds"] = 1,
 	["Inner Fire"] = 1,
 	["Inner Focus"] = 1,
 	["Judgement of Light"] = 1,
 	["Judgement of Wisdom"] = 1,
+    ["Kindred Spirits"] = 1,                    -- BM hunt talent, 10% movement speed, pet damage 20% increase
 	["Leader of the Pack"] = 1,
+    ["Life Tap"] = 1,                           -- Warlock glyph, 
 	["Lightning Shield"] = 1,
-    ["Lightweave"] = 1,
+    ["Lightning Speed"] = 1,                    -- Mongoose weapon enchant prot
+    ["Lightweave"] = 1,                         -- Tailoring back enchant proc
 	["Living Seed"] = 1,
+    ["Luck of the Draw"] = 1,                   -- RDF buff
 	["Mage Armor"] = 1,
 	["Mana Spring"] = 1,
 	["Mangle (Bear)"] = 1,
 	["Mangle (Cat)"] = 1,
 	["Mark of the Wild"] = 1,
+    ["Master Demonologist"] = 1,                -- Demo warlock talent
 	["Master Shapeshifter"] = 1,
 	["Molten Armor"] = 1,
 	["Moonkin Aura"] = 1,
@@ -176,26 +206,42 @@ local FILTERED_AURA = {
 	["Prayer of Shadow Protection"] = 1,
 	["Prayer of Spirit"] = 1,
 	["Precious's Ribbon"] = 1,
+    ["Pyroclasm"] = 1,                      -- Warlock
+    ["Quad Core"] = 1,                      -- Mage tier 4 piece set bonus when casting Mirror Image
 	["Rampage"] = 1,
+    ["Reckoning"] = 1,                      -- Prot pala talent, next 4 swings generate extra attack
+    ["Rejuvenating"] = 1,                   -- Idol of Flaring Growth
 	["Renewed Hope"] = 1,
+    ["Replenishment"] = 1,                  -- 1% max mana every 5s
 	["Retribution Aura"] = 1,
 	["Righteous Fury"] = 1,
+    ["Roar of Sacrifice"] = 1,              -- BM pet ability
+    ["Savage Defense"] = 1,                 -- Feral druid talent (Savage Fury)
 	["Scorpid Sting"] = 1,
+    ["Seal of the Pantheon"] = 1,           -- Tank trinket, 3k armor, 20s
 	["Sentry Totem"] = 1,
 	["Shadow Resistance Aura"] = 1,
 	["Shadow Ward"] = 1,
 	["Shield of Righteousness"] = 1,
-    ["Soothing"] = 1,
+    ["Slam"] = 1,                           -- Fury war talent (Bloodsurge)
+    ["Soothing"] = 1,                       -- Idol of the Black Widow 
+    ["Soul Link"] = 1,                      -- Warlock pet ability
 	["Stoneskin"] = 1,
 	["Strength of Earth"] = 1,
 	["Strength of Wrynn"] = 1,
+    ["Sword and Board"] = 1,                -- Prot warrior talent, refresh Shield Slam ability
 	["Sunder Armor"] = 1,
+    ["Swordguard Embroidery"] = 1,          -- Tailoring back enchant?
     ["Thorns"] = 1,
 	["Tiger's Fury"] = 1,
 	["Totem of Wrath"] = 1,
 	["Trueshot Aura"] = 1,
+    ["Unholy Force"] = 1,                   -- Sigil of Virulence
+    ["Unleashed Rage"] = 1,                 -- Enha shammy passive talent
     ["Vengeance"] = 1,
+    ["Vicious"] = 1,                        -- Idol of the Lunar Eclipse
 	["Vigilance"] = 1,
+    ["Water Breathing"] = 1,                -- Shaman ability
 	["Water Shield"] = 1,
 	["Well Fed"] = 1,
 	["Wild Growth"] = 1,
@@ -414,21 +460,30 @@ local handleHealth = function(self)
     if colors then
         local health = UnitHealth(unit)
         local maxHealth = UnitHealthMax(unit)
-        local percentage = math.floor((health / maxHealth) * 100)
+        
+        local percentage 
         local value
         
-        if health > 3000 then
-            value = tostring(math.floor(health / 1000) .. "k")
+        if maxHealth > 3000 then
+            value = tostring(math.floor(maxHealth / 1000) .. "k")
         else
-            value = health
+            value = maxHealth
+        end
+        
+        if maxHealth > 0 then
+            percentage = tostring(math.floor((health / maxHealth) * 100) .. "%")
+        else
+            percentage = ""
         end
         
         self.healthBar:SetStatusBarColor(unpack(colors)) -- bug?
         self.healthBar:SetMinMaxValues(0, maxHealth)
         self.healthBar:SetValue(health)
         
-        self.healthValueFontString:SetText(tostring(value))
-        self.healthPercentageFontString:SetText(tostring(percentage) .. "%")
+        if self.healthValueFontString then
+            self.healthValueFontString:SetText(tostring(value))
+            self.healthPercentageFontString:SetText(percentage)
+        end
     end
 end
 
@@ -440,7 +495,10 @@ local handlePower = function(self)
 
     if powerType then
         local colors = POWERTYPE_TO_COLORS[powerType]
-        self.powerBar:SetStatusBarColor(unpack(colors))
+        
+        if colors then
+            self.powerBar:SetStatusBarColor(unpack(colors))
+        end
     end
     
     local power = UnitMana(unit)
@@ -451,7 +509,9 @@ local handlePower = function(self)
         value = tostring(power)
     end
     
-    self.powerValueFontString:SetText(value)
+    if self.powerValueFontString then
+        self.powerValueFontString:SetText(value)
+    end
     
     self.powerBar:SetMinMaxValues(0, UnitManaMax(unit))
     self.powerBar:SetValue(power)
@@ -502,7 +562,7 @@ local getAuras = function(self, auraFunction, playerInclusion)
     local unit = self:GetAttribute(UNIT)
     
     local index = 1
-    local auraName, _, icon, count, dispelType, duration, expiration, source = auraFunction(unit, index)
+    local auraName, _, icon, count, dispelType, duration, expiration, source, _, _, auraID = auraFunction(unit, index)
     local changeDetected = false
 
     while auraName do
@@ -521,7 +581,7 @@ local getAuras = function(self, auraFunction, playerInclusion)
                       ["dispelType"] = dispelType,
                       ["duration"]   = duration,
                       ["expiration"] = expiration}
-        if not FILTERED_AURA[auraName] then
+        if not FILTERED_AURA[auraName] and not FILTERED_AURA_IDS[auraID] then
             if source == "player" then
                 if playerInclusion ~= "EXCLUDED" then
                     table_insert(result, aura)
@@ -534,7 +594,7 @@ local getAuras = function(self, auraFunction, playerInclusion)
         end
 
         index = index + 1
-        auraName, _, icon, count, dispelType, duration, expiration, source = auraFunction(unit, index)
+        auraName, _, icon, count, dispelType, duration, expiration, source, _, _, auraID = auraFunction(unit, index)
     end
 
     return result
@@ -819,7 +879,7 @@ local setupTarget = function(self)
     self.target = target
     
     local targetBackground = target:CreateTexture(nil, "BACKGROUND")
-    targetBackground:SetTexture(1, 1, 1)
+    targetBackground:SetTexture(0, 0, 0, 0.4)
     targetBackground:SetAllPoints()
     self.targetBackground = targetBackground
     
@@ -869,8 +929,8 @@ local setupTarget = function(self)
     powerBarBackground:SetAllPoints()
 
     target:SetScript("OnUpdate", function(self)
-        --handleHealth(self)
-        --handlePower(self)
+        handleHealth(self)
+        handlePower(self)
     end)
 end
 
@@ -1000,11 +1060,11 @@ AssiduityRegisterFrame = function(self, size)
     self.healthValueFontString = healthValueFontString
     
     local healthPercentageFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
-    healthPercentageFontString:SetPoint("TOPLEFT", healthBar, 2, -3)
+    healthPercentageFontString:SetPoint("LEFT", healthBar, 2, 0)
     self.healthPercentageFontString = healthPercentageFontString
 
     local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
-    nameFontString:SetPoint("BOTTOM", self, "TOP", -2)
+    nameFontString:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -2)
     self.nameFontString = nameFontString
 
     local powerBar = CreateFrame("StatusBar", nil, self)
@@ -1023,7 +1083,7 @@ AssiduityRegisterFrame = function(self, size)
     powerBarBackground:SetTexture(0, 0, 0, 1)
     powerBarBackground:SetAllPoints()
 
-    local powerValueFontString = powerBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
+    local powerValueFontString = powerBar:CreateFontString(nil, nil, "AssiduityAuraCountFontTiny")
     powerValueFontString:SetPoint("RIGHT", powerBar, -2, 0)
     self.powerValueFontString = powerValueFontString
     

@@ -11,6 +11,7 @@ local createFrame = function(index)
 
     frame = CreateFrame("Button", "AssiduityArena" .. stringIndex, UIParent, "SecureUnitButtonTemplate")
     frame:SetAttribute("unit", "arena" .. stringIndex)
+    frame:SetAttribute("type1", "target")
     frame.changeEvent = "ARENA_OPPONENT_UPDATE"
     --frame:SetAttribute("unit", "target")
     --frame.changeEvent = "PLAYER_TARGET_CHANGED"

@@ -16,6 +16,7 @@ src\new_frames\templates.xml
 src\new_frames\player.xml
 src\new_frames\target.lua
 src\new_frames\focus.lua
+src\new_frames\party.lua
 src\new_frames\groups.lua
 src\new_frames\arena.lua
 
@@ -34,4 +35,4 @@ src\delete_items.lua
 src\equipment.lua
 src\macros.lua
 src\reagent_reminder.lua
-src\reposition_frames.lua
+src\handle_old_frames.lua

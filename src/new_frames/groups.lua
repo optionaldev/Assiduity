@@ -399,6 +399,7 @@ local updateFrames = function(frameList, units)
 			frame:UnregisterEvent("UNIT_MANA")
 			frame:UnregisterEvent("UNIT_MAXMANA")
 			frame:SetAlpha(HIDDEN_FRAME_ALPHA)
+            frame:Hide()
 		end
 	end
 end
@@ -813,7 +814,7 @@ local handleFrameCreation = function(frameType, framePosition)
 					   -DISTANCE_TO_EDGE)
 	result.healthBar = healthBar
 				
-	local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
+	local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontTiny")
 	nameFontString:SetPoint("CENTER", healthBar)
 	result.nameFontString = nameFontString
 	
