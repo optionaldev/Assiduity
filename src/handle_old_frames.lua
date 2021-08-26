@@ -20,6 +20,11 @@ local handleFrames = function()
         frame:SetAlpha(ALPHA)
         frame:Hide()
         frame:UnregisterAllEvents()
+        frame:SetScript("OnClick", nil)
+        frame:SetScript("OnEnter", nil)
+        frame:SetScript("OnEvent", nil)
+        frame:SetScript("OnLeave", nil)
+        frame:SetScript("OnUpdate", nil)
     end
 end
 

@@ -47,8 +47,8 @@ local MEASUREMENTS = {
         ["POWER_BAR_HEIGHT"]      =   5,
         ["TARGET"] = {
             ["BAR_WIDTH"]          = 53,
-            ["FRAME_HEIGHT"]       = 26,
-            ["FRAME_WIDTH"]        = 70,
+            ["FRAME_HEIGHT"]       = 28,
+            ["FRAME_WIDTH"]        = 82,
             ["HEALTH_BAR_HEIGHT"]  = 13,
             ["PORTRAIT_SIZE"]      = 24,
             ["POWER_BAR_HEIGHT"]   = 10,
@@ -69,8 +69,8 @@ local MEASUREMENTS = {
         ["POWER_BAR_HEIGHT"]      =  12,
         ["TARGET"] = {
             ["BAR_WIDTH"]          = 53,
-            ["FRAME_HEIGHT"]       = 26,
-            ["FRAME_WIDTH"]        = 70,
+            ["FRAME_HEIGHT"]       = 28,
+            ["FRAME_WIDTH"]        = 82,
             ["HEALTH_BAR_HEIGHT"]  = 13,
             ["PORTRAIT_SIZE"]      = 24,
             ["POWER_BAR_HEIGHT"]   = 10,
@@ -87,7 +87,10 @@ local FILTERED_AURA_IDS = {
 local FILTERED_AURA = {
 
 	["Abomination's Might"] = 1,
-	["Amplify Magic"] = 1,
+    ["Acclimation"] = 1,                    -- Frost dk talent
+    ["Aegis"] = 1,                          -- The Black Heart, tank trinket
+    ["Amplify Magic"] = 1,
+    ["Ancestral Fortitude"] = 1,            -- Rsham talent
 	["Arcane Brilliance"] = 1,
 	["Arcane Empowerment"] = 1,
 	["Arcane Intellect"] = 1,
@@ -99,11 +102,14 @@ local FILTERED_AURA = {
 	["Aspect of the Wild"] = 1,
 	["Battle Shout"] = 1,
 	["Berserker Rage"] = 1,
+    ["Black Magic"] = 1,                            -- Weapon enchant caster haste
+    ["Blade Barrier"] = 1,                          -- DK talent
     ["Blessing of Forgotten Kings"] = 1,
 	["Blessing of Kings"] = 1,
 	["Blessing of Might"] = 1,
 	["Blessing of Sanctuary"] = 1,
 	["Blessing of Wisdom"] = 1,
+    ["Blood Pact"] = 1,                             -- Warlock imp ability
     ["Bloodrage"] = 1,                              -- Warrior ability
     ["Bloody Vengeance"] = 1,                       -- Blood DK talent, 3% extra physical damage, stacks up to 9%, 30s
 	["Bone Shield"] = 1,
@@ -115,6 +121,7 @@ local FILTERED_AURA = {
 	["Commanding Shout"] = 1,
 	["Concentration Aura"] = 1,
     ["Cozy Fire"] = 1,
+    ["Culling the Herd"] = 1,                       -- Hunter pet ability?
 	["Cultivated Power"] = 1,	-- 
 	["Dampen Magic"] = 1,
 	["Demoralizing Roar"] = 1,
@@ -134,12 +141,16 @@ local FILTERED_AURA = {
 	["Earth Shield"] = 1,
 	["Earth Shock"] = 1,
     ["Ebon Champion"] = 1,
+    ["Ebon Plague"] = 1,                            -- Unholy DK debuff
+    ["Edward's Insight"] = 1,                       -- Signet of Edward the Odd
     ["Effervescence"] = 1,
 	["Elemental Oath"] = 1,
     ["Elemental Devastation"] = 1,                  -- Enha shaman talent?
     ["Elusive Power"] = 1,                          -- Abyssal Rune trinket, 590 sp 10s
+    ["Energized"] = 1,                              -- Solace
 	["Enrage"] = 1,     
     ["Enraged"] = 1,
+    ["Enraged Defense"] = 1,                        -- Druid feral talent?
 	["Enraged Regeneration"] = 1,       
     ["Eradication"] = 1,                            -- Affliction talent, 20% haste 10s
     ["Executioner"] = 1,                            -- Executioner weapon enchant proc
@@ -152,18 +163,24 @@ local FILTERED_AURA = {
 	["Fire Ward"] = 1,
 	["Flametongue Totem"] = 1,
 	["Flask of Endless Rage"] = 1,
+    ["Flask of Stoneblood"] = 1,
 	["Flask of the Frost Wyrm"] = 1,
+    ["Flask of the North"] = 1,
     ["Flurry"] = 1,                                 -- Fury war talent, 25% attack speed on next 3 attacks
 	["Focus Magic"] = 1,
+    ["Formidable"] = 1,                             -- Libram of Three Truths proc
 	["Fortitude"] = 1,
 	["Frenzied Regeneration"] = 1,
 	["Frost Resistance"] = 1,
 	["Frost Resistance Aura"] = 1,
 	["Frost Ward"] = 1,
     ["Frostforged Champion"] = 1,                   -- Ashen verdict melee rings (ap & str)
+    ["Frostforged Sage"] = 1,                       -- Ashen verdict hostile caster ring
     ["Furious"] = 1,                                -- Shaman item idol slot
+    ["Furious Howl"] = 1,                           -- Hunter pet, wolf ability
 	["Hand of Reckoning"] = 1,
 	["Hand of Salvation"] = 1,
+    ["Heart of the Crusader"] = 1,               -- Ret pala talent
 	["Heroic Presence"] = 1,
 	["Holy Shield"] = 1,
     ["Holy Strength"] = 1,                       -- Libram of Valiance
@@ -171,6 +188,7 @@ local FILTERED_AURA = {
 	["Hunter's Mark"] = 1,
 	["Gift of the Wild"] = 1,
     ["Glyph of Blocking"] = 1,                  -- Warrior glyph
+    ["Grace"] = 1,                              -- Disc priest talent
 	["Greater Blessing of Kings"] = 1,
 	["Greater Blessing of Might"] = 1,
 	["Greater Blessing of Sanctuary"] = 1,
@@ -178,14 +196,20 @@ local FILTERED_AURA = {
 	["Ice Armor"] = 1,                          
     ["Icy Talons"] = 1,                         -- DK talent, 20% attack speed
 	["Improved Icy Talons"] = 1,                -- DK talent, 20% attack speed to other party members, 5% extra for DK
+    ["Improved Spirit Tap"] = 1,                -- Priest talent
     ["Improved Steady Shot"] = 1,               -- MM hunt talent, 15% extra damage on next Aimed/Arcane/Chimera shot
 	["Infected Wounds"] = 1,
 	["Inner Fire"] = 1,
 	["Inner Focus"] = 1,
+    ["Inspiration"] = 1,                        -- Priest talent
 	["Judgement of Light"] = 1,
 	["Judgement of Wisdom"] = 1,
+    ["Judgements of the Pure"] = 1,              -- Holy pala talent
+    ["Kill Command"] = 1,                       -- Hunter ability
+    ["Killing Machine"] = 1,                    -- DK talent
     ["Kindred Spirits"] = 1,                    -- BM hunt talent, 10% movement speed, pet damage 20% increase
 	["Leader of the Pack"] = 1,
+    ["Lesser Flask of Toughness"] = 1, 
     ["Life Tap"] = 1,                           -- Warlock glyph, 
 	["Lightning Shield"] = 1,
     ["Lightning Speed"] = 1,                    -- Mongoose weapon enchant prot
@@ -198,10 +222,14 @@ local FILTERED_AURA = {
 	["Mangle (Cat)"] = 1,
 	["Mark of the Wild"] = 1,
     ["Master Demonologist"] = 1,                -- Demo warlock talent
+    ["Master of Subtlety"] = 1,                 -- Sub rogue talent
 	["Master Shapeshifter"] = 1,
+    ["Misery"] = 1,                             -- Spriest talent
 	["Molten Armor"] = 1,
 	["Moonkin Aura"] = 1,
 	["Nature Resistance"] = 1,
+    ["Omen of Doom"] = 1,                       -- Druid T10 4 piece set bonus proc
+    ["Power Word: Fortitude"] = 1,
 	["Prayer of Fortitude"] = 1,
 	["Prayer of Shadow Protection"] = 1,
 	["Prayer of Spirit"] = 1,
@@ -209,21 +237,30 @@ local FILTERED_AURA = {
     ["Pyroclasm"] = 1,                      -- Warlock
     ["Quad Core"] = 1,                      -- Mage tier 4 piece set bonus when casting Mirror Image
 	["Rampage"] = 1,
+    ["Rapid Killing"] = 1,                  -- Hunt talent 
+    ["Rapid Recuperation"] = 1,             -- MM hunt talent
+    ["Rage of the Fallen"] = 1,             -- Herkuml War Token trinket proc
     ["Reckoning"] = 1,                      -- Prot pala talent, next 4 swings generate extra attack
+    ["Redoubt"] = 1,                        -- Prot pala talent
     ["Rejuvenating"] = 1,                   -- Idol of Flaring Growth
 	["Renewed Hope"] = 1,
     ["Replenishment"] = 1,                  -- 1% max mana every 5s
 	["Retribution Aura"] = 1,
 	["Righteous Fury"] = 1,
     ["Roar of Sacrifice"] = 1,              -- BM pet ability
+    ["Runic Return"] = 1,                   -- DK talent???
+    ["Savage Combat"] = 1,                  -- Combat rogue talent
     ["Savage Defense"] = 1,                 -- Feral druid talent (Savage Fury)
 	["Scorpid Sting"] = 1,
     ["Seal of the Pantheon"] = 1,           -- Tank trinket, 3k armor, 20s
 	["Sentry Totem"] = 1,
+    ["Shadow Protection"] = 1,
 	["Shadow Resistance Aura"] = 1,
 	["Shadow Ward"] = 1,
+    ["Shadow Weaving"] = 1,                 -- Spriest talent
 	["Shield of Righteousness"] = 1,
     ["Slam"] = 1,                           -- Fury war talent (Bloodsurge)
+    ["Sniper Training"] = 1,                -- Survival hunt talent
     ["Soothing"] = 1,                       -- Idol of the Black Widow 
     ["Soul Link"] = 1,                      -- Warlock pet ability
 	["Stoneskin"] = 1,
@@ -238,9 +275,12 @@ local FILTERED_AURA = {
 	["Trueshot Aura"] = 1,
     ["Unholy Force"] = 1,                   -- Sigil of Virulence
     ["Unleashed Rage"] = 1,                 -- Enha shammy passive talent
+    ["Vampiric Embrace"] = 1,               -- Spriest talent
     ["Vengeance"] = 1,
     ["Vicious"] = 1,                        -- Idol of the Lunar Eclipse
 	["Vigilance"] = 1,
+    ["Vindication"] = 1,                    -- Ret pala talent
+    ["Volcanic Fury"] = 1,                  -- Totem of Quaking Earth
     ["Water Breathing"] = 1,                -- Shaman ability
 	["Water Shield"] = 1,
 	["Well Fed"] = 1,
@@ -401,9 +441,15 @@ local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
 -- Functions --
 ---------------
 
-local getReaction = function(self)
+local getReaction = function(self, optionalUnit)
 
-    local unit = self:GetAttribute(UNIT)
+    local unit
+
+    if optionalUnit then
+        unit = optionalUnit
+    else 
+        unit = self:GetAttribute(UNIT)
+    end
 
     if UnitIsPVPSanctuary(unit) == 1 or not UnitIsEnemy("player", unit) then
         return FRIENDLY
@@ -802,6 +848,9 @@ local updateTarget = function(self)
         self.target.powerBar:Show()
         detectedUnit = unitTarget
     end
+
+    local reaction = REACTION[getReaction(self, unitTarget)]
+    self.targetBackground:SetTexture(unpack(reaction))
     
     if UNIT_TO_SETUP[detectedUnit] then
         setUnit(self, unpack(UNIT_TO_SETUP[detectedUnit]))
@@ -1038,6 +1087,10 @@ AssiduityRegisterFrame = function(self, size)
     
     setupTarget(self)
     
+    local nameFontString = self:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
+    nameFontString:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -2)
+    self.nameFontString = nameFontString
+
     -- Bars
     
     local healthBar = CreateFrame("StatusBar", nil, self)
@@ -1062,10 +1115,6 @@ AssiduityRegisterFrame = function(self, size)
     local healthPercentageFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
     healthPercentageFontString:SetPoint("LEFT", healthBar, 2, 0)
     self.healthPercentageFontString = healthPercentageFontString
-
-    local nameFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
-    nameFontString:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -2)
-    self.nameFontString = nameFontString
 
     local powerBar = CreateFrame("StatusBar", nil, self)
     powerBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
@@ -1191,6 +1240,17 @@ AssiduityRegisterFrame = function(self, size)
         else 
             self[event](self, ...)
         end
+    end)
+    
+    self:SetScript("OnEnter", function(self)
+        --GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", 20, 10)
+        GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
+        GameTooltip:SetUnit(self:GetAttribute(UNIT))
+        GameTooltip:Show()
+    end)
+
+    self:SetScript("OnLeave", function()
+        GameTooltip:Hide()
     end)
 
     handleUnitChange(self)

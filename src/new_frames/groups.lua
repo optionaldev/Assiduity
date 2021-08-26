@@ -399,7 +399,6 @@ local updateFrames = function(frameList, units)
 			frame:UnregisterEvent("UNIT_MANA")
 			frame:UnregisterEvent("UNIT_MAXMANA")
 			frame:SetAlpha(HIDDEN_FRAME_ALPHA)
-            frame:Hide()
 		end
 	end
 end
