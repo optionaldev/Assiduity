@@ -41,6 +41,7 @@ local MEASUREMENTS = {
         ["FRAME_HEIGHT"]          =  33,
         ["FRAME_WIDTH"]           = 123,
         ["HEALTH_BAR_HEIGHT"]     =  22,
+        ["MINI_AURA"]             =   9,
         ["PLAYER_AURA_SIZE"]      =  17,
         ["PLAYER_BAR_HEIGHT"]     =  19,
         ["PORTRAIT_SIZE"]         =  28,
@@ -63,6 +64,7 @@ local MEASUREMENTS = {
         ["FRAME_HEIGHT"]          =  47,
         ["FRAME_WIDTH"]           = 230,
         ["HEALTH_BAR_HEIGHT"]     =  28,
+        ["MINI_AURA"]             =   9,
         ["PLAYER_AURA_SIZE"]      =  25,
         ["PLAYER_BAR_HEIGHT"]     =  27,
         ["PORTRAIT_SIZE"]         =  41,
@@ -95,6 +97,8 @@ local FILTERED_AURA = {
 	["Arcane Empowerment"] = 1,
 	["Arcane Intellect"] = 1,
 	["Argent Champion"] = 1,
+    ["Argent Dawn Commission"] = 1,         -- Level 1 trinket
+    ["Argent Valor"] = 1,                   -- Cannoneer trinket proc
 	["Aspect of the Beast"] = 1,
 	["Aspect of the Dragonhawk"] = 1,
 	["Aspect of the Hawk"] = 1,
@@ -102,26 +106,28 @@ local FILTERED_AURA = {
 	["Aspect of the Wild"] = 1,
 	["Battle Shout"] = 1,
 	["Berserker Rage"] = 1,
-    ["Black Magic"] = 1,                            -- Weapon enchant caster haste
-    ["Blade Barrier"] = 1,                          -- DK talent
+    ["Black Magic"] = 1,                     -- Weapon enchant caster haste
+    ["Blade Barrier"] = 1,                   -- DK talent
     ["Blessing of Forgotten Kings"] = 1,
 	["Blessing of Kings"] = 1,
 	["Blessing of Might"] = 1,
+    ["Blessing of the Moon Goddess"] = 1,   -- Idol of Lunar Fury proc
 	["Blessing of Sanctuary"] = 1,
 	["Blessing of Wisdom"] = 1,
-    ["Blood Pact"] = 1,                             -- Warlock imp ability
-    ["Bloodrage"] = 1,                              -- Warrior ability
-    ["Bloody Vengeance"] = 1,                       -- Blood DK talent, 3% extra physical damage, stacks up to 9%, 30s
+    ["Blood Pact"] = 1,                     -- Warlock imp ability
+    ["Bloodrage"] = 1,                      -- Warrior ability
+    ["Bloodthirst"] = 1,                    -- Fury war talent
+    ["Bloody Vengeance"] = 1,               -- Blood DK talent, 3% extra physical damage, stacks up to 9%, 30s
 	["Bone Shield"] = 1,
 	["Champion of the Kirin Tor"] = 1,
-    ["Chaos Bane"] = 1,                             -- Shadowmourne proc
+    ["Chaos Bane"] = 1,                     -- Shadowmourne proc
 	["Chill of the Throne"] = 1,
-    ["Chilling Knowledge"] = 1,                     -- Ashen verdict healer ring
+    ["Chilling Knowledge"] = 1,             -- Ashen verdict healer ring
     ["Clearcasting"] = 1,
 	["Commanding Shout"] = 1,
 	["Concentration Aura"] = 1,
     ["Cozy Fire"] = 1,
-    ["Culling the Herd"] = 1,                       -- Hunter pet ability?
+    ["Culling the Herd"] = 1,               -- Hunter pet ability?
 	["Cultivated Power"] = 1,	-- 
 	["Dampen Magic"] = 1,
 	["Demoralizing Roar"] = 1,
@@ -130,9 +136,9 @@ local FILTERED_AURA = {
 	["Dalaran Intellect"] = 1,
 	["Demon Armor"] = 1,
 	["Demonic Circle: Summon"] = 1,
-    ["Demonic Knowledge"] = 1,                      -- Demo warlock talent
+    ["Demonic Knowledge"] = 1,              -- Demo warlock talent
 	["Demoralizing Shout"] = 1,
-    ["Desolation"] = 1,                             -- Unholy DK talent, 5% additional damage with all attacks, 20s
+    ["Desolation"] = 1,                     -- Unholy DK talent, 5% additional damage with all attacks, 20s
 	["Detect Invisibility"] = 1,
 	["Divine Plea"] = 1,
 	["Divine Sacrifice"] = 1,
@@ -141,23 +147,24 @@ local FILTERED_AURA = {
 	["Earth Shield"] = 1,
 	["Earth Shock"] = 1,
     ["Ebon Champion"] = 1,
-    ["Ebon Plague"] = 1,                            -- Unholy DK debuff
-    ["Edward's Insight"] = 1,                       -- Signet of Edward the Odd
+    ["Ebon Plague"] = 1,                    -- Unholy DK debuff
+    ["Edward's Insight"] = 1,               -- Signet of Edward the Odd
     ["Effervescence"] = 1,
 	["Elemental Oath"] = 1,
-    ["Elemental Devastation"] = 1,                  -- Enha shaman talent?
-    ["Elusive Power"] = 1,                          -- Abyssal Rune trinket, 590 sp 10s
-    ["Energized"] = 1,                              -- Solace
+    ["Elemental Devastation"] = 1,          -- Enha shaman talent?
+    ["Elusive Power"] = 1,                  -- Abyssal Rune trinket, 590 sp 10s
+    ["Energized"] = 1,                      -- Solace
 	["Enrage"] = 1,     
     ["Enraged"] = 1,
-    ["Enraged Defense"] = 1,                        -- Druid feral talent?
+    ["Enraged Defense"] = 1,                -- Druid feral talent?
 	["Enraged Regeneration"] = 1,       
-    ["Eradication"] = 1,                            -- Affliction talent, 20% haste 10s
-    ["Executioner"] = 1,                            -- Executioner weapon enchant proc
-	["Fade"] = 1,                                   -- Priest ability, reduce threat
+    ["Eradication"] = 1,                    -- Affliction talent, 20% haste 10s
+    ["Executioner"] = 1,                    -- Executioner weapon enchant proc
+    ["Expose Weakness"] = 1,                -- Survival hunt talent
+	["Fade"] = 1,                           -- Priest ability, reduce threat
 	["Fel Armor"] = 1,
-	["Fel Intelligence"] = 1,                       -- Warlock felhunter ability
-    ["Ferocious Inspiration"] = 1,                  -- BM hunt talent
+	["Fel Intelligence"] = 1,               -- Warlock felhunter ability
+    ["Ferocious Inspiration"] = 1,          -- BM hunt talent
 	["Fire Resistance"] = 1,
 	["Fire Resistance Aura"] = 1,
 	["Fire Ward"] = 1,
@@ -166,69 +173,73 @@ local FILTERED_AURA = {
     ["Flask of Stoneblood"] = 1,
 	["Flask of the Frost Wyrm"] = 1,
     ["Flask of the North"] = 1,
-    ["Flurry"] = 1,                                 -- Fury war talent, 25% attack speed on next 3 attacks
+    ["Flurry"] = 1,                         -- Fury war talent, 25% attack speed on next 3 attacks
 	["Focus Magic"] = 1,
-    ["Formidable"] = 1,                             -- Libram of Three Truths proc
+    ["Focused Will"] = 1,                   -- Disc priest talent
+    ["Formidable"] = 1,                     -- Libram of Three Truths proc
 	["Fortitude"] = 1,
 	["Frenzied Regeneration"] = 1,
 	["Frost Resistance"] = 1,
 	["Frost Resistance Aura"] = 1,
 	["Frost Ward"] = 1,
-    ["Frostforged Champion"] = 1,                   -- Ashen verdict melee rings (ap & str)
-    ["Frostforged Sage"] = 1,                       -- Ashen verdict hostile caster ring
-    ["Furious"] = 1,                                -- Shaman item idol slot
-    ["Furious Howl"] = 1,                           -- Hunter pet, wolf ability
+    ["Frostforged Champion"] = 1,           -- Ashen verdict melee rings (ap & str)
+    ["Frostforged Sage"] = 1,               -- Ashen verdict hostile caster ring
+    ["Furious"] = 1,                        -- Shaman item idol slot
+    ["Furious Gladiator's Libram of Fortitude"] = 1,    
+    ["Furious Howl"] = 1,                   -- Hunter pet, wolf ability
 	["Hand of Reckoning"] = 1,
 	["Hand of Salvation"] = 1,
-    ["Heart of the Crusader"] = 1,               -- Ret pala talent
+    ["Heart of the Crusader"] = 1,          -- Ret pala talent
 	["Heroic Presence"] = 1,
 	["Holy Shield"] = 1,
-    ["Holy Strength"] = 1,                       -- Libram of Valiance
+    ["Holy Strength"] = 1,                  -- Libram of Valiance
 	["Horn of Winter"] = 1,
 	["Hunter's Mark"] = 1,
+    ["Hyperspeed Acceleration"] = 1,        -- Engineering hand enchant
 	["Gift of the Wild"] = 1,
-    ["Glyph of Blocking"] = 1,                  -- Warrior glyph
-    ["Grace"] = 1,                              -- Disc priest talent
+    ["Glyph of Blocking"] = 1,              -- Warrior glyph
+    ["Grace"] = 1,                          -- Disc priest talent
 	["Greater Blessing of Kings"] = 1,
 	["Greater Blessing of Might"] = 1,
 	["Greater Blessing of Sanctuary"] = 1,
 	["Greater Blessing of Wisdom"] = 1,
-	["Ice Armor"] = 1,                          
-    ["Icy Talons"] = 1,                         -- DK talent, 20% attack speed
-	["Improved Icy Talons"] = 1,                -- DK talent, 20% attack speed to other party members, 5% extra for DK
-    ["Improved Spirit Tap"] = 1,                -- Priest talent
-    ["Improved Steady Shot"] = 1,               -- MM hunt talent, 15% extra damage on next Aimed/Arcane/Chimera shot
+	["Ice Armor"] = 1,                      
+    ["Icy Talons"] = 1,                     -- DK talent, 20% attack speed
+	["Improved Icy Talons"] = 1,            -- DK talent, 20% attack speed to other party members, 5% extra for DK
+    ["Improved Spirit Tap"] = 1,            -- Priest talent
+    ["Improved Steady Shot"] = 1,           -- MM hunt talent, 15% extra damage on next Aimed/Arcane/Chimera shot
 	["Infected Wounds"] = 1,
 	["Inner Fire"] = 1,
 	["Inner Focus"] = 1,
-    ["Inspiration"] = 1,                        -- Priest talent
+    ["Inspiration"] = 1,                    -- Priest talent
 	["Judgement of Light"] = 1,
+    ["Judgement of the Just"] = 1,          -- Prot pala talent
 	["Judgement of Wisdom"] = 1,
-    ["Judgements of the Pure"] = 1,              -- Holy pala talent
-    ["Kill Command"] = 1,                       -- Hunter ability
-    ["Killing Machine"] = 1,                    -- DK talent
-    ["Kindred Spirits"] = 1,                    -- BM hunt talent, 10% movement speed, pet damage 20% increase
+    ["Judgements of the Pure"] = 1,         -- Holy pala talent
+    ["Kill Command"] = 1,                   -- Hunter ability
+    ["Killing Machine"] = 1,                -- DK talent
+    ["Kindred Spirits"] = 1,                -- BM hunt talent, 10% movement speed, pet damage 20% increase
 	["Leader of the Pack"] = 1,
     ["Lesser Flask of Toughness"] = 1, 
-    ["Life Tap"] = 1,                           -- Warlock glyph, 
+    ["Life Tap"] = 1,                       -- Warlock glyph, 
 	["Lightning Shield"] = 1,
-    ["Lightning Speed"] = 1,                    -- Mongoose weapon enchant prot
-    ["Lightweave"] = 1,                         -- Tailoring back enchant proc
+    ["Lightning Speed"] = 1,                -- Mongoose weapon enchant prot
+    ["Lightweave"] = 1,                     -- Tailoring back enchant proc
 	["Living Seed"] = 1,
-    ["Luck of the Draw"] = 1,                   -- RDF buff
+    ["Luck of the Draw"] = 1,               -- RDF buff
 	["Mage Armor"] = 1,
 	["Mana Spring"] = 1,
 	["Mangle (Bear)"] = 1,
 	["Mangle (Cat)"] = 1,
 	["Mark of the Wild"] = 1,
-    ["Master Demonologist"] = 1,                -- Demo warlock talent
-    ["Master of Subtlety"] = 1,                 -- Sub rogue talent
+    ["Master Demonologist"] = 1,            -- Demo warlock talent
+    ["Master of Subtlety"] = 1,             -- Sub rogue talent
 	["Master Shapeshifter"] = 1,
-    ["Misery"] = 1,                             -- Spriest talent
+    ["Misery"] = 1,                         -- Spriest talent
 	["Molten Armor"] = 1,
 	["Moonkin Aura"] = 1,
 	["Nature Resistance"] = 1,
-    ["Omen of Doom"] = 1,                       -- Druid T10 4 piece set bonus proc
+    ["Omen of Doom"] = 1,                   -- Druid T10 4 piece set bonus proc
     ["Power Word: Fortitude"] = 1,
 	["Prayer of Fortitude"] = 1,
 	["Prayer of Shadow Protection"] = 1,
@@ -246,6 +257,7 @@ local FILTERED_AURA = {
 	["Renewed Hope"] = 1,
     ["Replenishment"] = 1,                  -- 1% max mana every 5s
 	["Retribution Aura"] = 1,
+    ["Revitalized"] = 1,                    -- Purified Lunar Dust proc
 	["Righteous Fury"] = 1,
     ["Roar of Sacrifice"] = 1,              -- BM pet ability
     ["Runic Return"] = 1,                   -- DK talent???
@@ -254,13 +266,17 @@ local FILTERED_AURA = {
 	["Scorpid Sting"] = 1,
     ["Seal of the Pantheon"] = 1,           -- Tank trinket, 3k armor, 20s
 	["Sentry Totem"] = 1,
+    ["Shadow Embrace"] = 1,                 -- Aff lock talent
+    ["Shadow Mastery"] = 1,                 -- Aff lock talent
     ["Shadow Protection"] = 1,
 	["Shadow Resistance Aura"] = 1,
 	["Shadow Ward"] = 1,
     ["Shadow Weaving"] = 1,                 -- Spriest talent
+    ["Shield Block"] = 1,
 	["Shield of Righteousness"] = 1,
     ["Slam"] = 1,                           -- Fury war talent (Bloodsurge)
     ["Sniper Training"] = 1,                -- Survival hunt talent
+    ["Snow of Faith"] = 1,              
     ["Soothing"] = 1,                       -- Idol of the Black Widow 
     ["Soul Link"] = 1,                      -- Warlock pet ability
 	["Stoneskin"] = 1,
@@ -268,10 +284,12 @@ local FILTERED_AURA = {
 	["Strength of Wrynn"] = 1,
     ["Sword and Board"] = 1,                -- Prot warrior talent, refresh Shield Slam ability
 	["Sunder Armor"] = 1,
+    ["Surge of Power"] = 1,                 -- 1/2 of the DFO buffs
     ["Swordguard Embroidery"] = 1,          -- Tailoring back enchant?
     ["Thorns"] = 1,
 	["Tiger's Fury"] = 1,
 	["Totem of Wrath"] = 1,
+    ["Trauma"] = 1,                         -- Arms war talent
 	["Trueshot Aura"] = 1,
     ["Unholy Force"] = 1,                   -- Sigil of Virulence
     ["Unleashed Rage"] = 1,                 -- Enha shammy passive talent
@@ -286,6 +304,7 @@ local FILTERED_AURA = {
 	["Well Fed"] = 1,
 	["Wild Growth"] = 1,
 	["Windfury Totem"] = 1,
+    ["Winter's Chill"] = 1,                 -- Frost mage talent
 	["Wrath of Air Totem"] = 1,
 	["Wyrmrest Champion"] = 1
 }
@@ -738,10 +757,28 @@ local updateAura = function(self)
     local thirdRowAuras = {}
 
     if getReaction(self) == FRIENDLY then
+        local unit = self:GetAttribute(UNIT)
+        if UnitBuff(unit, "Mark of the Wild") or
+           UnitBuff(unit, "Gift of the Wild") 
+        then
+            self.offTheWildTexture:Show()
+        else
+            self.offTheWildTexture:Hide()
+        end
+        
+        if UnitBuff(unit, "Thorns") then
+            self.thornsTexture:Show()
+        else
+            self.thornsTexture:Hide()
+        end
+        
         firstRowAuras  = getAuras(self, UnitBuff,   "EXCLUSIVE")
         secondRowAuras = getAuras(self, UnitBuff,   "EXCLUDED")
         thirdRowAuras  = getAuras(self, UnitDebuff, "INCLUDED")
     else
+        self.offTheWildTexture:Hide()
+        self.thornsTexture:Hide()
+        
         firstRowAuras  = getAuras(self, UnitDebuff, "EXCLUSIVE")
         secondRowAuras = getAuras(self, UnitDebuff, "EXCLUDED")
         thirdRowAuras  = getAuras(self, UnitBuff,   "INCLUDED")
@@ -1115,6 +1152,22 @@ AssiduityRegisterFrame = function(self, size)
     local healthPercentageFontString = healthBar:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
     healthPercentageFontString:SetPoint("LEFT", healthBar, 2, 0)
     self.healthPercentageFontString = healthPercentageFontString
+
+    -- Druid buffs
+    
+    local offTheWildTexture = healthBar:CreateTexture(nil, "OVERLAY")
+    offTheWildTexture:SetSize(MEASUREMENTS.MINI_AURA, MEASUREMENTS.MINI_AURA)
+    offTheWildTexture:SetPoint("TOPLEFT", healthBar, "TOPLEFT")
+    offTheWildTexture:SetTexture("Interface\\Icons\\Spell_Nature_Regeneration")
+    self.offTheWildTexture = offTheWildTexture
+    
+    local thornsTexture = healthBar:CreateTexture(nil, "OVERLAY")
+    thornsTexture:SetSize(MEASUREMENTS.MINI_AURA, MEASUREMENTS.MINI_AURA)
+    thornsTexture:SetPoint("LEFT", offTheWildTexture, "RIGHT")
+    thornsTexture:SetTexture("Interface\\Icons\\Spell_Nature_Thorns")
+    self.thornsTexture = thornsTexture
+    
+    -- Power bar
 
     local powerBar = CreateFrame("StatusBar", nil, self)
     powerBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
