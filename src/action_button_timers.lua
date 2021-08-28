@@ -14,9 +14,9 @@ local debug = print
 ------------------------
 local AFTER_USE_COOLDOWNS = {
 
-    ["Inner Focus"] = 1,
-    ["Prowl"]       = 1,
-    ["Stealth"]     = 1,
+    ["Inner Focus"]        = 1,
+    ["Prowl"]              = 1,
+    ["Stealth"]            = 1,
 }
 
 local BUTTONS = {
@@ -73,6 +73,7 @@ local PLAYER_NAME              = GetUnitName( "player" )
 local lastSentTime = GetTime()
 local guardianSpiritRemoved 
 local guardianSpiritBloomed
+local natureSwiftnessCast
 local updateButton
 
 --- table: Keeps a list of buttons currenty being tracked
@@ -214,6 +215,7 @@ local ADDON_LOADED = function( self, addon )
 		self:RegisterEvent("ADDON_LOADED")
 		self:RegisterEvent("ACTIONBAR_HIDEGRID")
 		self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
+        self:RegisterEvent("CHARACTER_POINTS_CHANGED")
 		self:RegisterEvent("CHAT_MSG_SYSTEM")
 		self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 		self:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
@@ -235,6 +237,11 @@ local ACTIONBAR_UPDATE_COOLDOWN = function( self )
         updateButton:start()
         updateButton = nil
     end
+end
+
+local CHARACTER_POINTS_CHANGED = function( self )
+    
+    getButtonHoldings()
 end
 
 local CHAT_MSG_SYSTEM = function( self, message )
@@ -279,6 +286,12 @@ end
 
 local UNIT_AURA = function( self, unit )
     
+    if natureSwiftnessCast and UnitBuff(unit, "Nature's Swiftness") == nil then
+        local button = actionToButton["Nature's Swiftness"]
+        button:start()
+        natureSwiftnessCast = nil
+    end
+
     if guardianSpiritRemoved == 1 then
         if not guardianSpiritBloomed and
            ( select( 3, GetGlyphSocketInfo( 1 )) == GUARDIAN_SPIRIT_GLYPH_ID or
@@ -296,10 +309,14 @@ end
 --- @function: Ready the spell that will be tracked
 local UNIT_SPELLCAST_SUCCEEDED = function( self, unit, action )
     
-    if unit == "player" and not AFTER_USE_COOLDOWNS[action] then
-        local button = actionToButton[getActualName(action)]
-        if button then
-            updateButton = button
+    if unit == "player" then
+        if action == "Nature's Swiftness" then
+            natureSwiftnessCast = 1
+        elseif not AFTER_USE_COOLDOWNS[action] then
+            local button = actionToButton[getActualName(action)]
+            if button then
+                updateButton = button
+            end
         end
     end
 end
@@ -315,6 +332,7 @@ do
     self.ADDON_LOADED                = ADDON_LOADED
     self.ACTIONBAR_HIDEGRID          = ACTIONBAR_HIDEGRID
     self.ACTIONBAR_UPDATE_COOLDOWN   = ACTIONBAR_UPDATE_COOLDOWN
+    self.CHARACTER_POINTS_CHANGED    = CHARACTER_POINTS_CHANGED
     self.CHAT_MSG_SYSTEM   			 = CHAT_MSG_SYSTEM
     self.COMBAT_LOG_EVENT_UNFILTERED = COMBAT_LOG_EVENT_UNFILTERED
     self.PET_BAR_UPDATE_COOLDOWN     = PET_BAR_UPDATE_COOLDOWN

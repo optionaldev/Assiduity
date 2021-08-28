@@ -198,6 +198,7 @@ local FILTERED_AURA = {
     ["Hyperspeed Acceleration"] = 1,        -- Engineering hand enchant
 	["Gift of the Wild"] = 1,
     ["Glyph of Blocking"] = 1,              -- Warrior glyph
+    ["Gylph of Revenge"] = 1,               -- Warrior glyph
     ["Grace"] = 1,                          -- Disc priest talent
 	["Greater Blessing of Kings"] = 1,
 	["Greater Blessing of Might"] = 1,
@@ -258,7 +259,6 @@ local FILTERED_AURA = {
     ["Replenishment"] = 1,                  -- 1% max mana every 5s
 	["Retribution Aura"] = 1,
     ["Revitalized"] = 1,                    -- Purified Lunar Dust proc
-	["Righteous Fury"] = 1,
     ["Roar of Sacrifice"] = 1,              -- BM pet ability
     ["Runic Return"] = 1,                   -- DK talent???
     ["Savage Combat"] = 1,                  -- Combat rogue talent
@@ -287,6 +287,7 @@ local FILTERED_AURA = {
     ["Surge of Power"] = 1,                 -- 1/2 of the DFO buffs
     ["Swordguard Embroidery"] = 1,          -- Tailoring back enchant?
     ["Thorns"] = 1,
+    ["Thunder Clap"] = 1,
 	["Tiger's Fury"] = 1,
 	["Totem of Wrath"] = 1,
     ["Trauma"] = 1,                         -- Arms war talent
@@ -1159,12 +1160,14 @@ AssiduityRegisterFrame = function(self, size)
     offTheWildTexture:SetSize(MEASUREMENTS.MINI_AURA, MEASUREMENTS.MINI_AURA)
     offTheWildTexture:SetPoint("TOPLEFT", healthBar, "TOPLEFT")
     offTheWildTexture:SetTexture("Interface\\Icons\\Spell_Nature_Regeneration")
+    offTheWildTexture:SetAlpha(0.5)
     self.offTheWildTexture = offTheWildTexture
     
     local thornsTexture = healthBar:CreateTexture(nil, "OVERLAY")
     thornsTexture:SetSize(MEASUREMENTS.MINI_AURA, MEASUREMENTS.MINI_AURA)
     thornsTexture:SetPoint("LEFT", offTheWildTexture, "RIGHT")
     thornsTexture:SetTexture("Interface\\Icons\\Spell_Nature_Thorns")
+    thornsTexture:SetAlpha(0.5)
     self.thornsTexture = thornsTexture
     
     -- Power bar
