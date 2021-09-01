@@ -1069,7 +1069,7 @@ end
 --[[
     @size: can be either "SMALL" or "LARGE"
 ]]
-AssiduityRegisterFrame = function(self, size)
+AssiduityRegisterFrame = function(self, size, orientation)
 
     local MEASUREMENTS = MEASUREMENTS[size]
     self.MEASUREMENTS = MEASUREMENTS
@@ -1106,11 +1106,20 @@ AssiduityRegisterFrame = function(self, size)
 
     local portrait = CreateFrame("Frame", nil, self)
     portrait:SetSize(MEASUREMENTS.PORTRAIT_SIZE, MEASUREMENTS.PORTRAIT_SIZE)
-    portrait:SetPoint("RIGHT",
-                      self,
-                      "RIGHT",
-                      -MEASUREMENTS.DISTANCE_TO_EDGE,
-                      0)
+    
+    if orientation == "LEFT_TO_RIGHT" then 
+        portrait:SetPoint("LEFT",
+                          self,
+                          "LEFT",
+                          MEASUREMENTS.DISTANCE_TO_EDGE,
+                          0)
+    else
+        portrait:SetPoint("RIGHT",
+                          self,
+                          "RIGHT",
+                          -MEASUREMENTS.DISTANCE_TO_EDGE,
+                          0)
+    end
 
     local portraitBackground = portrait:CreateTexture(nil, "BACKGROUND")
     portraitBackground:SetTexture(unpack(UNIT_TO_SETUP[unit][2]))
@@ -1135,11 +1144,20 @@ AssiduityRegisterFrame = function(self, size)
     healthBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8X8.blp")
     healthBar:SetOrientation("HORIZONTAL")
     healthBar:SetSize(MEASUREMENTS.BAR_WIDTH, MEASUREMENTS.HEALTH_BAR_HEIGHT)
-    healthBar:SetPoint("TOPLEFT",
-                       self,
-                       "TOPLEFT",
-                       MEASUREMENTS.DISTANCE_TO_EDGE,
-                       -MEASUREMENTS.DISTANCE_TO_EDGE)
+    
+    if orientation == "LEFT_TO_RIGHT" then 
+        healthBar:SetPoint("TOPRIGHT",
+                           self,
+                           "TOPRIGHT",
+                           -MEASUREMENTS.DISTANCE_TO_EDGE,
+                           -MEASUREMENTS.DISTANCE_TO_EDGE)
+    else
+        healthBar:SetPoint("TOPLEFT",
+                           self,
+                           "TOPLEFT",
+                           MEASUREMENTS.DISTANCE_TO_EDGE,
+                           -MEASUREMENTS.DISTANCE_TO_EDGE)
+    end
     self.healthBar = healthBar
 
     local healthBarBackground = healthBar:CreateTexture(nil, "BACKGROUND")
@@ -1177,11 +1195,11 @@ AssiduityRegisterFrame = function(self, size)
     powerBar:SetStatusBarColor(0, 1, 1)
     powerBar:SetOrientation("HORIZONTAL")
     powerBar:SetSize(MEASUREMENTS.BAR_WIDTH, MEASUREMENTS.POWER_BAR_HEIGHT)
-    powerBar:SetPoint("BOTTOMLEFT",
-                      self,
-                      "BOTTOMLEFT",
-                      MEASUREMENTS.DISTANCE_TO_EDGE,
-                      MEASUREMENTS.DISTANCE_TO_EDGE)
+    powerBar:SetPoint("TOP",
+                      healthBar,
+                      "BOTTOM",
+                      0,
+                      -MEASUREMENTS.DISTANCE_TO_EDGE)
     self.powerBar = powerBar
 
     local powerBarBackground = powerBar:CreateTexture(nil, "BACKGROUND")

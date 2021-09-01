@@ -20,7 +20,7 @@ local createFrame = function(index)
     --frame:SetAttribute("unit", "target")
     --frame.changeEvent = "PLAYER_TARGET_CHANGED"
     
-    AssiduityRegisterFrame(frame, "SMALL")
+    AssiduityRegisterFrame(frame, "SMALL", "LEFT_TO_RIGHT")
 
     return frame
 end
