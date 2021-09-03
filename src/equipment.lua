@@ -3,11 +3,11 @@
 -- Imports and locals --
 ------------------------
 
-local CLOAK_REFRESH_TIME = 5
+local CLOAK_REFRESH_TIME = 0.2
 local CLOAK_VISIBLE_MAX  = 0.31
-local CLOAK_VISIBLE_MIN  = 0.3
+local CLOAK_VISIBLE_MIN  = 0.1
 
-local cloakTimer = CLOAK_REFRESH_TIME   
+local clockTimer = CLOAK_REFRESH_TIME   
 	
 local ShowCloak = ShowCloak
 local AssiduityEquipment = CreateFrame( "Frame" )

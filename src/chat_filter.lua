@@ -69,7 +69,7 @@ local function spamFilter(self, event, message, author, language, ...)
 		return false
 	end
 
-	if language == "Orcish" and GetZoneText() == "Dalaran" then
+	if language == "Orcish" then
 		return true
 	end
 	
