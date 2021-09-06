@@ -471,7 +471,7 @@ local getReaction = function(self, optionalUnit)
         unit = self:GetAttribute(UNIT)
     end
 
-    if UnitIsPVPSanctuary(unit) == 1 or not UnitIsEnemy("player", unit) then
+    if UnitIsPVPSanctuary(unit) == 1 or UnitIsFriend("player", unit) then
         return FRIENDLY
     end
 
