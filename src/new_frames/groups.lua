@@ -9,6 +9,26 @@ local table_sort   = table.sort
 local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
 local UnitAuraSource = AssiduityUnitAuraSource
 
+--[[
+    2 people in a party:
+        num party & real num party = 1
+        num raid & real num raid = 0
+    2 people in a raid:
+        num party & real num party = 1
+        num raid & real num raid = 2
+    2 people in a raid in different parties
+        num party & real num party = 0
+        num raid & real num raid = 2
+    battleground with 2 people in same group, 14 others in other groups
+        num party = 2
+        real num party = 0
+        num raid = 17
+        real num raid = 0
+]]
+local GetNumRaidMembers = GetNumRaidMembers
+local GetRealNumRaidMembers = GetRealNumRaidMembers
+local GetRealNumPartyMembers = GetRealNumPartyMembers
+
 local BUTTON_WIDTH = 70
 local BUTTON_HEIGHT = 50
 local SEPARATOR_SIZE = 7
@@ -56,6 +76,16 @@ AssiduityGroupsFrame = CreateFrame("Frame", AssiduityGroupsFrame, UIParent)
 nameToSpec = {}
 
 --[[
+    There is no perfect method for detecting the 1-2-3 tanks available in the group.
+    
+    Still experimenting with different things, but as long as there is ambiguity,
+    we should take the top 2-3 hp pools in the group.
+    
+    This might mess up parties, but the priority is having it work in raids.
+]]
+nameToHealth = {}
+
+--[[
 	Once we've identified the spec, we want to know what role that spec uses.
 	
 	Only included specs for classes where it couldn't be identified from the get-go.
@@ -66,6 +96,7 @@ nameToSpec = {}
 ]]
 
 local PLAYER_BUFF_ORDER = {
+
 	"Rejuvenation",
 	"Regrowth",
 	"Lifebloom",
@@ -82,7 +113,8 @@ local specToRole = {
 	["Holy"]		= "heal",
 	["Protection"]  = "tank",
 	["Restoration"] = "heal",
-	["Retribution"] = "mdps"
+	["Retribution"] = "mdps",
+    ["Unholy"]      = "mdps"
 }
 
 local BUFF_TO_SPEC = {
@@ -100,7 +132,9 @@ local BUFF_TO_SPEC = {
 	["Eclipse (Lunar)"] = "Balance",
 	["Eclipse (Solar)"] = "Balance",
 	
-	["Living Seed"] = "Restoration"
+	["Living Seed"] = "Restoration",
+    
+    ["Bone Shield"] = "Unholy"
 }
 
 local SPELLCAST_TO_SPEC = {
@@ -129,6 +163,7 @@ local SPELLCAST_TO_SPEC = {
 
 
 local OPPOSITE_POINT = {
+
 	["LEFT"]   = "RIGHT",
 	["RIGHT"]  = "LEFT",
 	["TOP"]    = "BOTTOM",
@@ -136,6 +171,7 @@ local OPPOSITE_POINT = {
 }
 
 local DEBUFFS_TO_IGNORE = {
+
 	["Chill of the Throne"] = 1,
 	["Exhaustion"] 			= 1,
 	["Weakened Soul"]		= 1
@@ -147,16 +183,16 @@ local rdpsFrames = {}
 local healFrames = {}
 local unclassifiedFrames = {}
 
-local tankUnits = {}
-local mdpsUnits = {}
-local rdpsUnits = {}
-local healUnits = {}
+tankUnits = {}
+mdpsUnits = {}
+rdpsUnits = {}
+healUnits = {}
 
 --[[ 
 	Here we put units that we can't classify based on hp / mana / passive buffs
 	We need to wait for them to cast some spell specific for their talents (spec)
 ]] 
-local unclassifiedUnits = {}
+unclassifiedUnits = {}
 
 ---------------
 -- Functions --
@@ -199,7 +235,7 @@ end
 	important in RDFs and I might even hide the entire thing in dungeons
 	and just use key combos for selecting.
 ]]
-local applyBaseClasification = function(unit, tankMinHp)
+local applyBaseClasification = function(unit)
 	
 	local class = UnitLocalizedClass(unit)
 	local name = UnitName(unit)
@@ -209,28 +245,24 @@ local applyBaseClasification = function(unit, tankMinHp)
 	elseif class == "ROGUE" then
 		handleTableInsertion(mdpsUnits, unit)
 	elseif class == "DRUID" then
-		if UnitAura(unit, "Moonkin Form") then
+        if UnitManaMax(unit) < 13000 then
+			nameToSpec[name] = "Feral"
+			handleTableInsertion(unclassifiedUnits, unit)
+        elseif UnitAura(unit, "Moonkin Form") then
 			handleTableInsertion(rdpsUnits, unit)
 			nameToSpec[name] = "Balance"
 		elseif UnitAuraSource(unit, "Tree of Life") then
 			handleTableInsertion(healUnits, unit)
 			nameToSpec[name] = "Restoration"
-		elseif UnitHealthMax(unit) > tankMinHp then
-			handleTableInsertion(tankUnits, unit)
-			nameToSpec[name] = "Feral"
-		else
+        else 
 			handleTableInsertion(unclassifiedUnits, unit)
 		end
 	elseif class == "PALADIN" then
-		if UnitPowerMax(unit) > 15000 then
+		if UnitManaMax(unit) > 15000 then
 			handleTableInsertion(healUnits, unit)
 			nameToSpec[name] = "Holy"
-		elseif UnitHealthMax(unit) > tankMinHp then
-			handleTableInsertion(tankUnits, unit)
-			nameToSpec[name] = "Protection"
-		else
-			handleTableInsertion(mdpsUnits, unit)
-			nameToSpec[name] = "Retribution"
+        else 
+			handleTableInsertion(unclassifiedUnits, unit)
 		end
 	elseif class == "SHAMAN" then
 		if UnitAuraSource(unit, "Elemental Oath") then
@@ -243,7 +275,7 @@ local applyBaseClasification = function(unit, tankMinHp)
 			handleTableInsertion(healUnits, unit)
 			nameToSpec[name] = "Restoration"
 		end
-	elseif class == "WARRIOR" and UnitAura(unit, "Rampage") then
+	elseif class == "WARRIOR" and UnitAuraSource(unit, "Rampage") then
 		handleTableInsertion(mdpsUnits, unit)
 	elseif class == "DEATHKNIGHT" or class == "WARRIOR" then
 		--[[
@@ -251,11 +283,7 @@ local applyBaseClasification = function(unit, tankMinHp)
 			tank or dps and Frost tank or dps. Will need to see how 
 			we deal with it.
 		]]
-		if UnitHealthMax(unit) > tankMinHp then
-			handleTableInsertion(tankUnits, unit)
-		else 
-			handleTableInsertion(mdpsUnits, unit)
-		end
+        handleTableInsertion(unclassifiedUnits, unit)
 	elseif class == "PRIEST" then
 		if UnitAura(unit, "Shadowform") then
 			handleTableInsertion(rdpsUnits, unit)
@@ -284,7 +312,7 @@ local handleUnit = function(unit)
 	if not UnitExists(unit) then
 		return
 	end
-	applyBaseClasification(unit, RAID_TANK_MIN_HP)
+	applyBaseClasification(unit)
 	if not isUnitRoleDiscovered(unit) then
 		local spec = nameToSpec[UnitName(unit)]
 		if spec then
@@ -310,7 +338,7 @@ end
 local evaluateParty = function() 
 	
 	for index = 1, 4 do
-		local unit = "party" .. tostring(index)
+		local unit = "party" .. index
 		handleUnit(unit)
 	end
 	
@@ -323,10 +351,92 @@ end
 
 local evaluateRaid = function()
 	
+    nameToHealth = {}
+    
+    for index = 1, 40 do
+        local unit = "raid" .. index
+        if UnitExists(unit) then
+            table_insert(nameToHealth, {["name"] = UnitName(unit), 
+                                        ["maxHealth"] = UnitHealthMax(unit)})
+        end
+    end
+    
 	for index = 1, 40 do
 		local unit = "raid" .. index
 		handleUnit(unit)
 	end
+    
+    table_sort(nameToHealth, function(a, b) return a.maxHealth > b.maxHealth end)
+    
+    local firstTank
+    local secondTank
+    local thirdTank
+    
+    if GetRealNumRaidMembers() ~= 0 then
+        local count = GetRealNumRaidMembers()
+        firstTank = nameToHealth[1].name
+        secondTank = nameToHealth[2].name
+        
+        if count > 15 then
+            thirdTank = nameToHealth[3].name
+        end
+    elseif GetNumPartyMembers() ~= 0 then
+        firstTank = nameToHealth[1].name
+    end
+    
+    --[[
+        We expect there to be 1 tank in parties, 2 tanks in 10 man raids and 
+        2-3 in 25 man raids (going with 3 just to be safe)
+    ]]
+   local removeIndex
+   for index, unclassified in ipairs(unclassifiedUnits) do
+       if UnitName(unclassified) == firstTank then
+           table_insert(tankUnits, unclassified)
+           removeIndex = index
+           break
+       end
+   end
+   table_remove(unclassifiedUnits, removeIndex)
+   
+   if secondTank then
+       for index, unclassified in ipairs(unclassifiedUnits) do
+           if UnitName(unclassified) == secondTank then
+               table_insert(tankUnits, unclassified)
+               removeIndex = index
+               break
+           end
+       end
+       table_remove(unclassifiedUnits, removeIndex)
+       
+       
+       if thirdTank then
+           for index, unclassified in ipairs(unclassifiedUnits) do
+               if UnitName(unclassified) == thirdTank then
+                   table_insert(tankUnits, unclassified)
+                   removeIndex = index
+                   break
+               end
+           end
+           table_remove(unclassifiedUnits, removeIndex)
+       end
+   end
+   
+   local remainingUnclassifiedUnits = {}
+   
+   for index, unclassified in ipairs(unclassifiedUnits) do
+       local class = UnitLocalizedClass(unclassified)
+       if class == "DEATHKNIGHT" or 
+          class == "WARRIOR" or 
+          class == "PALADIN" or
+          (class == "DRUID" and UnitPowerMax(unclassified, 0) < 15000)
+       then
+           table_insert(mdpsUnits, unclassified)
+       else
+           table_insert(remainingUnclassifiedUnits, unclassified)
+       end
+   end
+   
+   unclassifiedUnits = remainingUnclassifiedUnits
 end
 
 
@@ -385,20 +495,28 @@ local updateFrames = function(frameList, units)
 			frame.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
 			frame.powerBar:SetValue(UnitMana(unit))
 			frame.powerBar:SetMinMaxValues(0, UnitManaMax(unit))
+            if UnitIsDeadOrGhost(unit) then
+                frame.deadFontString:SetAlpha(1)
+            else 
+                frame.deadFontString:SetAlpha(0)
+            end
 			frame:RegisterEvent("UNIT_AURA")
 			frame:RegisterEvent("UNIT_HEALTH")
 			frame:RegisterEvent("UNIT_MAXHEALTH")
 			frame:RegisterEvent("UNIT_MANA")
 			frame:RegisterEvent("UNIT_MAXMANA")
 			frame:SetAlpha(1)
+            frame:Show()
 		else
+            frame.deadFontString:SetAlpha(0)
 			frame:SetAttribute("unit", nil)
 			frame:UnregisterEvent("UNIT_AURA")
 			frame:UnregisterEvent("UNIT_HEALTH")
 			frame:UnregisterEvent("UNIT_MAXHEALTH")
 			frame:UnregisterEvent("UNIT_MANA")
 			frame:UnregisterEvent("UNIT_MAXMANA")
-			frame:SetAlpha(HIDDEN_FRAME_ALPHA)
+			--frame:SetAlpha(HIDDEN_FRAME_ALPHA)
+            frame:Hide()
 		end
 	end
 end
@@ -500,9 +618,10 @@ end
 local handleCurrentState = function()
 
 	if GetRealNumPartyMembers() == 0 and GetRealNumRaidMembers() == 0 then
-		AssiduityGroupsFrame:SetAlpha(1)
+		--For some reason this fires even if there are people in the group
+        --AssiduityGroupsFrame:Hide()
 	elseif not IsInInstance() then
-		AssiduityGroupsFrame:SetAlpha(1)
+		AssiduityGroupsFrame:SetAlpha(0.5)
 	else 
 		AssiduityGroupsFrame:SetAlpha(1)
 	end
@@ -566,14 +685,8 @@ end
 ]]
 local PARTY_MEMBERS_CHANGED = function()
 
-	if GetNumPartyMembers() == 0 then
-		--[[
-			Use this opportunity to reset certain tables.
-		]]
-		nameToSpec = {}
-	else 
-		evaluateGroup()
-	end
+	handleCurrentState()
+	evaluateGroup()
 end
 
 local PLAYER_ENTERING_WORLD = function()
@@ -592,8 +705,9 @@ local UNIT_AURA = function(self, unit)
 		if not isUnitRoleDiscovered(source) then
 			local spec = BUFF_TO_SPEC[buffName]
 		
-			if spec then
-				nameToSpec[UnitName(unit)] = spec
+			if source and spec and nameToSpec[UnitName(source)] then
+            
+				nameToSpec[UnitName(source)] = spec
 				changeDetected = true
 			end
 		end
