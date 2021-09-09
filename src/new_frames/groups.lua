@@ -463,17 +463,25 @@ local CLASS_TO_HEALTHCOLORS = {
 local updateFrames = function(frameList, units)
 	
 	local orderedFrameList = {}
+    local orderedUnits = {}
 	
 	for index = 1, #units do
 		table_insert(orderedFrameList, frameList[index])
+        table_insert(orderedUnits, units[index])
 	end
 	
 	table_sort(orderedFrameList, function(a, b) 
-		return a.position > b.position
-	end)
+        return a.position < b.position 
+    end)
+    
+    table_sort(orderedUnits, function(a, b) 
+        local firstName = UnitName(a)
+        local secondName = UnitName(b)
+        return firstName < secondName
+    end)
 	
 	for index, frame in ipairs(frameList) do
-		local unit = units[index]
+		local unit = orderedUnits[index]
 	
 		if UnitExists(unit) then
 			local class = UnitLocalizedClass(unit)
@@ -544,6 +552,10 @@ local evaluateGroup = function()
 		TODO: Either make an unclassifiedUnit frame section
 		or apply a "best guess" until we know everyone's role.
 	]]
+    
+    --local alphabeticSort = function(a, b) return UnitName(a)  end 
+    --
+    --table_sort(tankUnits, function(a, b) return a.maxHealth > b.maxHealth end)
 	
 	updateFrames(tankFrames, tankUnits)
 	updateFrames(healFrames, healUnits)
@@ -1029,6 +1041,8 @@ local handleFrameCreation = function(frameType, framePosition)
 	
 	result.position = framePosition
 	
+    RegisterUnitWatch(result)
+    
 	return result
 end
 
