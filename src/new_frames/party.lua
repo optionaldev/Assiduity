@@ -11,42 +11,46 @@ local IsInInstance = IsInInstance
 local autoHideObserver = CreateFrame("Frame")
 local partyFrames
 
+local parentFrame = CreateFrame("Frame")
+
+---------------
+-- Functions --
+---------------
+
+local handleTogglingVisibility = function()
+    
+    local _, instanceType = IsInInstance()
+
+    if instanceType == "raid" then
+        parentFrame:Hide()
+    else 
+        parentFrame:Show()
+    end
+end
+
+local createFrame = function(index)
+
+    local stringIndex = tostring(index)
+
+    frame = CreateFrame("Button", "AssiduityParty" .. stringIndex, parentFrame, "SecureUnitButtonTemplate")
+    frame:SetAttribute("unit", "party" .. stringIndex)
+    frame:SetAttribute("type1", "target")
+    frame.changeEvent = "PARTY_MEMBERS_CHANGED"
+    
+    AssiduityRegisterFrame(frame, "SMALL", "LEFT_TO_RIGHT")
+
+    return frame
+end
+
 ------------
 -- Events --
 ------------
 
 local PLAYER_ENTERING_WORLD = function()
 
-    local _, instanceType = IsInInstance()
-
-    for _, frame in ipairs(partyFrames) do
-        if instanceType == "raid" then
-            frame:Hide()
-        else 
-            frame:Show()
-        end
-    end
+    handleTogglingVisibility()
 end
 
----------------
--- Functions --
----------------
-
-local createFrame = function(index)
-
-    local stringIndex = tostring(index)
-
-    frame = CreateFrame("Button", "AssiduityParty" .. stringIndex, UIParent, "SecureUnitButtonTemplate")
-    frame:SetAttribute("unit", "party" .. stringIndex)
-    frame:SetAttribute("type1", "target")
-    frame.changeEvent = "PARTY_MEMBERS_CHANGED"
-    --frame:SetAttribute("unit", "target")
-    --frame.changeEvent = "PLAYER_TARGET_CHANGED"
-    
-    AssiduityRegisterFrame(frame, "SMALL", "LEFT_TO_RIGHT")
-
-    return frame
-end
 
 
 ------------
@@ -57,6 +61,8 @@ local party1 = createFrame(1)
 local party2 = createFrame(2)
 local party3 = createFrame(3)
 local party4 = createFrame(4)
+
+partyFrames = {party1, party2, party3, party4}
 
 party1:SetPoint("BOTTOMRIGHT", UIParent, "CENTER", -250, 20)
 party2:SetPoint("BOTTOM", party1, "TOP", 0, 60)
@@ -71,4 +77,6 @@ do
     autoHideObserver:SetScript("OnEvent", function(self, event, ...)
         self[event](self, ...)
     end)
+    
+    handleTogglingVisibility()
 end
