@@ -460,7 +460,22 @@ local CLASS_TO_HEALTHCOLORS = {
     ["WARRIOR"]		= { 0.78, 0.61, 0.43 }
 }
 
-local updateFrames = function(frameList, units)
+
+local orderedFrameString = ""
+local orderedUnitString = ""
+local orderedNameString = ""
+
+printGroupsInfo = function()
+
+    print("updateFrames ordered frames and ordered units:")
+    print(orderedFrameString)
+    print("---")
+    print(orderedUnitString)
+    print("---")
+    print(orderedNameString)
+end
+
+local updateFrames = function(frameList, units, prefix)
 	
 	local orderedFrameList = {}
     local orderedUnits = {}
@@ -474,12 +489,25 @@ local updateFrames = function(frameList, units)
         return a.position < b.position 
     end)
     
+    orderedFrameString = ""
+    orderedUnitString = ""
+    orderedNameString = ""
+    
+    for index, frame in ipairs(orderedFrameList) do
+        orderedFrameString = orderedFrameString .. " " .. prefix .. frame.position
+    end
+    
     table_sort(orderedUnits, function(a, b) 
         local firstName = UnitName(a)
         local secondName = UnitName(b)
         return firstName < secondName
     end)
-	
+    
+	for index, unit in ipairs(orderedUnits) do
+        orderedUnitString = orderedUnitString .. " " .. unit
+        orderedNameString = orderedNameString .. " " .. UnitName(unit)
+    end
+    
 	for index, frame in ipairs(frameList) do
 		local unit = orderedUnits[index]
 	
@@ -557,11 +585,11 @@ local evaluateGroup = function()
     --
     --table_sort(tankUnits, function(a, b) return a.maxHealth > b.maxHealth end)
 	
-	updateFrames(tankFrames, tankUnits)
-	updateFrames(healFrames, healUnits)
-	updateFrames(mdpsFrames, mdpsUnits)
-	updateFrames(rdpsFrames, rdpsUnits)
-	updateFrames(unclassifiedFrames, unclassifiedUnits)
+	updateFrames(tankFrames, tankUnits, "t")
+	updateFrames(healFrames, healUnits, "h")
+	updateFrames(mdpsFrames, mdpsUnits, "m")
+	updateFrames(rdpsFrames, rdpsUnits, "r")
+	updateFrames(unclassifiedFrames, unclassifiedUnits, "u")
 end
 
 local printUnitTable = function(tbl) 

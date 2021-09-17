@@ -953,7 +953,7 @@ local setupTarget = function(self)
 
     local MEASUREMENTS = self.MEASUREMENTS.TARGET
 
-    local target = CreateFrame("Button", self:GetName() .. "Target", UIParent, "SecureUnitButtonTemplate")
+    local target = CreateFrame("Button", self:GetName() .. "Target", self, "SecureUnitButtonTemplate")
     target:SetSize(MEASUREMENTS.FRAME_WIDTH, MEASUREMENTS.FRAME_HEIGHT)
     target:SetPoint("LEFT",
                     self,
