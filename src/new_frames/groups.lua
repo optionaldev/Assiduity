@@ -477,6 +477,7 @@ end
 
 local updateFrames = function(frameList, units, prefix)
 	
+    
 	local orderedFrameList = {}
     local orderedUnits = {}
 	
@@ -489,29 +490,26 @@ local updateFrames = function(frameList, units, prefix)
         return a.position < b.position 
     end)
     
-    orderedFrameString = ""
-    orderedUnitString = ""
-    orderedNameString = ""
-    
-    for index, frame in ipairs(orderedFrameList) do
-        orderedFrameString = orderedFrameString .. " " .. prefix .. frame.position
-    end
-    
     table_sort(orderedUnits, function(a, b) 
         local firstName = UnitName(a)
         local secondName = UnitName(b)
         return firstName < secondName
     end)
     
-	for index, unit in ipairs(orderedUnits) do
-        orderedUnitString = orderedUnitString .. " " .. unit
-        orderedNameString = orderedNameString .. " " .. UnitName(unit)
-    end
+    local frameToUnit = {}
+    
+	for index = 1, #units do
+        local frame = orderedFrameList[index]
+        
+        if frame then
+            frameToUnit[frame] = orderedUnits[index] 
+        end
+	end
     
 	for index, frame in ipairs(frameList) do
-		local unit = orderedUnits[index]
+		local unit = frameToUnit[frame]
 	
-		if UnitExists(unit) then
+		if unit and sUnitExists(unit) then
 			local class = UnitLocalizedClass(unit)
 			
 			if class == nil then
@@ -551,7 +549,7 @@ local updateFrames = function(frameList, units, prefix)
 			frame:UnregisterEvent("UNIT_MAXHEALTH")
 			frame:UnregisterEvent("UNIT_MANA")
 			frame:UnregisterEvent("UNIT_MAXMANA")
-			--frame:SetAlpha(HIDDEN_FRAME_ALPHA)
+			frame:SetAlpha(HIDDEN_FRAME_ALPHA)
             frame:Hide()
 		end
 	end
