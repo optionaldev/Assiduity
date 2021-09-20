@@ -183,16 +183,16 @@ local rdpsFrames = {}
 local healFrames = {}
 local unclassifiedFrames = {}
 
-tankUnits = {}
-mdpsUnits = {}
-rdpsUnits = {}
-healUnits = {}
+local tankUnits = {}
+local mdpsUnits = {}
+local rdpsUnits = {}
+local healUnits = {}
 
 --[[ 
 	Here we put units that we can't classify based on hp / mana / passive buffs
 	We need to wait for them to cast some spell specific for their talents (spec)
 ]] 
-unclassifiedUnits = {}
+local unclassifiedUnits = {}
 
 ---------------
 -- Functions --
@@ -448,37 +448,28 @@ end
 
 local CLASS_TO_HEALTHCOLORS = {
 
-    ["DEATHKNIGHT"]	= { 0.77, 0.12, 0.23 },
-    ["DRUID"]		= { 1,    0.49, 0.04 },
-    ["HUNTER"]		= { 0.67, 0.83, 0.45 },
-    ["MAGE"]		= { 0.41, 0.8,  0.94 },
-    ["PALADIN"]		= { 0.96, 0.55, 0.73 },
-    ["PRIEST"]		= { 1,    1,    1    },
-    ["ROGUE"]		= { 1,    0.96, 0.41 },
-    ["SHAMAN"]	 	= { 0,    0.44, 0.87 },
-    ["WARLOCK"]		= { 0.58, 0.51, 0.79 },
-    ["WARRIOR"]		= { 0.78, 0.61, 0.43 }
+    ["DEATHKNIGHT"]	= {0.77, 0.12, 0.23},
+    ["DRUID"]		= {1,    0.49, 0.04},
+    ["HUNTER"]		= {0.67, 0.83, 0.45},
+    ["MAGE"]		= {0.41, 0.8,  0.94},
+    ["PALADIN"]		= {0.96, 0.55, 0.73},
+    ["PRIEST"]		= {1,    1,    1   },
+    ["ROGUE"]		= {1,    0.96, 0.41},
+    ["SHAMAN"]	 	= {0,    0.44, 0.87},
+    ["WARLOCK"]		= {0.58, 0.51, 0.79},
+    ["WARRIOR"]		= {0.78, 0.61, 0.43}
 }
-
-
-local orderedFrameString = ""
-local orderedUnitString = ""
-local orderedNameString = ""
-
-printGroupsInfo = function()
-
-    print("updateFrames ordered frames and ordered units:")
-    print(orderedFrameString)
-    print("---")
-    print(orderedUnitString)
-    print("---")
-    print(orderedNameString)
-end
 
 local updateFrames = function(frameList, units, prefix)
 	
-    
+    --[[    This will hold an ordered equivalent of the first parameter 'frameList',
+            from left to right, of the frames that need to be populated.
+    ]]
 	local orderedFrameList = {}
+    
+    --[[    This will hold an ordered equivalent of the second parameter 'units',
+            from left to right, of the units that will populate the frames.
+    ]]
     local orderedUnits = {}
 	
 	for index = 1, #units do
@@ -496,6 +487,10 @@ local updateFrames = function(frameList, units, prefix)
         return firstName < secondName
     end)
     
+    --[[    After sorting the frames and the units, we keep a dictionary
+            of all relevant units, because we need to also handle the 
+            units that are NOT inside the dictionary (hiding, unregistering, etc)
+    ]]
     local frameToUnit = {}
     
 	for index = 1, #units do
@@ -509,7 +504,7 @@ local updateFrames = function(frameList, units, prefix)
 	for index, frame in ipairs(frameList) do
 		local unit = frameToUnit[frame]
 	
-		if unit and sUnitExists(unit) then
+		if unit and UnitExists(unit) then
 			local class = UnitLocalizedClass(unit)
 			
 			if class == nil then
@@ -557,6 +552,14 @@ end
 
 local evaluateGroup = function()
 
+    --[[    To avoid scenarios like people leaving the raid in combat and screwing up 
+            the entire interface, we simply ignore changes that occur during combat.
+            Changes to hp and mana should still be visible, since they're handled by different events.
+    ]]
+    if UnitAffectingCombat("player") then
+        return
+    end
+
 	tankUnits = {}
 	mdpsUnits = {}
 	rdpsUnits = {}
@@ -573,15 +576,6 @@ local evaluateGroup = function()
 	
 	AssiduityGroupsFrame:RegisterEvent("UNIT_AURA")
 	AssiduityGroupsFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	
-	--[[
-		TODO: Either make an unclassifiedUnit frame section
-		or apply a "best guess" until we know everyone's role.
-	]]
-    
-    --local alphabeticSort = function(a, b) return UnitName(a)  end 
-    --
-    --table_sort(tankUnits, function(a, b) return a.maxHealth > b.maxHealth end)
 	
 	updateFrames(tankFrames, tankUnits, "t")
 	updateFrames(healFrames, healUnits, "h")
