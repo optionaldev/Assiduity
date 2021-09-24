@@ -8,15 +8,16 @@ local DISTANCE_FROM_BOTTOM = 290
 local ALPHA = 0
 
 local partyFrames = {PartyMemberBackground, PartyMemberFrame1, PartyMemberFrame2, PartyMemberFrame3, PartyMemberFrame4}
-local frames = {TargetFrame, FocusFrame, PlayerFrame, PartyMemberFrame1, PartyMemberFrame2, PartyMemberFrame3, PartyMemberFrame4}
+local framesToHide = {FocusFrame, PartyMemberFrame1, PartyMemberFrame2, PartyMemberFrame3, PartyMemberFrame4}
+local framesToShrink = {PlayerFrame, TargetFrame}
 
 ---------------
 -- Functions --
 ---------------
 
-local handleFrames = function()
+local handleHidingFrames = function()
     
-    for _, frame in ipairs(frames) do
+    for _, frame in ipairs(framesToHide) do
         frame:SetAlpha(ALPHA)
         frame:Hide()
         frame:UnregisterAllEvents()
@@ -28,13 +29,22 @@ local handleFrames = function()
     end
 end
 
+local handleShrinkingFrames = function()
+
+    for _, frame in ipairs(framesToShrink) do
+        
+        frame:SetAlpha(0.1)
+        frame:SetFrameStrata("BACKGROUND")
+    end
+end
+
 ------------
 -- Events --
 ------------ 
 
 local PLAYER_TARGET_CHANGED = function(self)
 
-    TargetFrame:SetAlpha(ALPHA)
+    TargetFrame:SetAlpha(0.2)
 
     self:UnregisterEvent("PLAYER_TARGET_CHANGED")
 end
@@ -48,7 +58,7 @@ end
 
 local PARTY_MEMBERS_CHANGED = function(self)
 
-    handleFrames()
+    handleHidingFrames()
 	
 	self:UnregisterEvent("PARTY_MEMBERS_CHANGED")
 end
@@ -58,7 +68,8 @@ local ADDON_LOADED = function(self, addon)
 	if addon == "Assiduity" then
 		self:UnregisterEvent("ADDON_LOADED")
 		
-        handleFrames()
+        handleHidingFrames()
+        handleShrinkingFrames()
         
 		--[[
 		MultiBarBottomLeft:SetMovable() 
