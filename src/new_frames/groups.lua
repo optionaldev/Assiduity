@@ -552,14 +552,6 @@ end
 
 local evaluateGroup = function()
 
-    --[[    To avoid scenarios like people leaving the raid in combat and screwing up 
-            the entire interface, we simply ignore changes that occur during combat.
-            Changes to hp and mana should still be visible, since they're handled by different events.
-    ]]
-    if UnitAffectingCombat("player") then
-        return
-    end
-
 	tankUnits = {}
 	mdpsUnits = {}
 	rdpsUnits = {}

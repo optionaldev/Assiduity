@@ -20,6 +20,8 @@ local string_sub = string.sub
 local string_lower = string.lower
 local table_insert = table.insert
 
+local TableJoin = AssiduityTableJoin
+
 --[[
 	The reason why this is declared here and not in a SavedVariable 
 	is because it's required on multiple accounts and cross-account
@@ -40,8 +42,11 @@ local printedRecruitmentMessages = {}
 --[[ 
 	These will be read from the AssiduityWarmane module.
 ]]
+local ACHIEVEMENTS_TO_FILTER
+local DUNGEONS_TO_FILTER
 local GUILDS_TO_FILTER
 local HIGHLIGHT_MESSAGES
+local ITEMS_TO_FILTER
 local MARKET_IDENTIFIERS
 local MARKET_TO_FILTER
 local RESERVING_TO_FILTER
@@ -54,11 +59,6 @@ local TEMPORARY_FILTERS
 	filter a message we would have wanted to see
 ]]
 local filteredMessages = {}
-
-----------------------
--- Global functions --
----------------------
-
 
 ---------------------
 -- Local functions --
@@ -106,34 +106,34 @@ local function spamFilter(self, event, message, author, language, ...)
 	
 	return false
 end
+        
+------------
+-- Events --
+------------
 
 local ADDON_LOADED = function( self, addon )
 
     if addon == "AssiduityWarmane" then
-		GUILDS_TO_FILTER    = Assiduity.GUILDS_TO_FILTER
-		HIGHLIGHT_MESSAGES  = Assiduity.HIGHLIGHT_MESSAGES
-		MARKET_IDENTIFIERS  = Assiduity.MARKET_IDENTIFIERS
-		MARKET_TO_FILTER    = Assiduity.MARKET_TO_FILTER
-		RESERVING_TO_FILTER = Assiduity.RESERVING_TO_FILTER
-		OTHER_FILTERS       = Assiduity.OTHER_FILTERS
-		TEMPORARY_FILTERS   = Assiduity.TEMPORARY_FILTERS
+		ACHIEVEMENTS_TO_FILTER = Assiduity.ACHIEVEMENTS_TO_FILTER
+		DUNGEONS_TO_FILTER     = Assiduity.DUNGEONS_TO_FILTER
+		GUILDS_TO_FILTER       = Assiduity.GUILDS_TO_FILTER
+		HIGHLIGHT_MESSAGES     = Assiduity.HIGHLIGHT_MESSAGES
+		ITEMS_TO_FILTER        = Assiduity.ITEMS_TO_FILTER
+		MARKET_IDENTIFIERS     = Assiduity.MARKET_IDENTIFIERS
+		MARKET_TO_FILTER       = Assiduity.MARKET_TO_FILTER
+		OTHER_FILTERS          = Assiduity.OTHER_FILTERS
+		TEMPORARY_FILTERS      = Assiduity.TEMPORARY_FILTERS
 		
 		self:UnregisterEvent("ADDON_LOADED")
 		
-		filteringSubstrings = GUILDS_TO_FILTER
+		filteringSubstrings = ACHIEVEMENTS_TO_FILTER
 		
-		for _, value in ipairs(RESERVING_TO_FILTER) do
-			table_insert(filteringSubstrings, value)
-		end
-		
-		for _, value in ipairs(OTHER_FILTERS) do
-			table_insert(filteringSubstrings, value)
-		end
-		
-		for _, value in ipairs(TEMPORARY_FILTERS) do
-			table_insert(filteringSubstrings, value)
-		end
-		
+        TableJoin(filteringSubstrings, DUNGEONS_TO_FILTER)
+        TableJoin(filteringSubstrings, GUILDS_TO_FILTER)
+        TableJoin(filteringSubstrings, ITEMS_TO_FILTER)
+        TableJoin(filteringSubstrings, OTHER_FILTERS)
+        TableJoin(filteringSubstrings, TEMPORARY_FILTERS)
+        
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", spamFilter)
 		ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL",    spamFilter)
     end
