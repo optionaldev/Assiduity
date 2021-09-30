@@ -49,6 +49,7 @@ local HIGHLIGHT_MESSAGES
 local ITEMS_TO_FILTER
 local MARKET_IDENTIFIERS
 local MARKET_TO_FILTER
+local PLAYERS_TO_FILTER
 local RESERVING_TO_FILTER
 local OTHER_FILTERS
 local TEMPORARY_FILTERS
@@ -64,6 +65,12 @@ local filteredMessages = {}
 -- Local functions --
 ---------------------
 local function spamFilter(self, event, message, author, language, ...)
+
+    for _, sender in ipairs(PLAYERS_TO_FILTER) do
+        if sender == author then
+            return true
+        end
+    end
 
 	if author == UnitName("player") then
 		return false
@@ -121,6 +128,7 @@ local ADDON_LOADED = function( self, addon )
 		ITEMS_TO_FILTER        = Assiduity.ITEMS_TO_FILTER
 		MARKET_IDENTIFIERS     = Assiduity.MARKET_IDENTIFIERS
 		MARKET_TO_FILTER       = Assiduity.MARKET_TO_FILTER
+        PLAYERS_TO_FILTER      = Assiduity.PLAYERS_TO_FILTER
 		OTHER_FILTERS          = Assiduity.OTHER_FILTERS
 		TEMPORARY_FILTERS      = Assiduity.TEMPORARY_FILTERS
 		
