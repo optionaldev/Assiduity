@@ -57,6 +57,13 @@ AssiduityGetCastTime = function( spell )
 end
 
 AssiduityMount = function( index )
+    CancelUnitBuff("player", "Agility of the Vrykul")
+    CancelUnitBuff("player", "Aim of the Iron Dwarves")
+    CancelUnitBuff("player", "Power of the Taunka")
+    CancelUnitBuff("player", "Precision of the Iron Dwarves")
+    CancelUnitBuff("player", "Speed of the Vrykul")
+    CancelUnitBuff("player", "Strength of the Taunka")
+    
 	if not IsMounted() then 
 		if (GetZoneText() == "Wintergrasp" and GetWintergraspWaitTime() == nil) or 
 			not IsFlyableArea() 
