@@ -36,8 +36,10 @@ local createFrame = function(index)
     frame:SetAttribute("unit", "party" .. stringIndex)
     frame:SetAttribute("type1", "target")
     frame.changeEvent = "PARTY_MEMBERS_CHANGED"
+    frame.orientation = "LEFT_TO_RIGHT"
+    frame.sizing = "SMALL"
     
-    AssiduityRegisterFrame(frame, "SMALL", "LEFT_TO_RIGHT")
+    AssiduityRegisterFrame(frame)
 
     return frame
 end

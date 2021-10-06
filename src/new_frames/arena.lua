@@ -13,10 +13,12 @@ local createFrame = function(index)
     frame:SetAttribute("unit", "arena" .. stringIndex)
     frame:SetAttribute("type1", "target")
     frame.changeEvent = "ARENA_OPPONENT_UPDATE"
+    frame.sizing = "SMALL"
     --frame:SetAttribute("unit", "target")
     --frame.changeEvent = "PLAYER_TARGET_CHANGED"
     
-    AssiduityRegisterFrame(frame, "SMALL")
+    
+    AssiduityRegisterFrame(frame)
 
     return frame
 end

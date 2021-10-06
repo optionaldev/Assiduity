@@ -4,8 +4,9 @@ local frame = CreateFrame("Button", "AssiduityTarget", UIParent, "SecureUnitButt
 frame:SetPoint("CENTER", UIParent, "CENTER", 350, -205)
 frame:SetAttribute("unit", "target")
 frame.changeEvent = "PLAYER_TARGET_CHANGED"
+frame.sizing = "LARGE"
 
-AssiduityRegisterFrame(frame, "LARGE")
+AssiduityRegisterFrame(frame)
 
 local comboPointsFrame = CreateFrame("Frame")
 

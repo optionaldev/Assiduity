@@ -92,6 +92,7 @@ local FILTERED_AURA = {
     ["Acclimation"] = 1,                    -- Frost dk talent
     ["Aegis"] = 1,                          -- The Black Heart, tank trinket
     ["Amplify Magic"] = 1,
+    ["Ancestral Fortitude"] = 1,
     ["Ancestral Fortitude"] = 1,            -- Rsham talent
 	["Arcane Brilliance"] = 1,
 	["Arcane Empowerment"] = 1,
@@ -127,9 +128,11 @@ local FILTERED_AURA = {
 	["Commanding Shout"] = 1,
 	["Concentration Aura"] = 1,
     ["Cozy Fire"] = 1,
+    ["Crusader's Glory"] = 1,               -- Trinket proc
     ["Culling the Herd"] = 1,               -- Hunter pet ability?
 	["Cultivated Power"] = 1,	-- 
 	["Dampen Magic"] = 1,
+    ["Demonic Pact"] = 1,                   -- Demo lock talent
 	["Demoralizing Roar"] = 1,
 	["Devotion Aura"] = 1,
 	["Dalaran Brilliance"] = 1,
@@ -159,6 +162,7 @@ local FILTERED_AURA = {
     ["Enraged Defense"] = 1,                -- Druid feral talent?
 	["Enraged Regeneration"] = 1,       
     ["Eradication"] = 1,                    -- Affliction talent, 20% haste 10s
+    ["Evasive"] = 1,                        -- Libram of the Eternal Tower relic buff
     ["Executioner"] = 1,                    -- Executioner weapon enchant proc
     ["Expose Weakness"] = 1,                -- Survival hunt talent
 	["Fade"] = 1,                           -- Priest ability, reduce threat
@@ -167,6 +171,7 @@ local FILTERED_AURA = {
     ["Ferocious Inspiration"] = 1,          -- BM hunt talent
 	["Fire Resistance"] = 1,
 	["Fire Resistance Aura"] = 1,
+    ["Fire Shield"] = 1,                    -- Imp ability
 	["Fire Ward"] = 1,
 	["Flametongue Totem"] = 1,
 	["Flask of Endless Rage"] = 1,
@@ -205,13 +210,15 @@ local FILTERED_AURA = {
 	["Greater Blessing of Might"] = 1,
 	["Greater Blessing of Sanctuary"] = 1,
 	["Greater Blessing of Wisdom"] = 1,
+    ["Hoarse"] = 1,                         -- Some random debuff
 	["Ice Armor"] = 1,                      
     ["Icy Talons"] = 1,                     -- DK talent, 20% attack speed
 	["Improved Icy Talons"] = 1,            -- DK talent, 20% attack speed to other party members, 5% extra for DK
     ["Improved Scorch"] = 1,                -- Fire mage talent
     ["Improved Spirit Tap"] = 1,            -- Priest talent
     ["Improved Steady Shot"] = 1,           -- MM hunt talent, 15% extra damage on next Aimed/Arcane/Chimera shot
-	["Infected Wounds"] = 1,
+	["Indomitable"] = 1,                    -- Sigil of the Hanged Man (dk relic)
+    ["Infected Wounds"] = 1,
 	["Inner Fire"] = 1,
 	["Inner Focus"] = 1,
     ["Inspiration"] = 1,                    -- Priest talent
@@ -233,11 +240,12 @@ local FILTERED_AURA = {
 	["Mage Armor"] = 1,
 	["Mana Spring"] = 1,
 	["Mark of the Wild"] = 1,
-    ["Master Demonologist"] = 1,            -- Demo warlock talent
+    ["Master Demonologist"] = 1,            -- Demo  lock talent
     ["Master of Subtlety"] = 1,             -- Sub rogue talent
 	["Master Shapeshifter"] = 1,
     ["Misery"] = 1,                         -- Spriest talent
 	["Molten Armor"] = 1,
+    ["Molten Core"] = 1,                    -- Demo lock talent
 	["Moonkin Aura"] = 1,
 	["Nature Resistance"] = 1,
     ["Omen of Doom"] = 1,                   -- Druid T10 4 piece set bonus proc
@@ -246,6 +254,7 @@ local FILTERED_AURA = {
 	["Prayer of Shadow Protection"] = 1,
 	["Prayer of Spirit"] = 1,
 	["Precious's Ribbon"] = 1,
+    ["Precognition"] = 1,                   -- Sigil of the Bone Gryphon (dk relic)
     ["Pyroclasm"] = 1,                      -- Warlock
     ["Quad Core"] = 1,                      -- Mage tier 4 piece set bonus when casting Mirror Image
 	["Rampage"] = 1,
@@ -273,6 +282,7 @@ local FILTERED_AURA = {
 	["Shadow Resistance Aura"] = 1,
 	["Shadow Ward"] = 1,
     ["Shadow Weaving"] = 1,                 -- Spriest talent
+    ["Shadowy Insight"] = 1,                -- Glyph of Shadow (priest)
     ["Shield Block"] = 1,
 	["Shield of Righteousness"] = 1,
     ["Slam"] = 1,                           -- Fury war talent (Bloodsurge)
@@ -280,7 +290,10 @@ local FILTERED_AURA = {
     ["Snow of Faith"] = 1,              
     ["Soothing"] = 1,                       -- Idol of the Black Widow 
     ["Soul Link"] = 1,                      -- Warlock pet ability
-	["Stoneskin"] = 1,
+    ["Spirit Tap"] = 1,                     -- Priest talent
+    ["Spiritual Trance"] = 1,               -- Totem of Calming Tides relic buff
+	["Stamina"] = 1,                        -- scroll buff
+    ["Stoneskin"] = 1,
 	["Strength of Earth"] = 1,
 	["Strength of Wrynn"] = 1,
     ["Sword and Board"] = 1,                -- Prot warrior talent, refresh Shield Slam ability
@@ -293,6 +306,7 @@ local FILTERED_AURA = {
 	["Totem of Wrath"] = 1,
     ["Trauma"] = 1,                         -- Arms war talent
 	["Trueshot Aura"] = 1,
+    ["Unending Breath"] = 1,                -- Warlock ability
     ["Unholy Force"] = 1,                   -- Sigil of Virulence
     ["Unleashed Rage"] = 1,                 -- Enha shammy passive talent
     ["Vampiric Embrace"] = 1,               -- Spriest talent
@@ -1066,13 +1080,9 @@ local UNIT_TARGET = function(self, unit)
     end
 end
 
+AssiduityRegisterFrame = function(self)
 
---[[
-    @size: can be either "SMALL" or "LARGE"
-]]
-AssiduityRegisterFrame = function(self, size, orientation)
-
-    local MEASUREMENTS = MEASUREMENTS[size]
+    local MEASUREMENTS = MEASUREMENTS[self.sizing]
     self.MEASUREMENTS = MEASUREMENTS
 
     local unit = self:GetAttribute(UNIT)
@@ -1084,7 +1094,7 @@ AssiduityRegisterFrame = function(self, size, orientation)
     self:EnableKeyboard(true)
     self:RegisterForClicks("AnyUp")
     self:RegisterForClicks("AnyDown")
-    --self:SetAttribute("type", "spell")
+    self:SetAttribute("type1", "target")
     --
     --self:SetAttribute("*helpbutton1", "heal1")
     --self:SetAttribute("*helpbutton2", "heal2")
@@ -1108,7 +1118,7 @@ AssiduityRegisterFrame = function(self, size, orientation)
     local portrait = CreateFrame("Frame", nil, self)
     portrait:SetSize(MEASUREMENTS.PORTRAIT_SIZE, MEASUREMENTS.PORTRAIT_SIZE)
     
-    if orientation == "LEFT_TO_RIGHT" then 
+    if self.orientation == "LEFT_TO_RIGHT" then 
         portrait:SetPoint("LEFT",
                           self,
                           "LEFT",
