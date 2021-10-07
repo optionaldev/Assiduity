@@ -854,6 +854,10 @@ end
 
 local updateTarget = function(self)
 
+    if self.hideTarget then
+        return
+    end
+
     local unit = self:GetAttribute(UNIT)
     local unitTarget = unit .. "target"
     local class = UnitLocalizedClass(unit)
@@ -864,7 +868,7 @@ local updateTarget = function(self)
     end
     
     if (UnitIsUnit(unit, "player") and UnitIsUnit(unitTarget, "player")) or 
-       not UnitExists(unitTarget) 
+       not UnitExists(unitTarget)
     then
         self.target:Hide()
         self.target.healthBar:Hide()
@@ -1080,6 +1084,34 @@ local UNIT_TARGET = function(self, unit)
     end
 end
 
+--[[
+    Aside from the properties that come by default from 'Frame' types,
+    the following frame properties either exist or are nil:
+    
+    orientation:
+    -----------
+        Possible values: LEFT_TO_RIGHT, RIGHT_TO_LEFT
+        Description: Indicates the direction in which the layout will flow.
+                     LEFT_TO_RIGHT means the portrait is on the left side and the
+                     hp and mana bar on the right side.
+                  
+     sizing: 
+     ------
+        Possible values: SMALL, LARGE
+        Description: Large size is used for more important frames such as player,
+                     target & focus, while smaller is used for things like party 
+                     members and arena opponents.
+                     
+     changeEvent:
+     -----------
+        Possible values: PLAYER_TARGET_CHANGED, PLAYER_FOCUS_CHANGED
+        Description: Except for player frame, all other frames (and units) can exist
+                     or not exist. This change event reflects whether the existance
+                     state has changed.
+                     
+                     
+    
+]]
 AssiduityRegisterFrame = function(self)
 
     local MEASUREMENTS = MEASUREMENTS[self.sizing]
@@ -1143,7 +1175,9 @@ AssiduityRegisterFrame = function(self)
     
     -- Target of unit
     
-    setupTarget(self)
+    if not self.hideTarget then
+        setupTarget(self)
+    end
     
     local nameFontString = self:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
     nameFontString:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", -2)
@@ -1156,7 +1190,7 @@ AssiduityRegisterFrame = function(self)
     healthBar:SetOrientation("HORIZONTAL")
     healthBar:SetSize(MEASUREMENTS.BAR_WIDTH, MEASUREMENTS.HEALTH_BAR_HEIGHT)
     
-    if orientation == "LEFT_TO_RIGHT" then 
+    if self.orientation == "LEFT_TO_RIGHT" then 
         healthBar:SetPoint("TOPRIGHT",
                            self,
                            "TOPRIGHT",
@@ -1226,11 +1260,24 @@ AssiduityRegisterFrame = function(self)
     local unitCapitalized = unit:sub(1,1):upper() .. unit:sub(2)
 
     local castBar = CreateFrame("StatusBar", "Assiduity" .. unitCapitalized .. "CastBar", self, "AssiduityCastingBarTemplate")
-    castBar:SetPoint("RIGHT", 
-                     self, 
-                     "LEFT", 
-                     -10, 
-                     -MEASUREMENTS.CAST_BAR_OFFSET)
+    
+    --[[ Cast bar should always be positioned between the frame it represents
+        and the middle of the screen. What the unit casts is such as important 
+        as how much hp it has.
+    ]]
+    if self.orientation == "LEFT_TO_RIGHT" then 
+        castBar:SetPoint("LEFT", 
+                        self, 
+                        "RIGHT", 
+                        30, 
+                        -MEASUREMENTS.CAST_BAR_OFFSET)
+    else
+        castBar:SetPoint("RIGHT", 
+                        self, 
+                        "LEFT", 
+                        -10, 
+                        -MEASUREMENTS.CAST_BAR_OFFSET)
+    end
     self.castBar = castBar
     
     CastingBarFrame_OnLoad(castBar, unit, false)
