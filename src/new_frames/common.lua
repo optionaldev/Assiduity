@@ -10,27 +10,6 @@ local FRIENDLY = "FRIENDLY"
 local HOSTILE  = "HOSTILE"
 local UNIT     = "unit"
 
---local AURA_DISTANCE_TO_EDGE = 1
---local AURA_SIZE             = 20
---local BAR_WIDTH             = 180
---local DISTANCE_TO_EDGE      = 3
---local HEALTH_BAR_HEIGHT     = 28
---local PLAYER_AURA_SIZE      = 25
---local POWER_BAR_HEIGHT      = 12
---
---local TARGET_FRAME_HEIGHT = 26
---local TARGET_FRAME_WIDTH  = 70
---local TARGET_PORTRAIT_SIZE = TARGET_FRAME_HEIGHT - 2
---local TARGET_HEALTH_BAR_HEIGHT = 13
---local TARGET_BAR_WIDTH = TARGET_FRAME_WIDTH - TARGET_PORTRAIT_SIZE - 3
---local TARGET_POWER_BAR_HEIGHT = TARGET_FRAME_HEIGHT - TARGET_HEALTH_BAR_HEIGHT - 3
---
---local PLAYER_BAR_HEIGHT = PLAYER_AURA_SIZE + 2 * AURA_DISTANCE_TO_EDGE
---local PORTRAIT_SIZE     = HEALTH_BAR_HEIGHT + POWER_BAR_HEIGHT + DISTANCE_TO_EDGE
---
---local FRAME_WIDTH  = BAR_WIDTH + PORTRAIT_SIZE + 3 * DISTANCE_TO_EDGE
---local FRAME_HEIGHT = PORTRAIT_SIZE + 2 * DISTANCE_TO_EDGE
-
 local MEASUREMENTS = {
     ["SMALL"] = {
         ["AURA_DISTANCE_TO_EDGE"] =   1,
@@ -73,9 +52,9 @@ local MEASUREMENTS = {
             ["BAR_WIDTH"]          = 53,
             ["FRAME_HEIGHT"]       = 28,
             ["FRAME_WIDTH"]        = 82,
-            ["HEALTH_BAR_HEIGHT"]  = 13,
+            ["HEALTH_BAR_HEIGHT"]  = 16,
             ["PORTRAIT_SIZE"]      = 24,
-            ["POWER_BAR_HEIGHT"]   = 10,
+            ["POWER_BAR_HEIGHT"]   = 7,
         },
     }
 }
@@ -873,6 +852,7 @@ local updateTarget = function(self)
         self.target:Hide()
         self.target.healthBar:Hide()
         self.target.powerBar:Hide()
+        self.target.unitNameFontString:Hide()
         self.targetBackground:Hide()
         self.targetPortrait:Hide()
         self.targetFontString:Hide()
@@ -899,15 +879,18 @@ local updateTarget = function(self)
         self.targetBackground:Hide()
         self.target.healthBar:Hide()
         self.target.powerBar:Hide()
+        self.target.unitNameFontString:Hide()
     else 
         self.targetBackground:Show()
         self.target.healthBar:Show()
         self.target.powerBar:Show()
+        self.target.unitNameFontString:Show()
         detectedUnit = unitTarget
     end
 
     local reaction = REACTION[getReaction(self, unitTarget)]
     self.targetBackground:SetTexture(unpack(reaction))
+    self.target.unitNameFontString:SetText(UnitName(unitTarget))
     
     if UNIT_TO_SETUP[detectedUnit] then
         setUnit(self, unpack(UNIT_TO_SETUP[detectedUnit]))
@@ -989,7 +972,13 @@ local setupTarget = function(self)
     targetBackground:SetAllPoints()
     self.targetBackground = targetBackground
     
-    local targetPortrait = target:CreateTexture(nil, "BACKGROUND") 
+    local targetPortraitBackground = target:CreateTexture(nil)
+    targetPortraitBackground:SetSize(MEASUREMENTS.PORTRAIT_SIZE, MEASUREMENTS.PORTRAIT_SIZE)
+    targetPortraitBackground:SetTexture(0, 0, 0)
+    targetPortraitBackground:SetPoint("LEFT", target, "LEFT", 1, 0)
+    self.targetPortraitBackground = targetPortraitBackground
+    
+    local targetPortrait = target:CreateTexture(nil) 
     targetPortrait:SetSize(MEASUREMENTS.PORTRAIT_SIZE, MEASUREMENTS.PORTRAIT_SIZE)
     targetPortrait:SetPoint("LEFT", target, "LEFT", 1, 0)
     self.targetPortrait = targetPortrait
@@ -1033,6 +1022,10 @@ local setupTarget = function(self)
     local powerBarBackground = powerBar:CreateTexture(nil, "BACKGROUND")
     powerBarBackground:SetTexture(0, 0, 0, 1)
     powerBarBackground:SetAllPoints()
+
+    local unitNameFontString = target:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
+    unitNameFontString:SetPoint("BOTTOMRIGHT", target, "TOPRIGHT", 0, 3)
+    target.unitNameFontString = unitNameFontString
 
     target:SetScript("OnUpdate", function(self)
         handleHealth(self)
@@ -1164,14 +1157,16 @@ AssiduityRegisterFrame = function(self)
                           0)
     end
 
-    local portraitBackground = portrait:CreateTexture(nil, "BACKGROUND")
-    portraitBackground:SetTexture(unpack(UNIT_TO_SETUP[unit][2]))
-    portraitBackground:SetAllPoints()
-
-    local portraitFontString = portrait:CreateFontString(nil, nil, "AssiduityIconText")
-    portraitFontString:SetPoint("CENTER", portrait)
-    portraitFontString:SetTextColor(unpack(UNIT_TO_SETUP[unit][3]))
-    portraitFontString:SetText(UNIT_TO_SETUP[unit][1])
+    if UNIT_TO_SETUP[unit] then
+        local portraitBackground = portrait:CreateTexture(nil, "BACKGROUND")
+        portraitBackground:SetTexture(unpack(UNIT_TO_SETUP[unit][2]))
+        portraitBackground:SetAllPoints()
+    
+        local portraitFontString = portrait:CreateFontString(nil, nil, "AssiduityIconText")
+        portraitFontString:SetPoint("CENTER", portrait)
+        portraitFontString:SetTextColor(unpack(UNIT_TO_SETUP[unit][3]))
+        portraitFontString:SetText(UNIT_TO_SETUP[unit][1])
+    end
     
     -- Target of unit
     
