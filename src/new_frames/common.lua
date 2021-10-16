@@ -389,7 +389,7 @@ local COLORS = {
     ["WHITE"]  = { 255, 255, 255},
 }
 
-local UNIT_TO_SETUP = {
+local TARGET_TO_SETUP = {
 --- unit          = { txt, bgColor,       textColor    },
     ["arena1"]    = { "1", COLORS.RED,    COLORS.BLACK },
     ["arena2"]    = { "2", COLORS.RED,    COLORS.BLACK },
@@ -413,9 +413,12 @@ local UNIT_TO_SETUP = {
     ["partypet3"] = { "3", COLORS.BLUE,   COLORS.WHITE },
     ["partypet4"] = { "4", COLORS.BLUE,   COLORS.WHITE },
     
-    ["player"]    = { "P", COLORS.WHITE,  COLORS.BLACK },
-    ["target"]    = { "G", COLORS.WHITE,  COLORS.BLACK },
-    ["focus"]     = { "F", COLORS.WHITE,  COLORS.BLACK },
+    ["player"]    = { "P", COLORS.WHITE,  COLORS.BLACK }
+}
+
+local UNIT_TO_SETUP = {
+    ["target"] = { "G", COLORS.WHITE,  COLORS.BLACK },
+    ["focus"]  = { "F", COLORS.WHITE,  COLORS.BLACK }
 }
 
 local VALID_UNITS = {
@@ -823,9 +826,12 @@ local setIcon = function(self, icon, coord)
 end
 
 local setUnit = function(self, text, bgColorTable, fontColorTable )
-
+    
+    print("set unit " .. text .. " " .. tostring(bgColorTable[1]) .. " " .. tostring(bgColorTable[2]) .. " " .. tostring(bgColorTable[3]))
+    print("set unit " .. " " .. tostring(fontColorTable[1]) .. " " .. tostring(fontColorTable[2]) .. " " .. tostring(fontColorTable[3]))
     self.targetPortrait:SetTexture(unpack(bgColorTable))
     self.targetPortrait:SetTexCoord(0, 1, 0, 1)
+    self.targetPortraitBackground:Show()
     self.targetFontString:SetTextColor(unpack(fontColorTable))
     self.targetFontString:SetText(text)
     self.targetFontString:Show()
@@ -855,12 +861,14 @@ local updateTarget = function(self)
         self.target.unitNameFontString:Hide()
         self.targetBackground:Hide()
         self.targetPortrait:Hide()
+        self.targetPortraitBackground:Hide()
         self.targetFontString:Hide()
         return
     end
     
     self.target:Show()
     self.targetPortrait:Show()
+    self.targetPortraitBackground:Show()
     self.targetFontString:Show()
     
     local detectedUnit
@@ -892,8 +900,9 @@ local updateTarget = function(self)
     self.targetBackground:SetTexture(unpack(reaction))
     self.target.unitNameFontString:SetText(UnitName(unitTarget))
     
-    if UNIT_TO_SETUP[detectedUnit] then
-        setUnit(self, unpack(UNIT_TO_SETUP[detectedUnit]))
+    if TARGET_TO_SETUP[detectedUnit] then
+        print("target to setup " .. detectedUnit)
+        setUnit(self, unpack(TARGET_TO_SETUP[detectedUnit]))
     
     --if UnitIsPlayer(detectedUnit) then
     --self:setIcon( "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES", CLASS_ICON_TCOORDS[class] )
@@ -1157,15 +1166,24 @@ AssiduityRegisterFrame = function(self)
                           0)
     end
 
-    if UNIT_TO_SETUP[unit] then
+    local setup = UNIT_TO_SETUP[unit]
+    
+    if setup == nil then
+        setup = TARGET_TO_SETUP[unit]
+    end
+
+    if setup then
+        portrait:Show()
         local portraitBackground = portrait:CreateTexture(nil, "BACKGROUND")
-        portraitBackground:SetTexture(unpack(UNIT_TO_SETUP[unit][2]))
+        portraitBackground:SetTexture(unpack(setup[2]))
         portraitBackground:SetAllPoints()
     
         local portraitFontString = portrait:CreateFontString(nil, nil, "AssiduityIconText")
         portraitFontString:SetPoint("CENTER", portrait)
-        portraitFontString:SetTextColor(unpack(UNIT_TO_SETUP[unit][3]))
-        portraitFontString:SetText(UNIT_TO_SETUP[unit][1])
+        portraitFontString:SetTextColor(unpack(setup[3]))
+        portraitFontString:SetText(setup[1])
+    else 
+        portrait:Hide()
     end
     
     -- Target of unit
