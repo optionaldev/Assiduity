@@ -23,7 +23,8 @@ end
 
 AssiduityUnitAuraSource = function(unit, auraName)
 	local source = select(8, UnitAura(unit, auraName))
-	return source == unit or (source == "player" and UnitIsUnit(unit, "player"))
+    
+	return (source ~= nil and UnitIsUnit(unit, source)) or (source == "player" and UnitIsUnit(unit, "player"))
 end
 
 AssiduityPrintTable = function(tbl)

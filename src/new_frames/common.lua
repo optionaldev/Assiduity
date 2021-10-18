@@ -827,8 +827,6 @@ end
 
 local setUnit = function(self, text, bgColorTable, fontColorTable )
     
-    print("set unit " .. text .. " " .. tostring(bgColorTable[1]) .. " " .. tostring(bgColorTable[2]) .. " " .. tostring(bgColorTable[3]))
-    print("set unit " .. " " .. tostring(fontColorTable[1]) .. " " .. tostring(fontColorTable[2]) .. " " .. tostring(fontColorTable[3]))
     self.targetPortrait:SetTexture(unpack(bgColorTable))
     self.targetPortrait:SetTexCoord(0, 1, 0, 1)
     self.targetPortraitBackground:Show()
@@ -901,7 +899,6 @@ local updateTarget = function(self)
     self.target.unitNameFontString:SetText(UnitName(unitTarget))
     
     if TARGET_TO_SETUP[detectedUnit] then
-        print("target to setup " .. detectedUnit)
         setUnit(self, unpack(TARGET_TO_SETUP[detectedUnit]))
     
     --if UnitIsPlayer(detectedUnit) then
@@ -919,6 +916,7 @@ local updateTarget = function(self)
     else
         SetPortraitTexture(self.targetPortrait, detectedUnit)
         self.targetPortrait:SetTexCoord(0, 1, 0, 1)
+        
         self.targetFontString:Hide()
     end 
 end
@@ -992,7 +990,7 @@ local setupTarget = function(self)
     targetPortrait:SetPoint("LEFT", target, "LEFT", 1, 0)
     self.targetPortrait = targetPortrait
     
-    local targetFontString = target:CreateFontString(nil, "BACKGROUND", "AssiduityIconTextSmall")
+    local targetFontString = target:CreateFontString(nil, "DEFAULT", "AssiduityIconTextSmall")
     targetFontString:SetPoint("CENTER", targetPortrait)
     self.targetFontString = targetFontString
 
@@ -1033,7 +1031,7 @@ local setupTarget = function(self)
     powerBarBackground:SetAllPoints()
 
     local unitNameFontString = target:CreateFontString(nil, nil, "AssiduityAuraCountFontSmall")
-    unitNameFontString:SetPoint("BOTTOMRIGHT", target, "TOPRIGHT", 0, 3)
+    unitNameFontString:SetPoint("BOTTOMLEFT", target, "TOPLEFT", 0, 3)
     target.unitNameFontString = unitNameFontString
 
     target:SetScript("OnUpdate", function(self)
