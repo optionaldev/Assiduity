@@ -15,7 +15,7 @@ local MEASUREMENTS = {
         ["AURA_DISTANCE_TO_EDGE"] =   1,
         ["AURA_SIZE"]             =  16,
         ["BAR_WIDTH"]             =  89,
-        ["CAST_BAR_OFFSET"]       =   7,
+        ["CAST_BAR_OFFSET"]       = -15,
         ["DISTANCE_TO_EDGE"]      =   2,
         ["FRAME_HEIGHT"]          =  33,
         ["FRAME_WIDTH"]           = 123,
@@ -38,7 +38,7 @@ local MEASUREMENTS = {
         ["AURA_DISTANCE_TO_EDGE"] =   1,
         ["AURA_SIZE"]             =  20,
         ["BAR_WIDTH"]             = 180,
-        ["CAST_BAR_OFFSET"]       =  15,
+        ["CAST_BAR_OFFSET"]       = -15,
         ["DISTANCE_TO_EDGE"]      =   3,
         ["FRAME_HEIGHT"]          =  47,
         ["FRAME_WIDTH"]           = 230,
@@ -443,9 +443,7 @@ local VALID_UNITS = {
     "partypet3",
     "partypet4",
 
-    "player",
-    "focus",
-    "target"
+    "player"
 }
 
 -------------
@@ -869,19 +867,18 @@ local updateTarget = function(self)
     self.targetPortraitBackground:Show()
     self.targetFontString:Show()
     
-    local detectedUnit
+    local detectedFamiliarUnit
     
     --- Handle displaying unit artwork for valid units
     
-    
     for index, validUnit in ipairs(VALID_UNITS) do
         if UnitIsUnit(unitTarget, validUnit) then
-            detectedUnit = validUnit
+            detectedFamiliarUnit = validUnit
             break
         end
     end
     
-    if detectedUnit then
+    if detectedFamiliarUnit then
         self.targetBackground:Hide()
         self.target.healthBar:Hide()
         self.target.powerBar:Hide()
@@ -891,21 +888,21 @@ local updateTarget = function(self)
         self.target.healthBar:Show()
         self.target.powerBar:Show()
         self.target.unitNameFontString:Show()
-        detectedUnit = unitTarget
+        detectedFamiliarUnit = unitTarget
     end
 
     local reaction = REACTION[getReaction(self, unitTarget)]
     self.targetBackground:SetTexture(unpack(reaction))
     self.target.unitNameFontString:SetText(UnitName(unitTarget))
     
-    if TARGET_TO_SETUP[detectedUnit] then
-        setUnit(self, unpack(TARGET_TO_SETUP[detectedUnit]))
+    if TARGET_TO_SETUP[detectedFamiliarUnit] then
+        setUnit(self, unpack(TARGET_TO_SETUP[detectedFamiliarUnit]))
     
     --if UnitIsPlayer(detectedUnit) then
     --self:setIcon( "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES", CLASS_ICON_TCOORDS[class] )
         
-    elseif FAMILY_TO_ICON[UnitCreatureFamily(detectedUnit)] then
-        setIcon(self, FAMILY_TO_ICON[UnitCreatureFamily(detectedUnit)])
+    elseif FAMILY_TO_ICON[UnitCreatureFamily(detectedFamiliarUnit)] then
+        setIcon(self, FAMILY_TO_ICON[UnitCreatureFamily(detectedFamiliarUnit)])
         
     elseif CLASS_TO_ICON[class] then
         setIcon(self, CLASS_TO_ICON[class])
@@ -914,7 +911,7 @@ local updateTarget = function(self)
         setIcon(self, "Interface\\Icons\\Spell_Magic_LesserInvisibilty")
         
     else
-        SetPortraitTexture(self.targetPortrait, detectedUnit)
+        SetPortraitTexture(self.targetPortrait, detectedFamiliarUnit)
         self.targetPortrait:SetTexCoord(0, 1, 0, 1)
         
         self.targetFontString:Hide()
@@ -965,7 +962,7 @@ local setupTarget = function(self)
                     self,
                     "RIGHT",
                     10,
-                    0)
+                    5)
     
     target:SetAttribute(UNIT, self:GetAttribute(UNIT) .. "target")
     target:SetAttribute("*type1", "target")
@@ -1281,13 +1278,13 @@ AssiduityRegisterFrame = function(self)
                         self, 
                         "RIGHT", 
                         30, 
-                        -MEASUREMENTS.CAST_BAR_OFFSET)
+                        MEASUREMENTS.CAST_BAR_OFFSET)
     else
         castBar:SetPoint("RIGHT", 
                         self, 
                         "LEFT", 
                         -10, 
-                        -MEASUREMENTS.CAST_BAR_OFFSET)
+                        MEASUREMENTS.CAST_BAR_OFFSET)
     end
     self.castBar = castBar
     
