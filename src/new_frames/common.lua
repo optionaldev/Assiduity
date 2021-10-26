@@ -924,12 +924,12 @@ end
 local observeEvents = function(self, func)
     
     func(self, "UNIT_AURA")
-    func(self, "UNIT_ENERGY")
+    --func(self, "UNIT_ENERGY")
     func(self, "UNIT_FACTION")
-    func(self, "UNIT_HEALTH")
-    func(self, "UNIT_MANA")
-    func(self, "UNIT_RAGE")
-    func(self, "UNIT_RUNIC_POWER")
+    --func(self, "UNIT_HEALTH")
+    --func(self, "UNIT_MANA")
+    --func(self, "UNIT_RAGE")
+    --func(self, "UNIT_RUNIC_POWER")
     func(self, "UNIT_TARGET")
 end
 
@@ -946,9 +946,14 @@ local handleUnitChange = function(self)
         updateAura(self)
         updateTarget(self)
         observeEvents(self, self.RegisterEvent)
+        self:SetScript("OnUpdate", function(self)
+            handleHealth(self)
+            handlePower(self)
+        end)
     else
         observeEvents(self, self.UnregisterEvent)
         self:Hide()
+        self:SetScript("OnUpdate", nil)
     end
 end
 
