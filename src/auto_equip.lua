@@ -68,11 +68,12 @@ do
   
     self.ADDON_LOADED = ADDON_LOADED
     
-    self:RegisterEvent("ADDON_LOADED")
-    
-    self:SetScript("OnEvent", function(self, event, ...)
-        self[event](self, ...)
-    end )
+    -- Disable for now until Hallow's End is finished
+    --self:RegisterEvent("ADDON_LOADED")
+    --
+    --self:SetScript("OnEvent", function(self, event, ...)
+    --    self[event](self, ...)
+    --end )
 end
 
 --------------------

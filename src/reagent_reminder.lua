@@ -3,7 +3,13 @@ local MINIMUM_AMOUNT = 19
 local GetInstanceType = AssiduityGetInstanceType
 
 local AssiduityReagents = CreateFrame("Frame")
+
 do
+
+    if UnitLevel("player") ~= 80 then
+        return
+    end
+    
     local Warn = AssiduityWarn
 
     local CLASS_TO_REAGENTS = {

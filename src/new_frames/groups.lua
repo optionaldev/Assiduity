@@ -6,8 +6,10 @@
 local table_insert = table.insert
 local table_remove = table.remove
 local table_sort   = table.sort
-local UnitLocalizedClass = AssiduityGetUnitLocalizedClass
-local UnitAuraSource = AssiduityUnitAuraSource
+
+local UnitAuraSource      = AssiduityUnitAuraSource
+local UnitAffectingCombat = UnitAffectingCombat
+local UnitLocalizedClass  = AssiduityGetUnitLocalizedClass
 
 --[[
     2 people in a party:
@@ -351,13 +353,21 @@ end
 
 local evaluateRaid = function()
 	
-    nameToHealth = {}
-    
-    for index = 1, 40 do
-        local unit = "raid" .. index
-        if UnitExists(unit) then
-            table_insert(nameToHealth, {["name"] = UnitName(unit), 
-                                        ["maxHealth"] = UnitHealthMax(unit)})
+    --[[
+        If player is in combat, we shouldn't rely on max health anymore
+        because max health includes all the buffs that a players has
+        and if a player dies, we won't have the opportunity to 
+        reorder frames based on dead people
+    ]]
+    if UnitAffectingCombat("player") then
+        nameToHealth = {}
+        
+        for index = 1, 40 do
+            local unit = "raid" .. index
+            if UnitExists(unit) then
+                table_insert(nameToHealth, {["name"] = UnitName(unit), 
+                                            ["maxHealth"] = UnitHealthMax(unit)})
+            end
         end
     end
     
