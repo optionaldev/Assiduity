@@ -359,7 +359,7 @@ local evaluateRaid = function()
         and if a player dies, we won't have the opportunity to 
         reorder frames based on dead people
     ]]
-    if UnitAffectingCombat("player") then
+    if not UnitAffectingCombat("player") then
         nameToHealth = {}
         
         for index = 1, 40 do
@@ -539,22 +539,16 @@ local updateFrames = function(frameList, units, prefix)
             else 
                 frame.deadFontString:SetAlpha(0)
             end
-			frame:RegisterEvent("UNIT_AURA")
-			frame:RegisterEvent("UNIT_HEALTH")
-			frame:RegisterEvent("UNIT_MAXHEALTH")
-			frame:RegisterEvent("UNIT_MANA")
-			frame:RegisterEvent("UNIT_MAXMANA")
+            frame:RegisterEvent("UNIT_AURA")
+            frame:SetScript("OnUpdate", childOnUpdate)
 			frame:SetAlpha(1)
             frame:Show()
 		else
             frame.deadFontString:SetAlpha(0)
 			frame:SetAttribute("unit", nil)
 			frame:UnregisterEvent("UNIT_AURA")
-			frame:UnregisterEvent("UNIT_HEALTH")
-			frame:UnregisterEvent("UNIT_MAXHEALTH")
-			frame:UnregisterEvent("UNIT_MANA")
-			frame:UnregisterEvent("UNIT_MAXMANA")
 			frame:SetAlpha(HIDDEN_FRAME_ALPHA)
+            frame:SetScript("OnUpdate", nil)
             frame:Hide()
 		end
 	end
@@ -684,7 +678,7 @@ local handleRange = function(frames)
 	end
 end
 
-local onUpdate = function()
+local parentOnUpdate = function()
 
 	handleRange(tankFrames)
 	handleRange(healFrames)
@@ -799,45 +793,29 @@ end
 local UNIT_SPELLCAST_SUCCEEDED = function(self, unit, spell)
 
 	local spec = SPELLCAST_TO_SPEC[spell]
+    local playerName = UnitName(unit)
 	
-	if spec then
-		nameToSpec[UnitName(unit)] = spec
+	if spec and nameToSpec[playerName] == nil then
+		nameToSpec[playerName] = spec
 		
 		evaluateGroup()
 	end
 end
 
-local UNIT_HEALTH = function(self, unit)
+local childOnUpdate = function(self)
 
-	if self:GetAttribute("unit") == unit then
-		if UnitIsDeadOrGhost(unit) then
-			self.deadFontString:SetAlpha(1)
-		else 
-			self.deadFontString:SetAlpha(0)
-		end
-		self.healthBar:SetValue(UnitHealth(unit))
-	end
-end
+    local unit = self:GetAttribute("unit")
 
-local UNIT_MAXHEALTH = function(self, unit)
-
-	if self:GetAttribute("unit") == unit then
-		self.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
-	end
-end
-
-local UNIT_MANA = function(self, unit)
-
-	if self:GetAttribute("unit") == unit then
-		self.powerBar:SetValue(UnitMana(unit))
-	end
-end
-
-local UNIT_MAXMANA = function(self, unit)
-
-	if self:GetAttribute("unit") == unit then
-		self.powerBar:SetMinMaxValues(0, UnitManaMax(unit))
-	end
+    if UnitIsDeadOrGhost(unit) then
+        self.deadFontString:SetAlpha(1)
+    else 
+        self.deadFontString:SetAlpha(0)
+    end
+    
+    self.healthBar:SetValue(UnitHealth(unit))
+    self.healthBar:SetMinMaxValues(0, UnitHealthMax(unit))
+    self.powerBar:SetValue(UnitMana(unit))
+    self.powerBar:SetMinMaxValues(0, UnitManaMax(unit))
 end
 
 -----------
@@ -858,7 +836,7 @@ do
     self:SetScript("OnEvent", function(self, event, ...)
         self[event](self, ...)
     end)    
-	self:SetScript("OnUpdate", onUpdate)
+	self:SetScript("OnUpdate", parentOnUpdate)
 	
 	self.PARTY_MEMBERS_CHANGED    = PARTY_MEMBERS_CHANGED
 	self.PLAYER_ENTERING_WORLD    = PLAYER_ENTERING_WORLD
@@ -932,10 +910,6 @@ local handleFrameCreation = function(frameType, framePosition)
     --result:SetAttribute("spell-heal5", "Wild Growth")
 	
 	result.UNIT_AURA 	  = CHILD_UNIT_AURA
-	result.UNIT_HEALTH 	  = UNIT_HEALTH
-	result.UNIT_MAXHEALTH = UNIT_MAXHEALTH
-	result.UNIT_MANA 	  = UNIT_MANA
-	result.UNIT_MAXMANA   = UNIT_MAXMANA
 	
 	local background = result:CreateTexture(nil, "BACKGROUND")
 	background:SetTexture(unpack(frameColors[frameType]))
@@ -1059,7 +1033,7 @@ local handleFrameCreation = function(frameType, framePosition)
 	
     result:SetScript("OnEvent", function(self, event, ...)
         self[event](self, ...)
-    end)    
+    end)
 	
 	result.position = framePosition
 	
